@@ -1,0 +1,8 @@
+services:
+  backend:
+    build: ./backend
+    container_name: backend-container
+
+  frontend:
+    build: ./frontend
+    container_name: frontend-container
