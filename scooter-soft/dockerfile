@@ -1,0 +1,9 @@
+FROM python:3.10-slim
+
+ENV SCOOTER_ID=default_id
+
+COPY scooter.py /app/scooter.py
+
+WORKDIR /app
+
+CMD ["python", "scooter.py"]

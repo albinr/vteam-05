@@ -6,3 +6,14 @@ services:
   frontend:
     build: ./frontend
     container_name: frontend-container
+
+  scooter_sim:
+    build: ./scooter-soft
+    environment:
+      - SCOOTER_ID={{.Task.Slot}}
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
