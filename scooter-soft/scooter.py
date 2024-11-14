@@ -6,6 +6,8 @@ class Scooter:
         self.scooter_id = scooter_id
         self.battery = 100
         self.location = {"latitude": 59.3293, "longitude": 18.0686}
+        self.charging = False
+        self.disabled = False
 
     def update(self):
         self.battery = max(self.battery - random.uniform(0.5, 1.5), 0)
