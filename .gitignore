@@ -1,6 +1,9 @@
 # Node-modules
 node_modules/
 
+# Venv stuff
+venv/
+
 # Build files
 dist/
 build/
