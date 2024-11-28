@@ -30,7 +30,3 @@ class Scooter:
         while self.battery > 0:
             self.update()
             time.sleep(5)
-
-if __name__ == "__main__":
-    scooter_id = os.getenv("SCOOTER_ID", "default_id")
-    Scooter(scooter_id).run()
