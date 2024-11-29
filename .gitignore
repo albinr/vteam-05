@@ -1,9 +1,15 @@
-# Node-modules
+# Node stuff
 node_modules/
 
-# Venv stuff
+# Python stuff
 venv/
+__pycache__/
 
-# Build files
+# Build stuff
 dist/
 build/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
