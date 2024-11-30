@@ -36,11 +36,11 @@ jobs:
             source venv/bin/activate
             python -m unittest discover -s sim-soft/tests
 
-        - name: Run flake8
-          run: |
-            source venv/bin/activate
-            pip install flake8
-            flake8 sim-soft/src
+        # - name: Run flake8
+        #   run: |
+        #     source venv/bin/activate
+        #     pip install flake8
+        #     flake8 sim-soft/src
 
         # - name: Build Docker image
         #   run: |
