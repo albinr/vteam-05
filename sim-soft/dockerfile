@@ -6,4 +6,4 @@ COPY scooter.py /app/scooter.py
 
 WORKDIR /app
 
-CMD ["python", "scooter.py"]
+CMD ["python3", "simulaiton.py"]
