@@ -13,7 +13,7 @@ jobs:
   # test-backend: # backend tests
   # test-frontend: # frontend tests
 
-  test-simulation: 
+  test-simulation:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +31,7 @@ jobs:
           source venv/bin/activate
           pip install -r sim-soft/requirements.txt
 
-      - name: Run tests
+      - name: Run unittest
         run: |
           source venv/bin/activate
-          pytest sim-soft/tests/ --disable-warnings
+          python -m unittest discover -s sim-soft/tests

@@ -8,6 +8,7 @@ import socketio
 class Scooter:
     def __init__(self, scooter_id, server_url="http://localhost:3000"):
         self.scooter_id = scooter_id
+        self.state = "idle"
         self.battery = 100
         self.location = {"latitude": 59.3293, "longitude": 18.0686}
         self.server_url = server_url

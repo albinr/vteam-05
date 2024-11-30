@@ -32,6 +32,7 @@ class Simulation:
         """
         self.users = users
         self.bikes = bikes
+        self.state = "initialized"
 
     def start(self):
         """
