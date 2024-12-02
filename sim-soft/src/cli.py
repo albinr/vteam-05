@@ -33,7 +33,7 @@ def main():
 
     # Subcommand: add-customer
     customer_parser = subparsers.add_parser("add-customer", help="Add a customer")
-    customer_parser.set_defaults(func=lambda args: add_customer(args.name, args.city))
+    customer_parser.set_defaults(func=lambda args: add_customer(args.city))
 
     # Subcommand: add-scooter
     scooter_parser = subparsers.add_parser("add-scooter", help="Add a scooter")
