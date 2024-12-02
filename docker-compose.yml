@@ -7,10 +7,8 @@ services:
     build: ./frontend
     container_name: frontend-container
 
-  scooter_sim:
-    build: ./scooter-soft
-    environment:
-      - SCOOTER_ID={{.Task.Slot}}
+  simulation:
+    build: ./sim-soft
     networks:
       - app_network
 

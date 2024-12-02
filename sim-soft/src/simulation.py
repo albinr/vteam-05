@@ -1,5 +1,7 @@
 # simulation.py
 
+from scooter import Scooter
+
 class Simulation:
     """
     A class to represent a scooter simulation environment.
@@ -51,3 +53,7 @@ class Simulation:
         the simulation has finished running.
         """
         pass
+
+if __name__ == "__main__":
+    scooter = Scooter(scooter_id=1)
+    scooter.run()

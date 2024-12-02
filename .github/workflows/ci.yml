@@ -3,13 +3,13 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - "**"
   pull_request:
     branches:
       - main
 
 jobs:
-  # theese can be added later i think
+  # these can be added later i think
   # test-backend: # backend tests
   # test-frontend: # frontend tests
 
