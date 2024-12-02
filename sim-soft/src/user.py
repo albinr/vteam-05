@@ -2,7 +2,7 @@ import json, random, time, os
 from datetime import datetime
 
 class User:
-    def __init__(self, user_id, username, bike_id):
+    def __init__(self, user_id, username, bike_id,city):
         self.user_id = user_id
         self.username = username
         self.bike_id = bike_id
