@@ -6,11 +6,18 @@ from datetime import datetime
 import socketio
 
 class Scooter:
-    def __init__(self, scooter_id, server_url="http://localhost:3000"):
+    def __init__(
+                self,
+                scooter_id,
+                state="idle",
+                battery=100,
+                location={"latitude": None, "longitude": None},
+                server_url="http://localhost:3000",
+            ):
         self.scooter_id = scooter_id
-        self.state = "idle"
-        self.battery = 100
-        self.location = {"latitude": 59.3293, "longitude": 18.0686}
+        self.state = state
+        self.battery = battery
+        self.location = location
         self.server_url = server_url
         self.sio = socketio.AsyncClient()
 
