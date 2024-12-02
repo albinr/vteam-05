@@ -23,9 +23,9 @@ class Scooter:
 
     def update(self):
         """Update scooter data."""
-        self.battery = max(self.battery - random.uniform(0.5, 1.5), 0)
-        self.location["latitude"] += random.uniform(-0.0001, 0.0001)
-        self.location["longitude"] += random.uniform(-0.0001, 0.0001)
+        # self.battery = max(self.battery - random.uniform(0.5, 1.5), 0)
+        # self.location["latitude"] += random.uniform(-0.0001, 0.0001)
+        # self.location["longitude"] += random.uniform(-0.0001, 0.0001)
         return self.get_data()
 
     def get_data(self):
@@ -39,13 +39,13 @@ class Scooter:
 
     async def send_updates(self):
         """Send periodic updates to the server."""
-        await self.sio.connect(self.server_url)
+        # await self.sio.connect(self.server_url)
         print(f"Connected to server at {self.server_url}")
 
         try:
             while self.battery > 0:
                 data = self.update()
-                await self.sio.emit("scooter_update", data)
+                # await self.sio.emit("scooter_update", data)
                 print(f"Data sent: {data}")
                 await asyncio.sleep(1)
         finally:
