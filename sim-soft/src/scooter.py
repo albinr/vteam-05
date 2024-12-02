@@ -9,13 +9,13 @@ class Scooter:
     def __init__(
                 self,
                 scooter_id,
-                state="idle",
+                status="idle",
                 battery=100,
                 location={"latitude": None, "longitude": None},
                 server_url="http://localhost:3000",
             ):
         self.scooter_id = scooter_id
-        self.state = state
+        self.status = status
         self.battery = battery
         self.location = location
         self.server_url = server_url
