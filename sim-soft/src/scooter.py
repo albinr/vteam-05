@@ -6,7 +6,7 @@ from datetime import datetime
 import socketio
 
 class Scooter:
-    def __init__(self, scooter_id, city, server_url="http://localhost:3000"):
+    def __init__(self, scooter_id, server_url="http://localhost:3000"):
         self.scooter_id = scooter_id
         self.state = "idle"
         self.city = city
