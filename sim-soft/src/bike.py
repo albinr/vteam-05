@@ -22,14 +22,37 @@ class Bike:
         self.server_url = server_url
         self.sio = socketio.AsyncClient()
 
-    def update(self):
+    def update(self, status=None, battery=None, location=None):
         """Update bike data."""
-        # self.battery = max(self.battery - 1, 0)
-        # self.location = (
-        #     self.location[0] + 0.0001 if self.location[0] else 0.0001,
-        #     self.location[1] + 0.0001 if self.location[1] else 0.0001,
-        # )
+        self.status = status if status else self.status
+        self.battery = battery if battery else self.battery
+        self.location = location if location else self.location
+
         return self.get_data()
+
+    def charging(self):
+        """Set the status to charging"""
+        self.status = "charging"
+
+        return self.status
+
+    def unlock(self):
+        """Set the status to unlocked"""
+        self.status = "unlocked"
+
+        return self.status
+
+    def lock(self):
+        """Set the status to locked"""
+        self.status = "locked"
+
+        return self.status
+
+    def idle(self):
+        """Set the status to idle"""
+        self.status = "idle"
+
+        return self.status
 
     def get_data(self):
         """Prepare data payload."""
