@@ -5,11 +5,11 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
 import unittest
-from scooter import Scooter
+from bike import Bike
 
 class TestScooter(unittest.TestCase):
     def setUp(self):
-        self.scooter = Scooter(1)
+        self.scooter = Bike(1)
 
     def test_placeholder(self):
         self.assertTrue(True)

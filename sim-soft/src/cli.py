@@ -3,20 +3,20 @@
 import argparse
 
 def start_simulation():
-    """Start the scooter simulation."""
+    """Start the bike simulation."""
     print("Starting the simulation...")
 
 def stop_simulation():
-    """Start the scooter simulation."""
+    """Start the bike simulation."""
     print("Stopping the simulation...")
 
 def add_customer(city):
     """Add a customer to the simulation."""
     print(f"Adding customer in {city} to the simulation...")
 
-def add_scooter(city):
-    """Add a scooter to the simulation."""
-    print(f"Adding scooter in city to the simulation...")
+def add_bike(city):
+    """Add a bike to the simulation."""
+    print(f"Adding bike in city to the simulation...")
 
 def main():
     # Create the top-level parser
@@ -35,11 +35,11 @@ def main():
     customer_parser = subparsers.add_parser("add-customer", help="Add a customer")
     customer_parser.set_defaults(func=lambda args: add_customer(args.city))
 
-    # Subcommand: add-scooter
-    scooter_parser = subparsers.add_parser("add-scooter", help="Add a scooter")
-    scooter_parser.add_argument("model", type=str, help="Model of the scooter")
-    scooter_parser.add_argument("location", type=str, help="Location where the scooter is placed")
-    scooter_parser.set_defaults(func=lambda args: add_scooter(args.model, args.location))
+    # Subcommand: add-bike
+    bike_parser = subparsers.add_parser("add-bike", help="Add a bike")
+    bike_parser.add_argument("model", type=str, help="Model of the bike")
+    bike_parser.add_argument("location", type=str, help="Location where the bike is placed")
+    bike_parser.set_defaults(func=lambda args: add_bike(args.model, args.location))
 
     # Parse arguments and execute the appropriate function
     args = parser.parse_args()
