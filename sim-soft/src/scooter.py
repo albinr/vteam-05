@@ -2,6 +2,10 @@ import asyncio
 from datetime import datetime
 import socketio
 
+min_battery = 20
+sleep_time = 5
+sleep_time_locked = 30
+
 class Scooter:
     def __init__(
                 self,
@@ -43,18 +47,36 @@ class Scooter:
         # print(f"Scooter {self.scooter_id} connected to server at {self.server_url}")
 
         try:
-            while self.battery > 0:
-                data = self.update()
-                # await self.sio.emit("scooter_update", data) # To send update to server
-                print(f"[Scooter {self.scooter_id}] Data sent: {data}")
-                if self.status == "locked":
-                    await asyncio.sleep(30)
+            while True:
+                self.update()
+
+                if self.battery > min_battery:
+                    # TODO: Send update to server
+                    print(f"[Scooter {self.scooter_id}] Refreshed")
                 else:
-                    await asyncio.sleep(5)
+                    # TODO: Send update to server with warning about battery level
+                    print(f"[Scooter {self.scooter_id}] Low battery")
+
+                if self.status == "locked":
+                    await asyncio.sleep(sleep_time_locked)
+                else:
+                    await asyncio.sleep(sleep_time)
         except Exception as e:
             print(f"[Scooter {self.scooter_id}] Error: {e}")
-        finally:
-            await self.sio.disconnect() # To disconnect from server
+
+        # try:
+        #     while self.battery > 0:
+        #         data = self.update()
+        #         # await self.sio.emit("scooter_update", data) # To send update to server
+        #         print(f"[Scooter {self.scooter_id}] Data sent: {data}")
+        #         if self.status == "locked":
+        #             await asyncio.sleep(30)
+        #         else:
+        #             await asyncio.sleep(5)
+        # except Exception as e:
+        #     print(f"[Scooter {self.scooter_id}] Error: {e}")
+        # finally:
+        #     await self.sio.disconnect() # To disconnect from server
 
     async def run(self):
         await self.send_updates()
