@@ -11,6 +11,9 @@ services:
     build: ./sim-soft
     networks:
       - app_network
+    container_name: simulation
+    volumes:
+      - ./sim-soft/src:/app
 
 networks:
   app_network:
