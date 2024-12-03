@@ -1,6 +1,3 @@
-import json
-import random
-import time
 import asyncio
 from datetime import datetime
 import socketio
@@ -9,13 +6,13 @@ class Scooter:
     def __init__(
                 self,
                 scooter_id,
-                status="idle",
+                status="locked",
                 battery=100,
-                location={"latitude": None, "longitude": None},
-                server_url="http://localhost:3000",
+                location=(None, None), # Tuple for better performance (lat,long)
+                server_url="https://c2195955-eebf-49af-836d-f3372f7abfae.mock.pstmn.io",
             ):
         self.scooter_id = scooter_id
-        self.status = status
+        self.status = status # locked, unlocked, idle, charging
         self.battery = battery
         self.location = location
         self.server_url = server_url
@@ -23,15 +20,18 @@ class Scooter:
 
     def update(self):
         """Update scooter data."""
-        # self.battery = max(self.battery - random.uniform(0.5, 1.5), 0)
-        # self.location["latitude"] += random.uniform(-0.0001, 0.0001)
-        # self.location["longitude"] += random.uniform(-0.0001, 0.0001)
+        # self.battery = max(self.battery - 1, 0)
+        # self.location = (
+        #     self.location[0] + 0.0001 if self.location[0] else 0.0001,
+        #     self.location[1] + 0.0001 if self.location[1] else 0.0001,
+        # )
         return self.get_data()
 
     def get_data(self):
         """Prepare data payload."""
         return {
             "scooter_id": self.scooter_id,
+            "status": self.status,
             "battery": round(self.battery, 2),
             "location": self.location,
             "timestamp": datetime.now().isoformat()
@@ -39,21 +39,35 @@ class Scooter:
 
     async def send_updates(self):
         """Send periodic updates to the server."""
-        # await self.sio.connect(self.server_url)
-        print(f"Connected to server at {self.server_url}")
+        # await self.sio.connect(self.server_url) # To connect to server
+        # print(f"Scooter {self.scooter_id} connected to server at {self.server_url}")
 
         try:
             while self.battery > 0:
                 data = self.update()
-                # await self.sio.emit("scooter_update", data)
-                print(f"Data sent: {data}")
-                await asyncio.sleep(1)
+                # await self.sio.emit("scooter_update", data) # To send update to server
+                print(f"[Scooter {self.scooter_id}] Data sent: {data}")
+                if self.status == "locked":
+                    await asyncio.sleep(30)
+                else:
+                    await asyncio.sleep(5)
+        except Exception as e:
+            print(f"[Scooter {self.scooter_id}] Error: {e}")
         finally:
-            await self.sio.disconnect()
+            await self.sio.disconnect() # To disconnect from server
 
-    def run(self):
-        asyncio.run(self.send_updates())
+    async def run(self):
+        await self.send_updates()
+
+    async def execute_command():
+        pass
+
 
 if __name__ == "__main__":
-    scooter = Scooter(scooter_id=1)
-    scooter.run()
+    async def main():
+        scooter = Scooter(scooter_id=1)
+        await scooter.run()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("[Simulation] Simulation interrupted by user.")
