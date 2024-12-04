@@ -39,7 +39,7 @@ class Simulation:
 
 if __name__ == "__main__":
     try:
-        simulation = Simulation(num_bikes=10)
+        simulation = Simulation(num_bikes=3000)
         simulation.start()
     except KeyboardInterrupt:
         print("[Simulation] Simulation ended.")
