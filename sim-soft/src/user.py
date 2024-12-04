@@ -3,9 +3,10 @@ from datetime import datetime
 from bike import Bike
 
 class User:
-    def __init__(self, user_id, username):
+    def __init__(self, user_id, username, bike_id):
         self.user_id = user_id
         self.username = username
+        self.bike_id = bike_id
         self.bike = None # Holder for bike class- A user starts without a bike
 
     async def update(self):
