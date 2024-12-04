@@ -1,6 +1,8 @@
 FROM python:3.10-slim
 
-COPY ./src /app/
+# COPY ./src /app/
+
+VOLUME /app
 
 COPY ./requirements.txt /app/
 

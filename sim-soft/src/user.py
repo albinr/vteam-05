@@ -14,10 +14,10 @@ class User:
     def register(self):
         pass
 
-    def rentScooter(self):
+    def rentBike(self):
         pass
 
-    def returnScooter(self):
+    def returnBike(self):
         pass
 
     def run(self):
