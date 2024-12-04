@@ -1,10 +1,12 @@
 import asyncio
 from datetime import datetime
 import socketio
+import random
 
 min_battery = 20
 sleep_time = 1
 sleep_time_locked = 5
+battery_drain_sim = 0.02
 
 class Bike:
     def __init__(
@@ -12,12 +14,14 @@ class Bike:
                 bike_id,
                 status="locked",
                 battery=100,
+                simulated = False,
                 location=(None, None), # (lat,long)
                 server_url="https://c2195955-eebf-49af-836d-f3372f7abfae.mock.pstmn.io",
             ):
         self.bike_id = bike_id
         self.status = status # locked, unlocked, idle, charging
         self.battery = battery
+        self.simulated = simulated
         self.location = location
         self.server_url = server_url
         self.sio = socketio.AsyncClient()
@@ -69,23 +73,49 @@ class Bike:
         try:
             # await self.sio.connect(self.server_url) # To connect to server
             # print(f"bike {self.bike_id} connected to server at {self.server_url}")
-            while True:
-                data = self.get_data()
 
-                if self.battery > min_battery:
-                    # TODO: Send update to server
-                    # await self.sio.emit("bike_update", data) # To send update to server
-                    print(f"[bike {self.bike_id}] Refreshed")
-                    print(f"[bike {self.bike_id}] Data sent: {data}")
-                else:
-                    # TODO: Send update to server with warning about battery level
-                    print(f"[bike {self.bike_id}] Low battery")
-                    # await self.sio.emit("bike_warning", data) # To send warning to server
+            if not self.simulated:
+                while True:
+                    data = self.get_data()
 
-                if self.status == "locked":
-                    await asyncio.sleep(sleep_time_locked)
-                else:
-                    await asyncio.sleep(sleep_time)
+                    # self.battery = self.battery - (0.5 * sleep_time)
+
+                    if self.battery > min_battery:
+                        # TODO: Send update to server
+                        # await self.sio.emit("bike_update", data) # To send update to server
+                        print(f"[bike {self.bike_id}] Refreshed")
+                        print(f"[bike {self.bike_id}] Data sent: {data}")
+                    else:
+                        # TODO: Send update to server with warning about battery level
+                        print(f"[bike {self.bike_id}] Low battery")
+                        # await self.sio.emit("bike_warning", data) # To send warning to server
+
+                    if self.status == "locked":
+                        await asyncio.sleep(sleep_time_locked)
+                    else:
+                        await asyncio.sleep(sleep_time)
+
+            if self.simulated:
+                while True:
+                    data = self.get_data()
+
+                    if self.battery > min_battery:
+                        # TODO: Send update to server
+                        # await self.sio.emit("bike_update", data) # To send update to server
+                        print(f"[bike {self.bike_id}] Refreshed")
+                        print(f"[bike {self.bike_id}] Data sent: {data}")
+                    else:
+                        # TODO: Send update to server with warning about battery level
+                        print(f"[bike {self.bike_id}] Low battery")
+                        # await self.sio.emit("bike_warning", data) # To send warning to server
+
+                    if self.status == "locked":
+                        await asyncio.sleep(sleep_time_locked)
+                    else:
+                        await asyncio.sleep(sleep_time)
+
+                    if self.status == "unlocked":
+                        self.battery = self.battery - (battery_drain_sim * sleep_time * random.randint(0, 10) * 0.1)
         except Exception as e:
             print(f"[bike {self.bike_id}] Error: {e}")
         finally:
