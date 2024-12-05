@@ -65,15 +65,13 @@ class TestBike(unittest.IsolatedAsyncioTestCase):
             battery=85.5
         )
 
-        # Assert that the values are updated correctly
         self.assertEqual(self.bike.status, "unlocked")
         self.assertEqual(self.bike.location, (59.3293, 18.0686))
         self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
 
-        # Partial update: Only update the status
         await self.bike.update_bike_data(status="locked")
         self.assertEqual(self.bike.status, "locked")
-        self.assertEqual(self.bike.location, (59.3293, 18.0686))  # Ensure location is unchanged
+        self.assertEqual(self.bike.location, (59.3293, 18.0686))
         self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
         
 
