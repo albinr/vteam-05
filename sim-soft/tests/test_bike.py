@@ -1,7 +1,7 @@
 import unittest
 from src.bike import Bike
 import datetime
-class TestBike(unittest.TestCase):
+class TestBike(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.bike = Bike(1)
 
@@ -49,15 +49,32 @@ class TestBike(unittest.TestCase):
         #     timestamp_is_valid = False
         # self.assertTrue(timestamp_is_valid)
 
-    def test_update_bike_data(self):
+    async def test_update_bike_data(self):
         """
         Test for updating bike data.
         """
-        self.bike.update_bike_data(status="unlocked", location=(0.2, 0.2), battery=20)
+        # self.bike.update_bike_data(status="unlocked", location=(0.2, 0.2), battery=20)
 
+        # self.assertEqual(self.bike.status, "unlocked")
+        # self.assertEqual(self.bike.location, (0.2, 0.2))
+        # self.assertEqual(self.bike.battery, 20)
+
+        await self.bike.update_bike_data(
+            status="unlocked",
+            location=(59.3293, 18.0686),
+            battery=85.5
+        )
+
+        # Assert that the values are updated correctly
         self.assertEqual(self.bike.status, "unlocked")
-        self.assertEqual(self.bike.location, (0.2, 0.2))
-        self.assertEqual(self.bike.battery, 20)
+        self.assertEqual(self.bike.location, (59.3293, 18.0686))
+        self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
+
+        # Partial update: Only update the status
+        await self.bike.update_bike_data(status="locked")
+        self.assertEqual(self.bike.status, "locked")
+        self.assertEqual(self.bike.location, (59.3293, 18.0686))  # Ensure location is unchanged
+        self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
         
 
 if __name__ == "__main__":
