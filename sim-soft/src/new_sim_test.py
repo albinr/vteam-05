@@ -105,7 +105,7 @@ class Simulation:
         tasks = [bike.run_simulation() for bike in self.bikes]
         await asyncio.gather(*tasks)
 
-    async def run_simulation(self):
+    async def start(self):
         """Start the simulation and run bike updates."""
         print("[Simulation] Starting simulation...")
         self.state = "running"
@@ -117,10 +117,6 @@ class Simulation:
         for bike in self.bikes:
             if bike.bike_id == bike_id:
                 await bike.update_bike_data(status, location, battery)
-
-    async def start(self):
-        """Start the simulation."""
-        await self.run_simulation()
 
 if __name__ == "__main__":
     # Create a simulation with X bikes
