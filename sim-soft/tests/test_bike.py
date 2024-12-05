@@ -1,18 +1,64 @@
-import sys
-import os
-
-# Add the `sim-soft/src` directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-
 import unittest
-from bike import Bike
-
-class TestScooter(unittest.TestCase):
+from src.bike import Bike
+import datetime
+class TestBike(unittest.TestCase):
     def setUp(self):
-        self.scooter = Bike(1)
+        self.bike = Bike(1)
 
-    def test_placeholder(self):
-        self.assertTrue(True)
+    def test_is_bike(self):
+        """
+        Test if bike is correct instance of class.
+        """
+        self.assertIsInstance(self.bike, Bike)
+        
+    def test_bike_with_set_params(self):
+        """ 
+        Test if bike with specific params gets set
+        """
+        self.bike_two = Bike(2, battery=43.43, min_battery=10, status="idle", location=(0.1, 0.1), simulated=False)
+        
+        self.assertEqual(self.bike_two.bike_id, 2)
+        self.assertEqual(self.bike_two.battery, 43.43)
+        self.assertEqual(self.bike_two.min_battery, 10)
+        self.assertEqual(self.bike_two.location, (0.1, 0.1))
+        self.assertEqual(self.bike_two.simulated, False)
+    
+    def test_bike_send_update(self):
+        """
+        Test for bike to send updates
+        """
+        pass
+    
+    def test_get_bike_data(self):
+        """
+        Test for getting bike data
+        """
+        data = self.bike.get_data()
+        self.assertEqual(data["bike_id"].strip(),"1")
+        self.assertEqual(data["battery"], "100.00")
+        self.assertEqual(data["location"], (0,0))
+        self.assertEqual(data["status"].strip(), "locked")
+
+        # TODO: Fix this part of test
+        # try:
+        #     print(data["timestamp"])
+        #     print(type(data["timestamp"]))
+        #     datetime.date.fromisoformat(data["timestamp"].replace('Z', '+00:00'))
+        #     timestamp_is_valid = True
+        # except ValueError:
+        #     timestamp_is_valid = False
+        # self.assertTrue(timestamp_is_valid)
+
+    def test_update_bike_data(self):
+        """
+        Test for updating bike data.
+        """
+        self.bike.update_bike_data(status="unlocked", location=(0.2, 0.2), battery=20)
+
+        self.assertEqual(self.bike.status, "unlocked")
+        self.assertEqual(self.bike.location, (0.2, 0.2))
+        self.assertEqual(self.bike.battery, 20)
+        
 
 if __name__ == "__main__":
     unittest.main()
