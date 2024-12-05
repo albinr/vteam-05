@@ -10,13 +10,13 @@ MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 class Bike:
-    def __init__(self, bike_id, battery=100, min_battery=20, location=(0, 0), simulated=True):
+    def __init__(self, bike_id, battery=100, min_battery=20, status="locked", location=(0, 0), simulated=True):
         self.bike_id = bike_id
         self.battery = battery
         self.min_battery = min_battery
         self.location = location
         self.update_delay = random.uniform(0, 4)
-        self.status = "locked"  # locked, unlocked, idle, charging
+        self.status = status  # locked, unlocked, idle, charging
         self.simulated = simulated  # To mark if the bike is simulated
 
     async def send_update_to_api(self):
@@ -43,7 +43,8 @@ class Bike:
         while self.battery > 0:
             if self.status == "unlocked":
                 # Simulate battery drain
-                self.battery -= random.uniform(0.01, 0.05)
+                # self.battery -= random.uniform(0.01, 0.05)
+                self.battery = 0
             if self.status == "charging" and self.battery < 100:
                 # Simulate battery charging
                 self.battery += random.uniform(0.01, 0.05)
@@ -61,19 +62,19 @@ class Bike:
                 # Simulate travel
                 self.location = (self.location[0] + random.uniform(-0.005, 0.005),
                                 self.location[1] + random.uniform(-0.005, 0.005))
-                # print(f"[Bike {self.bike_id}] Traveling to: {self.location}")
+                print(f"[Bike {self.bike_id}] Traveling to: {self.location}")
             await asyncio.sleep(SLEEP_TIME)
 
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
         while self.battery > 0:
             self.status = random.choice(["locked", "unlocked", "idle", "charging"])
-            # print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
+            print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME)) # Change status every X-Y minutes
 
     async def update_bike_data(self, status=None, location=None, battery=None):
         """Method to dynamically update bike data (status, location, battery)."""
-        # print("[Bike] Updating bike data...")
+        print("[Bike] Updating bike data...")
         if status:
             self.status = status
         if location:
