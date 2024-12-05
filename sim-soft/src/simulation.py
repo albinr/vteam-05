@@ -1,16 +1,29 @@
+"""
+simulation.py
+
+This module defines a Simulation class to create simulated bikes and users.
+"""
+
 import asyncio
 from src.bike import Bike
 
 class Simulation:
+    """
+    Simulation class for starting a simulation with simulated bikes
+    """
     def __init__(self, num_bikes=1):
-        self.bikes = [Bike(bike_id=i, location=(536432.5724638, 6224215.9292303)) for i in range(1, num_bikes + 1)]
+        self.bikes = [Bike(bike_id=i, location=(56.176, 15.590)) for i in range(1, num_bikes + 1)]
         self.state = "initialized"
 
     def list_bikes(self):
         """List all bikes and their data."""
         print("[Simulation] Current Bikes:")
         for bike in self.bikes:
-            print(f"Bike ID: {bike.bike_id}, Battery: {bike.battery}, Status: {bike.status}, Location: {bike.location}")
+            print(
+                f"Bike ID: {bike.bike_id},"
+                f" Battery: {bike.battery}, "
+                f"Status: {bike.status}, "
+                f"Location: {bike.location}")
 
     async def start_bikes(self):
         """Start the bike update and simulation loop."""
@@ -36,6 +49,9 @@ if __name__ == "__main__":
     simulation = Simulation(num_bikes=100)
 
     async def main():
+        """
+        To test the file
+        """
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
 

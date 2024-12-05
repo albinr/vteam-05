@@ -1,3 +1,10 @@
+"""
+bike.py
+
+This module defines a Bike class to simulate the behavior and state of an electric bike 
+in a system for renting bikes.
+"""
+
 import asyncio
 import random
 from datetime import datetime
@@ -10,7 +17,19 @@ MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 class Bike:
-    def __init__(self, bike_id, battery=100, min_battery=20, status="locked", location=(0, 0), simulated=True):
+    """
+    Bike class for simulating an electric bike.
+    """
+    def __init__(
+            self,
+            bike_id,
+            battery=100,
+            min_battery=20,
+            status="locked",
+            location=(0, 0),
+            simulated=True
+            ):
+
         self.bike_id = bike_id
         self.battery = battery
         self.min_battery = min_battery
@@ -21,7 +40,9 @@ class Bike:
 
     async def send_update_to_api(self):
         """Send periodic updates to the API."""
-        await asyncio.sleep(self.update_delay) # Random delay to avoid all bikes updating at the same time
+
+        # Random delay to avoid all bikes updating at the same time
+        await asyncio.sleep(self.update_delay)
 
         while self.status != "shutdown":
             if self.battery < self.min_battery:
@@ -95,4 +116,6 @@ class Bike:
         while self.status != "shutdown":
             self.status = random.choice(["locked", "unlocked", "idle", "charging"])
             print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
-            await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME)) # Change status every X-Y minutes
+
+            # Change status every X-Y minutes
+            await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))

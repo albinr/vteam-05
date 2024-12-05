@@ -1,19 +1,32 @@
-# cli.py
+"""
+cli.py
+
+Command line interface to start the simulation
+"""
 
 import argparse
 import asyncio
-from simulation import Simulation
+from src.simulation import Simulation
 
 async def main():
+    """
+    Main function to start the simulation
+    """
     parser = argparse.ArgumentParser(description="Simulation CLI")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Start command
     start_parser = subparsers.add_parser("start", help="Start the simulation")
-    start_parser.add_argument("--num-bikes", type=int, required=True, help="Number of bikes to simulate")
-    # start_parser.add_argument("--num-users", type=int, required=True, help="Number of users to simulate")
-    start_parser.add_argument("--log-level", type=str, default="info", help="Logging level (default: info)")
+
+    start_parser.add_argument("--num-bikes",
+    type=int, required=True, help="Number of bikes to simulate")
+
+    # start_parser.add_argument("--num-users",
+    # type=int, required=True, help="Number of users to simulate")
+
+    start_parser.add_argument("--log-level",
+    type=str, default="info", help="Logging level (default: info)")
 
     # Stop command
     subparsers.add_parser("stop", help="Stop the simulation")
