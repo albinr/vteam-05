@@ -34,7 +34,8 @@ jobs:
         - name: Run unittest
           run: |
             source venv/bin/activate
-            python -m unittest discover -s sim-soft/tests
+            cd sim-soft
+            python -m unittest discover tests
 
         # - name: Run flake8
         #   run: |
