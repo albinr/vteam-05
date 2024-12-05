@@ -1,5 +1,5 @@
 import asyncio
-from bike import Bike
+from src.bike import Bike
 
 class Simulation:
     def __init__(self, num_bikes=1):

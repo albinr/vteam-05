@@ -1,6 +1,6 @@
 import json, random, time, os
 from datetime import datetime
-from bike import Bike
+from src.bike import Bike
 
 class User:
     def __init__(self, user_id, username, bike_id):
