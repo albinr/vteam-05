@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import asyncio
 import random
 from datetime import datetime

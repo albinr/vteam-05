@@ -20,7 +20,7 @@ class Bike:
     """
     Bike class for simulating an electric bike.
     """
-    def __init__(
+    def __init__( # pylint: disable=too-many-arguments too-many-positional-arguments
             self,
             bike_id,
             battery=100,
@@ -95,7 +95,7 @@ class Bike:
                 self.battery += random.uniform(0.01, 0.05)
 
                 # Make sure that the battery doesn't go over 100
-                if self.battery > 100:
+                if self.battery > 100: # pylint: disable=consider-using-min-builtin
                     self.battery = 100
 
             await asyncio.sleep(SLEEP_TIME)
