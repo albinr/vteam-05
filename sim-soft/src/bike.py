@@ -1,155 +1,93 @@
 import asyncio
-from datetime import datetime
-import socketio
 import random
+from datetime import datetime
 
-min_battery = 20
-sleep_time = 1
-sleep_time_locked = 5
-battery_drain_sim = 0.02
+# Constants
+SLEEP_TIME = 1  # Seconds for simulation update loop
+API_UPDATE_INTERVAL = 5  # Seconds for sending updates to API
+
+MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
+MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 class Bike:
-    def __init__(
-                self,
-                bike_id,
-                status="locked",
-                battery=100,
-                simulated = False,
-                location=(None, None), # (lat,long)
-                server_url="https://c2195955-eebf-49af-836d-f3372f7abfae.mock.pstmn.io",
-            ):
+    def __init__(self, bike_id, battery=100, min_battery=20, location=(0, 0), simulated=True):
         self.bike_id = bike_id
-        self.status = status # locked, unlocked, idle, charging
         self.battery = battery
-        self.simulated = simulated
+        self.min_battery = min_battery
         self.location = location
-        self.server_url = server_url
-        self.sio = socketio.AsyncClient()
+        self.update_delay = random.uniform(0, 4)
+        self.status = "locked"  # locked, unlocked, idle, charging
+        self.simulated = simulated  # To mark if the bike is simulated
 
-    async def update(self, status=None, battery=None, location=None):
-        """Update bike data."""
-        self.status = status if status else self.status
-        self.battery = battery if battery else self.battery
-        self.location = location if location else self.location
+    async def send_update_to_api(self):
+        """Send periodic updates to the API."""
+        await asyncio.sleep(self.update_delay)
 
-        return self.get_data()
-
-    async def charging(self):
-        """Set the status to charging"""
-        self.status = "charging"
-
-        return self.status
-
-    def unlock(self):
-        """Set the status to unlocked"""
-        self.status = "unlocked"
-        print(f"[bike {self.bike_id}] Unlocked")
-        return self.status
-
-    def lock(self):
-        """Set the status to locked"""
-        self.status = "locked"
-        print(f"[bike {self.bike_id}] Locked")
-        return self.status
-
-    async def idle(self):
-        """Set the status to idle"""
-        self.status = "idle"
-
-        return self.status
+        while self.battery > 0:
+            data = self.get_data()
+            print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
+            await asyncio.sleep(API_UPDATE_INTERVAL)
 
     def get_data(self):
-        """Prepare data payload."""
+        """Return the current data of the bike."""
         return {
-            "bike_id": self.bike_id,
-            "status": self.status,
-            "battery": round(self.battery, 2),
+            "bike_id": f"{self.bike_id:2}",
+            "battery": f"{self.battery:6.2f}",
             "location": self.location,
+            "status": f"{self.status:10}",
             "timestamp": datetime.now().isoformat()
         }
 
-    async def send_updates(self):
-        """Send periodic updates to the server."""
-        try:
-            # await self.sio.connect(self.server_url) # To connect to server
-            # print(f"bike {self.bike_id} connected to server at {self.server_url}")
+    async def sim_battery(self):
+        """Simulate battery drain when bike is unlocked."""
+        while self.battery > 0:
+            if self.status == "unlocked":
+                # Simulate battery drain
+                self.battery -= random.uniform(0.01, 0.05)
+            if self.status == "charging" and self.battery < 100:
+                # Simulate battery charging
+                self.battery += random.uniform(0.01, 0.05)
 
-            if not self.simulated:
-                while True:
-                    data = self.get_data()
+                # Make sure that the battery doesn't go over 100
+                if self.battery > 100:
+                    self.battery = 100
 
-                    # self.battery = self.battery - (0.5 * sleep_time)
+            await asyncio.sleep(SLEEP_TIME)
 
-                    if self.battery > min_battery:
-                        # TODO: Send update to server
-                        # await self.sio.emit("bike_update", data) # To send update to server
-                        print(f"[bike {self.bike_id}] Refreshed")
-                        print(f"[bike {self.bike_id}] Data sent: {data}")
-                    else:
-                        # TODO: Send update to server with warning about battery level
-                        print(f"[bike {self.bike_id}] Low battery")
-                        # await self.sio.emit("bike_warning", data) # To send warning to server
+    async def sim_travel(self):
+        """Simulate bike travel."""
+        while self.battery > 0:
+            if self.status == "unlocked":
+                # Simulate travel
+                self.location = (self.location[0] + random.uniform(-0.005, 0.005),
+                                self.location[1] + random.uniform(-0.005, 0.005))
+                # print(f"[Bike {self.bike_id}] Traveling to: {self.location}")
+            await asyncio.sleep(SLEEP_TIME)
 
-                    if self.status == "locked":
-                        await asyncio.sleep(sleep_time_locked)
-                    else:
-                        await asyncio.sleep(sleep_time)
+    async def sim_random_bike_status(self):
+        """ Randomly change the bike status."""
+        while self.battery > 0:
+            self.status = random.choice(["locked", "unlocked", "idle", "charging"])
+            # print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
+            await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME)) # Change status every X-Y minutes
 
-            if self.simulated:
-                while True:
-                    data = self.get_data()
+    async def update_bike_data(self, status=None, location=None, battery=None):
+        """Method to dynamically update bike data (status, location, battery)."""
+        # print("[Bike] Updating bike data...")
+        if status:
+            self.status = status
+        if location:
+            self.location = location
+        if battery:
+            self.battery = battery
 
-                    if self.battery > min_battery:
-                        # TODO: Send update to server
-                        # await self.sio.emit("bike_update", data) # To send update to server
-                        print(f"[bike {self.bike_id}] Refreshed")
-                        print(f"[bike {self.bike_id}] Data sent: {data}")
-                    else:
-                        # TODO: Send update to server with warning about battery level
-                        print(f"[bike {self.bike_id}] Low battery")
-                        # await self.sio.emit("bike_warning", data) # To send warning to server
+    async def run_simulation(self):
+        """Start the update loop for sending data and battery drain."""
+        # Run all tasks in the background
+        update_task = asyncio.create_task(self.send_update_to_api())
+        battery_task = asyncio.create_task(self.sim_battery())
+        status_task = asyncio.create_task(self.sim_random_bike_status())
+        travel_task = asyncio.create_task(self.sim_travel())
 
-                    if self.status == "locked":
-                        await asyncio.sleep(sleep_time_locked)
-                    else:
-                        await asyncio.sleep(sleep_time)
-
-                    if self.status == "unlocked":
-                        self.battery = self.battery - (battery_drain_sim * sleep_time * random.randint(0, 10) * 0.1)
-        except Exception as e:
-            print(f"[bike {self.bike_id}] Error: {e}")
-        finally:
-            # await self.sio.disconnect() # To disconnect from server
-            pass
-
-    async def run(self):
-        await self.send_updates()
-
-if __name__ == "__main__":
-    async def main():
-        bike = Bike(bike_id=1, location=(59.3293, 18.0686))
-
-        update_task = asyncio.create_task(bike.run())
-
-        await asyncio.sleep(5)
-
-        bike.unlock()
-
-        for i in range(5):
-            new_location = (bike.location[0] + 0.01 * i, bike.location[1] - 0.01 * i)
-            await bike.update(location=new_location)
-            print(f"[Main] Updated location to: {new_location}")
-            await asyncio.sleep(2)
-
-        bike.lock()
-
-        update_task.cancel()
-        try:
-            await update_task
-        except asyncio.CancelledError:
-            print("[Main] Background updates stopped")
-
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("[Simulation] Simulation interrupted by user.")
+        # Wait for all tasks to finish (running in background)
+        await asyncio.gather(update_task, battery_task, status_task, travel_task)
