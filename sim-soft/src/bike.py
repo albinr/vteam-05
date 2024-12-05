@@ -21,7 +21,7 @@ class Bike:
 
     async def send_update_to_api(self):
         """Send periodic updates to the API."""
-        await asyncio.sleep(self.update_delay)
+        await asyncio.sleep(self.update_delay) # Random delay to avoid all bikes updating at the same time
 
         while self.battery > 0:
             data = self.get_data()
