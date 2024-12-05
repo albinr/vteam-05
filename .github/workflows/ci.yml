@@ -30,6 +30,16 @@ jobs:
             python -m venv venv
             source venv/bin/activate
             pip install -r sim-soft/requirements.txt
+        
+        - name: Install Pylint
+          run: |
+            source venv/bin/activate
+            pip install pylint
+
+        - name: Run Pylint
+          run: |
+            source venv/bin/activate
+            pylint sim-soft/src
 
         - name: Run unittest
           run: |
