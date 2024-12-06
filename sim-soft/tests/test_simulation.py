@@ -1,13 +1,25 @@
+"""
+test_simulation.py
+
+Tests for the simulation class
+"""
+
 import unittest
 import asyncio
 from src.simulation import Simulation
-from src.bike import Bike
+# from src.bike import Bike
 
 class TestSimulation(unittest.TestCase):
+    """
+    Test case for simulation
+    """
     def setUp(self):
         self.sim = Simulation(5)
 
     def test_simulation_initial_state(self):
+        """
+        Test for class initial state
+        """
         self.assertEqual(self.sim.state, "initialized")
 
     def test_simulation_bike_ammount(self):

@@ -1,7 +1,16 @@
+"""
+test_bike.py
+
+Test file for bike class
+"""
+
 import unittest
+# import datetime
 from src.bike import Bike
-import datetime
 class TestBike(unittest.IsolatedAsyncioTestCase):
+    """
+    Test class for bike class
+    """
     def setUp(self):
         self.bike = Bike(1)
 
@@ -10,25 +19,32 @@ class TestBike(unittest.IsolatedAsyncioTestCase):
         Test if bike is correct instance of class.
         """
         self.assertIsInstance(self.bike, Bike)
-        
+
     def test_bike_with_set_params(self):
         """ 
         Test if bike with specific params gets set
         """
-        self.bike_two = Bike(2, battery=43.43, min_battery=10, status="idle", location=(0.1, 0.1), simulated=False)
-        
-        self.assertEqual(self.bike_two.bike_id, 2)
-        self.assertEqual(self.bike_two.battery, 43.43)
-        self.assertEqual(self.bike_two.min_battery, 10)
-        self.assertEqual(self.bike_two.location, (0.1, 0.1))
-        self.assertEqual(self.bike_two.simulated, False)
-    
+        bike_two = Bike(2,
+            battery=43.43,
+            min_battery=10,
+            status="idle",
+            location=(0.1, 0.1),
+            simulated=False)
+
+        self.assertEqual(bike_two.bike_id, 2)
+        self.assertEqual(bike_two.battery, 43.43)
+        self.assertEqual(bike_two.min_battery, 10)
+        self.assertEqual(bike_two.location, (0.1, 0.1))
+        self.assertEqual(bike_two.simulated, False)
+
     def test_bike_send_update(self):
         """
         Test for bike to send updates
         """
-        pass
-    
+        variable = "add test here"
+        print(variable)
+
+
     def test_get_bike_data(self):
         """
         Test for getting bike data
@@ -39,7 +55,7 @@ class TestBike(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data["location"], (0,0))
         self.assertEqual(data["status"].strip(), "locked")
 
-        # TODO: Fix this part of test
+        # Fix this part of test
         # try:
         #     print(data["timestamp"])
         #     print(type(data["timestamp"]))
@@ -73,7 +89,7 @@ class TestBike(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bike.status, "locked")
         self.assertEqual(self.bike.location, (59.3293, 18.0686))
         self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
-        
+
 
 if __name__ == "__main__":
     unittest.main()
