@@ -25,10 +25,13 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd backend
+          npm install
 
       - name: Run ESLint
-        run: npx eslint backend
+        run: |
+          npx eslint backend
 
       - name: Run tests
         run: npm test
