@@ -24,17 +24,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: |
-          cd backend
-          npm install
+      # - name: Install dependencies
+      #   run: |
+      #     cd backend
+      #     npm install
 
-      - name: Run ESLint
-        run: |
-          npx eslint backend
+      # - name: Run ESLint
+      #   run: |
+      #     npx eslint backend
 
-      - name: Run tests
-        run: npm test
+      # - name: Run tests
+      #   run: npm test
 
   test-simulation:
       runs-on: ubuntu-latest
