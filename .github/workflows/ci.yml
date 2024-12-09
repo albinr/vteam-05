@@ -49,6 +49,9 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
+        - name: Set PYTHONPATH
+          run: export PYTHONPATH=$PYTHONPATH:$(pwd)/sim-soft
+
         - name: Checkout code
           uses: actions/checkout@v3
 
