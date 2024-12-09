@@ -1,4 +1,13 @@
+FROM node:18
 
-FROM alpine:latest
+COPY package*.json ./
 
-CMD echo "Hello from the backend!"
+VOLUME /backend
+
+WORKDIR /backend
+
+EXPOSE 1337
+
+RUN ["npm", "install"]
+
+CMD ["node", "app.js"]
