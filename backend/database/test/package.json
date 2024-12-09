@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "mysql": "^2.18.1",
-    "promise-mysql": "^5.2.0"
-  }
-}
