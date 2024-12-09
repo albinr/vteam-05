@@ -1,18 +1,95 @@
-import sys
-import os
+"""
+test_bike.py
 
-# Add the `sim-soft/src` directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+Test file for bike class
+"""
 
 import unittest
-from bike import Bike
-
-class TestScooter(unittest.TestCase):
+# import datetime
+from src.bike import Bike
+class TestBike(unittest.IsolatedAsyncioTestCase):
+    """
+    Test class for bike class
+    """
     def setUp(self):
-        self.scooter = Bike(1)
+        self.bike = Bike(1)
 
-    def test_placeholder(self):
-        self.assertTrue(True)
+    def test_is_bike(self):
+        """
+        Test if bike is correct instance of class.
+        """
+        self.assertIsInstance(self.bike, Bike)
+
+    def test_bike_with_set_params(self):
+        """ 
+        Test if bike with specific params gets set
+        """
+        bike_two = Bike(2,
+            battery=43.43,
+            min_battery=10,
+            status="idle",
+            location=(0.1, 0.1),
+            simulated=False)
+
+        self.assertEqual(bike_two.bike_id, 2)
+        self.assertEqual(bike_two.battery, 43.43)
+        self.assertEqual(bike_two.min_battery, 10)
+        self.assertEqual(bike_two.location, (0.1, 0.1))
+        self.assertEqual(bike_two.simulated, False)
+
+    def test_bike_send_update(self):
+        """
+        Test for bike to send updates
+        """
+        variable = "add test here"
+        print(variable)
+
+
+    def test_get_bike_data(self):
+        """
+        Test for getting bike data
+        """
+        data = self.bike.get_data()
+        self.assertEqual(data["bike_id"].strip(),"1")
+        self.assertEqual(data["battery"], "100.00")
+        self.assertEqual(data["location"], (0,0))
+        self.assertEqual(data["status"].strip(), "locked")
+
+        # Fix this part of test
+        # try:
+        #     print(data["timestamp"])
+        #     print(type(data["timestamp"]))
+        #     datetime.date.fromisoformat(data["timestamp"].replace('Z', '+00:00'))
+        #     timestamp_is_valid = True
+        # except ValueError:
+        #     timestamp_is_valid = False
+        # self.assertTrue(timestamp_is_valid)
+
+    async def test_update_bike_data(self):
+        """
+        Test for updating bike data.
+        """
+        # self.bike.update_bike_data(status="unlocked", location=(0.2, 0.2), battery=20)
+
+        # self.assertEqual(self.bike.status, "unlocked")
+        # self.assertEqual(self.bike.location, (0.2, 0.2))
+        # self.assertEqual(self.bike.battery, 20)
+
+        await self.bike.update_bike_data(
+            status="unlocked",
+            location=(59.3293, 18.0686),
+            battery=85.5
+        )
+
+        self.assertEqual(self.bike.status, "unlocked")
+        self.assertEqual(self.bike.location, (59.3293, 18.0686))
+        self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
+
+        await self.bike.update_bike_data(status="locked")
+        self.assertEqual(self.bike.status, "locked")
+        self.assertEqual(self.bike.location, (59.3293, 18.0686))
+        self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
+
 
 if __name__ == "__main__":
     unittest.main()

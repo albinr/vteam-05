@@ -1,16 +1,24 @@
-import sys
-import os
+"""
+test_user.py
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+Test file for user clas
+"""
+
 
 import unittest
-from user import User
+from src.user import User
 
 class TestUser(unittest.TestCase):
+    """
+    Unit test class for user class
+    """
     def setUp(self):
         self.user = User(1,"testuser", 1)
 
     def test_user_initialization(self):
+        """
+        Test class init
+        """
         self.assertEqual(self.user.username, "testuser")
 
 if __name__ == "__main__":

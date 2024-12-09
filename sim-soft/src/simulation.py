@@ -1,45 +1,65 @@
-from bike import Bike
+"""
+simulation.py
+
+This module defines a Simulation class to create simulated bikes and users.
+"""
+
 import asyncio
+from src.bike import Bike
 
 class Simulation:
-
-    def __init__(self, num_bikes=0):
-        self.bikes = [Bike(bike_id=i) for i in range(1, num_bikes + 1)]  # Create a list of bikes
+    """
+    Simulation class for starting a simulation with simulated bikes
+    """
+    def __init__(self, num_bikes=1):
+        self.bikes = [Bike(bike_id=i, location=(56.176, 15.590)) for i in range(1, num_bikes + 1)]
         self.state = "initialized"
 
     def list_bikes(self):
+        """List all bikes and their data."""
         print("[Simulation] Current Bikes:")
         for bike in self.bikes:
-            print(f"Bike ID: {bike.bike_id}, Battery: {bike.battery}, Status: {bike.status}")
+            print(
+                f"Bike ID: {bike.bike_id},"
+                f" Battery: {bike.battery}, "
+                f"Status: {bike.status}, "
+                f"Location: {bike.location}")
 
     async def start_bikes(self):
-        tasks = [bike.run() for bike in self.bikes]  # Put tasks in list and run them async
+        """Start the bike update and simulation loop."""
+        tasks = [bike.run_simulation() for bike in self.bikes]
+
         await asyncio.gather(*tasks)
 
-    async def run_simulation(self):
+    async def start(self):
+        """Start the simulation and run bike updates."""
         print("[Simulation] Starting simulation...")
         self.state = "running"
         self.list_bikes()
-        try:
-            await self.start_bikes()
-        except asyncio.CancelledError:
-            print("\n[Simulation] Simulation cancelled.")
-        finally:
-            self.stop()
+        await self.start_bikes()
 
-    def start(self):
-        try:
-            asyncio.run(self.run_simulation())
-        except KeyboardInterrupt:
-            print("\n[Simulation] Simulation interrupted by user.")
-
-    def stop(self):
-        print("[Simulation] Simulation stopped.")
-        self.state = "stopped"
+    async def update_bike_data(self, bike_id, status=None, location=None, battery=None):
+        """Update specific bike data (status, location, or battery)."""
+        for bike in self.bikes:
+            if bike.bike_id == bike_id:
+                await bike.update_bike_data(status, location, battery)
 
 if __name__ == "__main__":
-    try:
-        simulation = Simulation(num_bikes=10)
-        simulation.start()
-    except KeyboardInterrupt:
-        print("[Simulation] Simulation ended.")
+    # Create a simulation with X bikes
+    simulation = Simulation(num_bikes=100)
+
+    async def main():
+        """
+        To test the file
+        """
+        # Start the simulation in a background task
+        simulation_task = asyncio.create_task(simulation.start())
+
+        # Update bike 2's battery level
+        # await simulation.update_bike_data(bike_id=1, battery=50)
+
+        # Ensure thath the simulation completes
+        await simulation_task
+
+    # Run the async main function
+    asyncio.run(main())
