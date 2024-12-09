@@ -57,6 +57,9 @@ jobs:
           with:
             python-version: 3.13
 
+        - name: Set PYTHONPATH
+          run: echo "PYTHONPATH=$(pwd)/sim-soft/src" >> $GITHUB_ENV
+
         - name: Install dependencies
           run: |
             python -m venv venv

@@ -6,7 +6,7 @@ Command line interface to start the simulation
 
 import argparse
 import asyncio
-from src.simulation import Simulation
+from simulation import Simulation
 
 async def main():
     """
