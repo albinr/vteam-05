@@ -15,20 +15,6 @@ services:
     volumes:
       - ./sim-soft/src:/app
 
-  database:
-    image: mariadb:latest
-    container_name: mariadb-compose
-    environment:
-      MYSQL_ROOT_PASSWORD: scrt_pa_s_db
-      MYSQL_DATABASE: vteam05
-    ports:
-      - "3306:3306"
-    networks:
-      - app_network
-    volumes:
-    - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
-    - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
-
 networks:
   app_network:
     driver: bridge
