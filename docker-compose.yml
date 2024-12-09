@@ -9,7 +9,7 @@ services:
     ports:
       - "1337:1337"
     networks:
-      - app_network
+      - bike_network
     depends_on:
       - database
     environment:
@@ -20,14 +20,34 @@ services:
       DB_NAME: vteam
     restart: always
 
-  frontend:
-    build: ./frontend
-    container_name: frontend-container
+  admin-web:
+    build: ./admin-web
+    container_name: admin-web-container
+    volumes:
+      - ./admin-web:/admin-web
+    networks:
+      - bike_network
+
+  user-web:
+    build: ./user-web
+    container_name: user-web-container
+    volumes:
+      - ./user-web:/user-web
+    networks:
+      - bike_network
+
+  user-app:
+    build: ./user-app
+    container_name: user-app-container
+    volumes:
+      - ./user-app:/user-app
+    networks:
+      - bike_network
 
   simulation:
     build: ./sim-soft
     networks:
-      - app_network
+      - bike_network
     container_name: simulation
     volumes:
       - ./sim-soft/src:/app
@@ -43,11 +63,11 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - app_network
+      - bike_network
     volumes:
     - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
     - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
 
 networks:
-  app_network:
+  bike_network:
     driver: bridge
