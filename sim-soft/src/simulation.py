@@ -5,7 +5,7 @@ This module defines a Simulation class to create simulated bikes and users.
 """
 
 import asyncio
-from src.bike import Bike
+from bike import Bike
 
 class Simulation:
     """
