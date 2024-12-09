@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS Bike;
 CREATE TABLE Bike
 (
   bike_id INT AUTO_INCREMENT PRIMARY KEY,
-  status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
+  status ENUM('available', 'in_use', 'maintenance') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL
 );
@@ -67,30 +67,23 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE EndTrip(
-  IN input_bike_id INT
+  IN input_bike_id INT, 
+  IN input_end_position POINT
 )
 BEGIN
 
-  DECLARE bike_end_position POINT;
+  UPDATE Trip
+  SET 
+    end_time = NOW(),
+    end_position = input_end_position
+  WHERE bike_id = input_bike_id
+  AND end_time IS NULL;
 
-  IF (SELECT status FROM Bike WHERE bike_id = input_bike_id) = 'in_use' THEN
-    SELECT position INTO bike_end_position
-    FROM Bike
-    WHERE bike_id = input_bike_id;
-    UPDATE Trip
-    SET 
-      end_time = NOW(),
-      end_position = bike_end_position
-    WHERE bike_id = input_bike_id
-    AND end_time IS NULL;
-
-    UPDATE Bike
-    SET
-      status = 'available'
-    WHERE bike_id = input_bike_id;
-  ELSE
-    SELECT CONCAT('Bike ', input_bike_id, ' has not started a trip and can not end') AS message;
-  END IF;
+  UPDATE Bike
+  SET
+    status = 'available',
+    position = input_end_position
+  WHERE bike_id = input_bike_id;
 
 END
 ;;
