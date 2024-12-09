@@ -26,8 +26,8 @@ services:
     networks:
       - app_network
     volumes:
-    - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
-    - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
+    - "./backend/sql/setup.sql:/docker-entrypoint-initdb.d/1.sql"
+    - "./backend/sql/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
 
 networks:
   app_network:
