@@ -80,7 +80,7 @@ async function startTrip(bikeId) {
         const [result] = await pool.query('CALL StartTrip(?)', [bikeId]);
         return result;
     } catch (error) {
-        console.error("Error starting trip:", error);
+        console.error("Error att starta resan:", error);
         throw error;
     }
 }
@@ -98,10 +98,40 @@ async function endTrip(bikeId, longitude, latitude) {
     }
 }
 
+async function addBike(batteryLevel, longitude, latitude) {
+    try {
+        const sql = `
+            INSERT INTO Bike (battery_level, position)
+            VALUES (?, ST_PointFromText(?))
+        `;
+        const point = `POINT(${longitude} ${latitude})`;
+
+        const [result] = await pool.query(sql, [batteryLevel, point]);
+        return result.insertId;
+    } catch (error) {
+        console.error("Error att lägga till ny cykel:", error);
+        throw error;
+    }
+}
+
+async function deleteBike(bikeId) {
+    try {
+        const sql = `DELETE FROM Bike WHERE bike_id = ?`;
+
+        const [result] = await pool.query(sql, [bikeId]);
+        return result;
+    } catch (error) {
+        console.error("Error att ta bort cykel:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     "showTrip": showTrip,
     "showBikes": showBikes,
     "showTripsByBikeId": showTripsByBikeId,
     "startTrip": startTrip,
-    "endTrip": endTrip
+    "endTrip": endTrip,
+    "addBike": addBike,
+    "deleteBike": deleteBike
 };

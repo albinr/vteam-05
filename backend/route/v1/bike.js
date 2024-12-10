@@ -17,7 +17,32 @@ router.use("/graphql", graphqlHTTP({
     graphiql: true, // Visual interface for testing
 }));
 
-// REST route for /bikes
+// Route för att lägga till en ny cykel
+router.post("/add_bike", async (req, res) => {
+    const { batteryLevel, longitude, latitude } = req.body;
+
+    const newBikeId = await bike.addBike(batteryLevel, longitude, latitude);
+
+    res.status(201).json({ message: "Bike added successfully", bikeId: newBikeId });
+});
+
+router.delete("/delete_bike/:bikeId", async (req, res) => {
+    const { bikeId } = req.params;
+
+    const result = await bike.deleteBike(bikeId);
+
+    if (result.affectedRows === 0) {
+        res.status(404).json({ 
+            message: `Ingen cykel med ID ${bikeId}` 
+        });
+    } else {
+        res.status(200).json({ 
+            message: `Cykel med ID ${bikeId} har raderats` 
+        });
+    }
+});
+
+// route för att se alla cyklar
 router.get("/bikes", async (req, res) => {
     const bikes = await bike.showBikes();
 
