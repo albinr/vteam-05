@@ -19,7 +19,8 @@ CREATE TABLE Bike
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
-  simulation INT DEFAULT 0
+  simulation INT DEFAULT 0,
+  bike_text VARCHAR (255)
 );
 
 CREATE TABLE User (
