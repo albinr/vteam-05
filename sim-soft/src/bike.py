@@ -21,7 +21,7 @@ API_URL="http://backend:1337"
 
 BIKE_ID = 123323
 
-class Bike:
+class Bike: # pylint: disable=too-many-instance-attributes
     """
     Bike class for simulating an electric bike.
     """
