@@ -18,7 +18,7 @@ async function Bikes() {
 };
 
 async function Bikestart() {
-    const sql = "CALL StartTrip(1)";
+    const sql = "CALL StartTrip(1, 1)";
     return await db.query(sql);
 };
 
