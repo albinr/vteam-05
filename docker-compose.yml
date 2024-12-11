@@ -21,12 +21,17 @@ services:
     restart: always
 
   admin-web:
-    build: ./admin-web
+    build:
+      context: ./frontend/admin-web
+      dockerfile: Dockerfile
     container_name: admin-web-container
+    ports:
+      - "3000:3000"
     volumes:
-      - ./admin-web:/admin-web
+      - ./admin-web:/src
     networks:
       - bike_network
+    command: npm run start  # Use "npm run dev" for development
 
   user-web:
     build: ./user-web
