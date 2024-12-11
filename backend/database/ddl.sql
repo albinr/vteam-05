@@ -15,12 +15,11 @@ DROP TABLE IF EXISTS Bike;
 
 CREATE TABLE Bike
 (
-  bike_id INT AUTO_INCREMENT PRIMARY KEY,
+  bike_id VARCHAR PRIMARY KEY,
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
-  simulation INT DEFAULT 0,
-  bike_text VARCHAR (255)
+  simulation INT DEFAULT 0
 );
 
 CREATE TABLE User (
