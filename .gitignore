@@ -10,10 +10,15 @@ dist/
 build/
 
 # Env files
-.env*
+.env.local
 .next
 
 # Logs and temp files
 *.log
 *.tmp
 *.temp
+
+# user-app ignores
+*app-example
+expo-env
+*.expo
