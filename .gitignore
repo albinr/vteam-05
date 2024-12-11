@@ -20,5 +20,5 @@ build/
 
 # user-app ignores
 *app-example
-expo-env
+expo-env*
 *.expo
