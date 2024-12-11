@@ -9,6 +9,10 @@ __pycache__/
 dist/
 build/
 
+# Env files
+.env*
+.next
+
 # Logs and temp files
 *.log
 *.tmp
