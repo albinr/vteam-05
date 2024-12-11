@@ -25,7 +25,7 @@ class Bike:
     """
     Bike class for simulating an electric bike.
     """
-    def __init__( # pylint: disable=too-many-arguments too-many-positional-arguments
+    def __init__( # pylint: disable=too-many-arguments too-many-positional-arguments too-many-instance-attributes
             self,
             bike_id,
             battery=100,
@@ -53,7 +53,7 @@ class Bike:
         # Check if already added to database
 
         try:
-            requests.post(f"{API_URL}/v1/add_bike", data={
+            requests.post(f"{API_URL}/v1/add_bike", timeout=30, data={
                 "batteryLevel": self.battery,
                 "longitude": self.location[0],
                 "latitude": self.location[1],
@@ -79,7 +79,7 @@ class Bike:
             data = self.get_data()
             print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
             try:
-                requests.put(f"{API_URL}/v1/update_bike", data={
+                requests.put(f"{API_URL}/v1/update_bike", timeout=30, data={
                     "bike_id": self.bike_id,
                     "batteryLevel": self.battery,
                     "longitude": self.location[0],
