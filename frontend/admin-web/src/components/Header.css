@@ -1,15 +1,17 @@
 .header {
     display: flex;
     justify-content: space-between;
+    flex-direction: row;
     align-items: center;
     background-color: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 16px;
+    padding: 1rem; /* Add some padding */
 }
 
 .header-title {
-    font-size: 1.25rem;
+    font-size: 1.6rem;
     font-weight: bold;
+    margin:0;
 }
 
 .header-logout {

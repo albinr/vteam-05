@@ -1,22 +1,14 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: { session },
-  };
-}
+export default async function Users() {
+    const session = await getServerSession(authOptions);
 
+    if (!session) {
+        redirect("/auth/signin");
+    }
 
-export default function Users() {
     return (
         <div>
             <h1>Users</h1>

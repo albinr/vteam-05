@@ -1,20 +1,20 @@
 import { signIn, signOut, useSession } from "next-auth/react";
+import './Header.css';
 
 export default function Header() {
     const { data: session } = useSession();
 
     return (
         <header className="header">
-            <h1 className="header-title">Admin Panel</h1>
+            <div>
+                <h1 className="header-title">Admin Panel</h1>
+            </div>
             {session ? (
                 <div>
-                    <p>Welcome, {session.user.name}</p>
                     <button
                         className="header-logout"
                         onClick={() => signOut()}
-                    >
-                        Sign Out
-                    </button>
+                    >Sign Out</button>
                 </div>
             ) : (
                 <button
