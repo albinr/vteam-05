@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const config = require("../data/vteam.json");
+const { v4: uuidv4 } = require("uuid");
 // const pool = mysql.createPool(config);
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -109,17 +110,23 @@ async function endTrip(bikeId) {
     }
 }
 
-async function addBike(batteryLevel, longitude, latitude, isSimulated = 0) {
+async function addBike(bikeId, batteryLevel, longitude, latitude, isSimulated = 0) {
     try {
+        const id = bikeId || uuidv4();
+
         const sql = `
-            INSERT INTO Bike (battery_level, position, simulation)
-            VALUES (?, ST_PointFromText(?), ?)
+            INSERT INTO Bike (bike_id, battery_level, position, simulation)
+            VALUES (?, ?, ST_PointFromText(?), ?)
         `;
         const location = `POINT(${longitude} ${latitude})`;
 
-        const [result] = await pool.query(sql, [batteryLevel, location, isSimulated]);
-        return result.insertId;
+        const [result] = await pool.query(sql, [id, batteryLevel, location, isSimulated]);
+
+        return id;
     } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            throw new Error(`Cykel med ID ${bikeId} finns redan.`);
+        }
         console.error("Error att lägga till ny cykel:", error);
         throw error;
     }
@@ -167,6 +174,48 @@ async function addUser(username, email, balance) {
     }
 }
 
+async function updateUser(userId, updatedData) {
+    try {
+        const setStatements = [];
+        const values = [];
+
+        if (updatedData.username) {
+            setStatements.push("username = ?");
+            values.push(updatedData.username);
+        }
+
+        if (updatedData.email !== undefined) {
+            setStatements.push("email = ?");
+            values.push(updatedData.email);
+        }
+
+        if (updatedData.balance !== undefined) {
+            setStatements.push("balance = ?");
+            values.push(updatedData.balance);
+        }
+
+        values.push(userId);
+
+        const sql = `
+            UPDATE User
+                SET ${setStatements.join(", ")}
+            WHERE user_id = ?
+        `;
+
+        const [result] = await pool.query(sql, values);
+
+        if (result.affectedRows === 0) {
+            throw new Error(`Ingen användare med ID ${userId} hittades.`);
+        }
+
+        return { message: "Användare uppdaterad", affectedRows: result.affectedRows };
+    } catch (error) {
+        console.error("Error vid uppdatering av användare:", error.message);
+        throw error;
+    }
+}
+
+
 module.exports = {
     "showTrip": showTrip,
     "showBikes": showBikes,
@@ -177,5 +226,6 @@ module.exports = {
     "deleteBike": deleteBike,
     "deleteBikes": deleteBikes,
     "deleteTrips": deleteTrips,
-    "addUser": addUser
+    "addUser": addUser,
+    "updateUser": updateUser
 };

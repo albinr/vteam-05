@@ -32,7 +32,7 @@ CREATE TABLE User (
 CREATE TABLE Trip
 (
   trip_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id INT NOT NULL,
+  bike_id VARCHAR(50) NOT NULL,
   user_id INT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME,
@@ -46,7 +46,7 @@ CREATE TABLE Trip
 
 CREATE TABLE BikeMovement (
   movement_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id INT NOT NULL,
+  bike_id VARCHAR(50) NOT NULL,
   position POINT NOT NULL,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id)
 );
@@ -55,7 +55,7 @@ CREATE TABLE BikeMovement (
 DELIMITER ;;
 
 CREATE PROCEDURE StartTrip(
-  IN input_bike_id INT,
+  IN input_bike_id VARCHAR(50),
   IN input_user_id INT
 )
 BEGIN
@@ -82,7 +82,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE EndTrip(
-  IN input_bike_id INT
+  IN input_bike_id VARCHAR(50)
 )
 BEGIN
 
@@ -93,7 +93,7 @@ BEGIN
     FROM Bike
     WHERE bike_id = input_bike_id;
     UPDATE Trip
-    SET 
+    SET
       end_time = NOW(),
       end_position = bike_end_position
     WHERE bike_id = input_bike_id
@@ -114,7 +114,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE LogBikeMovement(
-  IN input_bike_id INT,
+  IN input_bike_id VARCHAR(50),
   IN new_position POINT
 )
 BEGIN

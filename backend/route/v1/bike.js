@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json());
 
-// GraphQL route
+// GraphQL route(används inte, kanske inför)
 router.use("/graphql", graphqlHTTP({
     schema: schema,
     rootValue: root,
@@ -18,43 +18,42 @@ router.use("/graphql", graphqlHTTP({
 
 // Route för att lägga till en ny cykel
 router.post("/add_bike", async (req, res) => {
-    const { batteryLevel, longitude, latitude, isSimulated = 0 } = req.body;
+    const { batteryLevel, longitude, latitude, isSimulated = 0, bikeId } = req.body;
 
-    const newBikeId = await bike.addBike(batteryLevel, longitude, latitude, isSimulated);
-
-    res.status(201).json({ message: "Cykel tillagd med ID", bikeId: newBikeId });
+    try {
+        const newBike = await bike.addBike(bikeId, batteryLevel, longitude, latitude, isSimulated);
+        res.json({ message: "Cykel tillagd med ID", bikeId: newBike });
+    } catch (error) {
+        console.error("Error att lägga till cykel:", error.message);
+        res.json({ error: error.message || "Något gick fel vid tillägg av cykel." });
+    }
 });
 
 router.delete("/delete_bike/:bikeId", async (req, res) => {
     const { bikeId } = req.params;
 
-    const result = await bike.deleteBike(bikeId);
-
-    if (result.affectedRows === 0) {
-        res.status(404).json({ 
-            message: `Ingen cykel med ID ${bikeId}` 
-        });
-    } else {
-        res.status(200).json({
+    try {
+        const result = await bike.deleteBike(bikeId);
+        res.json({
             message: `Cykel med ID ${bikeId} har raderats`
         });
+    } catch (error) {
+        console.error("Error att ta bort cykel:", error.message);
+        res.json({ error: error.message || "Något gick fel vid borttagning av cykel." });
     }
 });
 
 // route för att se alla cyklar
 router.get("/bikes", async (req, res) => {
     const bikes = await bike.showBikes();
-
-    console.log(bikes)
+    console.log(bikes);
     res.json(bikes);
 });
-
 
 // Route för att visa alla resor
 router.get("/trips", async (req, res) => {
     const trips = await bike.showTrip();
-
-    console.log(trips)
+    console.log(trips);
     res.json(trips);
 });
 
@@ -66,23 +65,18 @@ router.get("/trips/:bike_id", async (req, res) => {
 
     console.log(trips);
     res.json(trips);
-   
 });
 
 // Route för att starta en resa
 router.post('/trip/start/:bikeId/:userId', async (req, res) => {
-    const bikeId = req.params.bikeId;  // Hämtar bikeId från URL
-    const userId = req.params.userId;  // Hämtar userId från URL
+    const bikeId = req.params.bikeId;
+    const userId = req.params.userId;
 
     try {
-        // Startar resan genom att skicka både bikeId och userId till startTrip
         const result = await bike.startTrip(bikeId, userId);
-        
-        // Skicka tillbaka ett svar om att resan startades
         res.json({ message: `Resa startad för cykel med ID ${bikeId} för användare med ID ${userId}`, result });
     } catch (error) {
-        // Hantera eventuella fel
-        res.status(500).json({ error: 'Något gick fel när resan skulle startas', details: error.message });
+        res.json({ error: 'Något gick fel när resan skulle startas', details: error.message });
     }
 });
 
@@ -98,17 +92,23 @@ router.post("/trip/end/:bike_id", async (req, res) => {
 router.delete("/bikes/:isSimulated", async (req, res) => {
     const simulatedOnly = req.params.isSimulated === "1";
 
-    await bike.deleteBikes(simulatedOnly);
-    res.json({ message: simulatedOnly ? "Simulerade cyklar har tagits bort" : "Alla cyklar har tagits bort" });
+    try {
+        await bike.deleteBikes(simulatedOnly);
+        res.json({
+            message: simulatedOnly ? "Simulerade cyklar har tagits bort" : "Alla cyklar har tagits bort"
+        });
+    } catch (error) {
+        console.error("Error vid borttagning av cyklar:", error.message);
+        res.json({
+            error: error.message || "Något gick fel vid borttagning av cyklar."
+        });
+    }
 });
-
 
 // Route för att radera alla resor
 router.delete("/trips", async (req, res) => {
-
     await bike.deleteTrips();
     res.json({ message: 'Alla resor har raderats.' });
-
 });
 
 // Route för att lägga till en ny användare
@@ -117,9 +117,20 @@ router.post("/add_user", async (req, res) => {
 
     const result = await bike.addUser(username, email, balance);
 
-    res.status(201).json({ message: "Användare skapad", userId: result.insertId });
-
+    res.json({ message: "Användare skapad", userId: result.insertId });
 });
 
+router.put("/update_user/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const updatedData = req.body;
+
+    try {
+        const result = await bike.updateUser(userId, updatedData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error vid uppdatering av användare:", error.message);
+        res.json({ error: error.message || "Något gick fel vid uppdatering av användaren." });
+    }
+});
 
 module.exports = router;
