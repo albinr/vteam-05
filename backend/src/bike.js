@@ -14,7 +14,7 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-//för att testa utan docker
+// för att testa utan docker
 // const pool = mysql.createPool({
 //     host: config.host,  // Från config-filen
 //     user: config.user,  // Från config-filen
@@ -230,9 +230,10 @@ async function updateBike(bikeId, updatedData) {
             newD.push(updatedData.battery_level);
         }
 
-        if (updatedData.position !== undefined) {
-            data.push("position = ?");
-            newD.push(updatedData.position);
+        if (updatedData.longitude !== undefined && updatedData.latitude !== undefined) {
+            const location = `POINT(${updatedData.longitude} ${updatedData.latitude})`;
+            data.push("position = ST_PointFromText(?)");
+            newD.push(location);
         }
 
         if (updatedData.simulation !== undefined) {
