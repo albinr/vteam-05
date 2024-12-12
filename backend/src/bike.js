@@ -13,6 +13,18 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+//för att testa utan docker
+// const pool = mysql.createPool({
+//     host: config.host,  // Från config-filen
+//     user: config.user,  // Från config-filen
+//     password: config.password,  // Från config-filen
+//     database: config.database,  // Från config-filen
+//     multipleStatements: config.multipleStatements, // Från config-filen
+//     connectionLimit: config.connectionLimit, // Från config-filen
+//     waitForConnections: true,
+//     queueLimit: 0
+// });
+
 process.on("exit", () => {
     pool.end();
 });
@@ -75,9 +87,9 @@ async function showTripsByBikeId(bike_id) {
     return res;
 }
 
-async function startTrip(bikeId) {
+async function startTrip(bikeId, userId) {
     try {
-        const [result] = await pool.query('CALL StartTrip(?)', [bikeId]);
+        const [result] = await pool.query('CALL StartTrip(?, ?)', [bikeId, userId]);
         return result;
     } catch (error) {
         console.error("Error att starta resan:", error);
@@ -85,28 +97,27 @@ async function startTrip(bikeId) {
     }
 }
 
-async function endTrip(bikeId, longitude, latitude) {
+async function endTrip(bikeId) {
     try {
-        const sql = `CALL EndTrip(?, ST_PointFromText(?))`;
-        const point = `POINT(${longitude} ${latitude})`;
-        
-        const [result] = await pool.query(sql, [bikeId, point]);
-        return result;
+        const sql = `CALL EndTrip(?)`;
+
+        await pool.query(sql, [bikeId]);
+
     } catch (error) {
         console.error("Error att avsluta resan:", error);
         throw error;
     }
 }
 
-async function addBike(batteryLevel, longitude, latitude) {
+async function addBike(batteryLevel, longitude, latitude, isSimulated = 0) {
     try {
         const sql = `
-            INSERT INTO Bike (battery_level, position)
-            VALUES (?, ST_PointFromText(?))
+            INSERT INTO Bike (battery_level, position, simulation)
+            VALUES (?, ST_PointFromText(?), ?)
         `;
-        const point = `POINT(${longitude} ${latitude})`;
+        const location = `POINT(${longitude} ${latitude})`;
 
-        const [result] = await pool.query(sql, [batteryLevel, point]);
+        const [result] = await pool.query(sql, [batteryLevel, location, isSimulated]);
         return result.insertId;
     } catch (error) {
         console.error("Error att lägga till ny cykel:", error);
@@ -126,6 +137,36 @@ async function deleteBike(bikeId) {
     }
 }
 
+async function deleteBikes(simulatedOnly) {
+
+    const inputRemove = simulatedOnly ? 1 : 0;
+    const [result] = await pool.query(`CALL RemoveBikes(?)`, [inputRemove]);
+    return result;
+    
+}
+
+async function deleteTrips() {
+    const [result] = await pool.query(`CALL RemoveTrips()`);
+
+    if (result && result.affectedRows) {
+        return { message: `Alla resor har raderats` };
+    } else {
+        return { message: "Inga resor är raderade" };
+    }
+}
+
+async function addUser(username, email, balance) {
+    try {
+        const sql = `INSERT INTO User (Username, Balance, Email) VALUES (?, ?, ?)`;
+        
+        const [result] = await pool.query(sql, [username, balance, email]);
+        return result;
+    } catch (error) {
+        console.error("Fel vid skapande av användare:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     "showTrip": showTrip,
     "showBikes": showBikes,
@@ -133,5 +174,8 @@ module.exports = {
     "startTrip": startTrip,
     "endTrip": endTrip,
     "addBike": addBike,
-    "deleteBike": deleteBike
+    "deleteBike": deleteBike,
+    "deleteBikes": deleteBikes,
+    "deleteTrips": deleteTrips,
+    "addUser": addUser
 };
