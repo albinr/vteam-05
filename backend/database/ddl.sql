@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS Bike;
 
 CREATE TABLE Bike
 (
-  bike_id VARCHAR PRIMARY KEY,
+  bike_id VARCHAR (50) PRIMARY KEY,
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
