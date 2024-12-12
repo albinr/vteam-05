@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
@@ -10,10 +11,11 @@ export default function Dashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    if (status === "unauthenticated") {
-        router.push("/auth/signin");
-        return null;
-    }
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/auth/signin");
+        }
+    }, [status, router]);
 
     if (status === "loading") {
         return <Loader />;

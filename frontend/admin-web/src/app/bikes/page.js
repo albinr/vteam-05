@@ -1,16 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Table from "@/components/Table";
 import Loader from "@/components/Loader";
-
-
-const ebikesData = [
-    { id: 1, model: "E-Bike X", status: "Available", battery: "85%" },
-    { id: 2, model: "E-Bike Y", status: "In Use", battery: "45%" },
-    { id: 3, model: "E-Bike Z", status: "Charging", battery: "100%" },
-];
+import { fetchBikes } from "./api";
 
 const ebikeColumns = [
     { header: "ID", accessor: "id" },
@@ -23,13 +18,38 @@ export default function Bikes() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
+    const [bikes, setBikes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            const loadBikes = async () => {
+                try {
+                    const data = await fetchBikes();
+                    setBikes(data);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            loadBikes();
+        }
+    }, [status]);
+
     if (status === "unauthenticated") {
         router.push("/auth/signin");
         return null;
     }
 
-    if (status === "loading") {
+    if (status === "loading" || loading) {
         return <Loader />;
+    }
+
+    if (error) {
+        return <p className="error">Error: {error}</p>;
     }
 
     const handleRowClick = (row) => {
@@ -40,7 +60,7 @@ export default function Bikes() {
         <div>
             <h1>Bikes</h1>
             <p>Manage all bikes on the platform from this page.</p>
-            <Table columns={ebikeColumns} data={ebikesData} onRowClick={handleRowClick} />
+            <Table columns={ebikeColumns} data={bikes} onRowClick={handleRowClick} />
         </div>
     );
 }

@@ -28,5 +28,4 @@ export const apiClient = {
         return response.json();
     },
 
-    // You can add more methods (PUT, DELETE, etc.) as needed
 };
