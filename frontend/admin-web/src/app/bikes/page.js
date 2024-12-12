@@ -9,9 +9,10 @@ import { fetchBikes } from "./api";
 
 const ebikeColumns = [
     { header: "ID", accessor: "id" },
-    { header: "Model", accessor: "model" },
     { header: "Status", accessor: "status" },
+    { header: "Location", accessor: "location" },
     { header: "Battery", accessor: "battery" },
+    
 ];
 
 export default function Bikes() {

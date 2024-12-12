@@ -1,29 +1,35 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import './Header.css';
+import "./Header.css";
 
-export default function Header() {
+export default function Header({ onToggleSidebar }) {
     const { data: session } = useSession();
 
     return (
         <header className="header">
-            <div>
+            <div className="header-left">
+                {/* Hamburger Menu */}
+                <button className="hamburger-menu" onClick={onToggleSidebar}>
+                    ☰
+                </button>
                 <h1 className="header-title">Admin Panel</h1>
             </div>
-            {session ? (
-                <div>
+            <div className="header-right">
+                {session ? (
                     <button
                         className="header-logout"
                         onClick={() => signOut()}
-                    >Sign Out</button>
-                </div>
-            ) : (
-                <button
-                    className="header-login"
-                    onClick={() => signIn("google")}
-                >
-                    Sign In
-                </button>
-            )}
+                    >
+                        Sign Out
+                    </button>
+                ) : (
+                    <button
+                        className="header-login"
+                        onClick={() => signIn("google")}
+                    >
+                        Sign In
+                    </button>
+                )}
+            </div>
         </header>
     );
 }
