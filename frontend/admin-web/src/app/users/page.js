@@ -1,12 +1,22 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function Users() {
-    const session = await getServerSession(authOptions);
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
-    if (!session) {
-        redirect("/auth/signin");
+
+export default function Users() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    if (status === "unauthenticated") {
+        router.push("/auth/signin");
+        return null;
+    }
+
+    if (status === "loading") {
+        return <Loader />;
+
     }
 
     return (

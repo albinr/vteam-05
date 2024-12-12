@@ -10,6 +10,7 @@ export default function Sidebar() {
                 <Link href="/dashboard" className="sidebar-link">Dashboard</Link>
                 <Link href="/users" className="sidebar-link">Users</Link>
                 <Link href="/bikes" className="sidebar-link">Bikes</Link>
+                <Link href="/bikes" className="sidebar-link">Stations and zones</Link>
             </nav>
         </aside>
     );
