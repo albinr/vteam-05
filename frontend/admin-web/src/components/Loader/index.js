@@ -1,3 +1,4 @@
+"use client";
 import "./Loader.css";
 
 const Loader = () => {
