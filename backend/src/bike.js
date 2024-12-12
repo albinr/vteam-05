@@ -176,33 +176,33 @@ async function addUser(username, email, balance) {
 
 async function updateUser(userId, updatedData) {
     try {
-        const setStatements = [];
-        const values = [];
+        const data = [];
+        const newD = [];
 
         if (updatedData.username) {
-            setStatements.push("username = ?");
-            values.push(updatedData.username);
+            data.push("username = ?");
+            newD.push(updatedData.username);
         }
 
         if (updatedData.email !== undefined) {
-            setStatements.push("email = ?");
-            values.push(updatedData.email);
+            data.push("email = ?");
+            newD.push(updatedData.email);
         }
 
         if (updatedData.balance !== undefined) {
-            setStatements.push("balance = ?");
-            values.push(updatedData.balance);
+            data.push("balance = ?");
+            newD.push(updatedData.balance);
         }
 
-        values.push(userId);
+        newD.push(userId);
 
         const sql = `
             UPDATE User
-                SET ${setStatements.join(", ")}
+                SET ${data.join(", ")}
             WHERE user_id = ?
         `;
 
-        const [result] = await pool.query(sql, values);
+        const [result] = await pool.query(sql, newD);
 
         if (result.affectedRows === 0) {
             throw new Error(`Ingen användare med ID ${userId} hittades.`);
@@ -214,6 +214,53 @@ async function updateUser(userId, updatedData) {
         throw error;
     }
 }
+
+async function updateBike(bikeId, updatedData) {
+    try {
+        const data = [];
+        const newD = [];
+
+        if (updatedData.status) {
+            data.push("status = ?");
+            newD.push(updatedData.status);
+        }
+
+        if (updatedData.battery_level !== undefined) {
+            data.push("battery_level = ?");
+            newD.push(updatedData.battery_level);
+        }
+
+        if (updatedData.position !== undefined) {
+            data.push("position = ?");
+            newD.push(updatedData.position);
+        }
+
+        if (updatedData.simulation !== undefined) {
+            data.push("simulation = ?");
+            newD.push(updatedData.simulation);
+        }
+
+        newD.push(bikeId);
+
+        const sql = `
+            UPDATE Bike
+                SET ${data.join(", ")}
+            WHERE bike_id = ?
+        `;
+
+        const [result] = await pool.query(sql, newD);
+
+        if (result.affectedRows === 0) {
+            throw new Error(`Ingen cykel med ID ${bikeId} hittades.`);
+        }
+
+        return { message: "Cykel uppdaterad", affectedRows: result.affectedRows };
+    } catch (error) {
+        console.error("Error vid uppdatering av cykel:", error.message);
+        throw error;
+    }
+}
+
 
 
 module.exports = {
@@ -227,5 +274,6 @@ module.exports = {
     "deleteBikes": deleteBikes,
     "deleteTrips": deleteTrips,
     "addUser": addUser,
-    "updateUser": updateUser
+    "updateUser": updateUser,
+    "updateBike": updateBike
 };

@@ -133,4 +133,17 @@ router.put("/update_user/:userId", async (req, res) => {
     }
 });
 
+router.put("/bikes/:bikeId", async (req, res) => {
+    const { bikeId } = req.params;
+    const updatedData = req.body;
+
+    try {
+        const result = await bike.updateBike(bikeId, updatedData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error vid uppdatering av cykel:", error.message);
+        res.json({ error: error.message || "Något gick fel vid uppdatering av cykeln." });
+    }
+});
+
 module.exports = router;
