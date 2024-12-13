@@ -31,7 +31,7 @@ services:
       - ./admin-web:/src
     networks:
       - bike_network
-    command: npm run start  # Use "npm run dev" for development
+    command: npm run start
 
   user-web:
     build: ./user-web
