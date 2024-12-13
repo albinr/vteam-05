@@ -2,14 +2,11 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Loader from "@/components/Loader";
 
-const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
-
-const center = [59.334591, 18.06324];
 
 export default function Home() {
     const { data: session, status } = useSession();
@@ -28,6 +25,15 @@ export default function Home() {
     if (!session) {
         return null;
     }
+
+    const Map = useMemo(() => dynamic(
+        () => import('@/components/Map/'),
+        {
+            loading: () => <Loader />,
+            ssr: false
+        }
+    ), [])
+    const center = [57.534591, 18.06324];
 
     return (
         <div>

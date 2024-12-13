@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Table from "@/components/Table";
 import Loader from "@/components/Loader";
 import { fetchBikes } from "./api";
+import dynamic from "next/dynamic";
 
 const ebikeColumns = [
     { header: "ID", accessor: "id" },
@@ -17,6 +18,11 @@ const ebikeColumns = [
 export default function Bikes() {
     const { data: session, status } = useSession();
     const router = useRouter();
+
+    if (status === "unauthenticated") {
+        router.push("/auth/signin");
+        return null;
+    }
 
     const [bikes, setBikes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -40,18 +46,20 @@ export default function Bikes() {
         }
     }, [status]);
 
-    if (status === "unauthenticated") {
-        router.push("/auth/signin");
-        return null;
-    }
+
+    const Map = useMemo(() => dynamic(
+        () => import('@/components/Map/'),
+        {
+            loading: () => <Loader />,
+            ssr: false
+        }
+    ), [])
+    const center = [57.534591, 18.06324];
 
     if (status === "loading" || loading) {
         return <Loader />;
     }
 
-    // if (error) {
-    //     return <p className="error">Error: {error}</p>;
-    // }
 
     const handleRowClick = (row) => {
         console.log("Selected E-Bike:", row);
@@ -62,6 +70,7 @@ export default function Bikes() {
             <h1>Bikes</h1>
             <p>Manage all bikes on the platform from this page.</p>
             {error && <p className="error">{error}</p>}
+            <Map posix={center} />
             <Table
                 columns={ebikeColumns}
                 data={bikes}

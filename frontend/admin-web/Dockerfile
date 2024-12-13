@@ -1,4 +1,4 @@
-# Docker commands
+# Docker commands wile in dir admin-web
 # docker build -t admin-webpage .
 # docker run -p 3000:3000 admin-webpage
 
