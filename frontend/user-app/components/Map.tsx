@@ -9,6 +9,8 @@ export default function Map() {
     longitude: 18.0686, // Default latitude (Karlskrona)
   });
 
+  const [bikes ,setBikes] = useState([]);
+
   useEffect(() => {
     const fetchLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -24,12 +26,27 @@ export default function Map() {
       });
     };
 
+    const fetchBikes = async () => {
+        console.log(process.env.EXPO_PUBLIC_API_URL);
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + '/bikes');
+        console.log(response);
+        const data = await response.json();
+        setBikes(data);
+    }
+
     fetchLocation();
+    // fetchBikes();
   }, []);
 
 
   return (
     <View style={styles.container}>
+        {/* List of bikes */}
+        {/* <View>
+            {bikes.map((bike: any) => (
+                <Text key={bike.bike_id}>{bike.bike_id}</Text>
+            ))}
+        </View> */}
 
       {/* Map Section */}
       <View style={styles.mapContainer}>
