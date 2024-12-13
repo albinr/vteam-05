@@ -1,7 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useEffect } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
+import { addBikeMarker,addStationMarker,addZoneMarker } from "./markers.js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
@@ -15,7 +15,6 @@ L.Icon.Default.mergeOptions({
 });
 
 const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
-
     return (
         <MapContainer
             key={`${posix[0]}-${posix[1]}-${zoom}`}
@@ -29,11 +28,18 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {markers.map((marker, index) => (
-                <Marker key={index} position={marker.position}>
-                    <Popup>{marker.popupText}</Popup>
-                </Marker>
-            ))}
+            {markers.map((marker) => {
+                switch (marker.type) {
+                    case "bike":
+                        return addBikeMarker(marker);
+                    case "station":
+                        return addStationMarker(marker);
+                    case "zone":
+                        return addZoneMarker(marker);
+                    default:
+                        return null;
+                }
+            })}
         </MapContainer>
     );
 };
