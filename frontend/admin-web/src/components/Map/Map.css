@@ -1,7 +1,4 @@
-.leaflet-container {
-    height: 500px; /* Set desired height */
-    width: 100%;   /* Full width */
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
+.map {
+    width: 100%;
+    height: 100%;
 }

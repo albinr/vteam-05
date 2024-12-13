@@ -12,7 +12,6 @@ const ebikeColumns = [
     { header: "Status", accessor: "status" },
     { header: "Location", accessor: "location" },
     { header: "Battery", accessor: "battery" },
-    
 ];
 
 export default function Bikes() {
@@ -30,6 +29,7 @@ export default function Bikes() {
                     const data = await fetchBikes();
                     setBikes(data);
                 } catch (err) {
+                    console.log(err.message)
                     setError(err.message);
                 } finally {
                     setLoading(false);
@@ -49,9 +49,9 @@ export default function Bikes() {
         return <Loader />;
     }
 
-    if (error) {
-        return <p className="error">Error: {error}</p>;
-    }
+    // if (error) {
+    //     return <p className="error">Error: {error}</p>;
+    // }
 
     const handleRowClick = (row) => {
         console.log("Selected E-Bike:", row);
@@ -61,7 +61,12 @@ export default function Bikes() {
         <div>
             <h1>Bikes</h1>
             <p>Manage all bikes on the platform from this page.</p>
-            <Table columns={ebikeColumns} data={bikes} onRowClick={handleRowClick} />
+            {error && <p className="error">{error}</p>}
+            <Table
+                columns={ebikeColumns}
+                data={bikes}
+                onRowClick={handleRowClick}
+            />
         </div>
     );
 }

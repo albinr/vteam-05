@@ -1,0 +1,26 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.dashboard-map {
+    width: 100%;
+    height: 400px;
+}
+
+.dashboard-widgets {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.dashboard-widgets > div {
+    flex: 1;
+    height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

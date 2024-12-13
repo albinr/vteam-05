@@ -19,10 +19,10 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
                         Dashboard
                     </Link>
                     <Link href="/users" className="sidebar-link" onClick={handleLinkClick}>
-                        Users
+                        User management
                     </Link>
                     <Link href="/bikes" className="sidebar-link" onClick={handleLinkClick}>
-                        Bikes
+                        Bike management
                     </Link>
                     <Link href="/stations-zones" className="sidebar-link" onClick={handleLinkClick}>
                         Stations and Zones

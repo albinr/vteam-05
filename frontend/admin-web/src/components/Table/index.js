@@ -15,13 +15,21 @@ const Table = ({ columns, data, onRowClick }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, rowIndex) => (
-                        <tr key={rowIndex} onClick={() => onRowClick?.(row)}>
-                            {columns.map((col, colIndex) => (
-                                <td key={colIndex}>{row[col.accessor]}</td>
-                            ))}
+                    {data.length === 0 ? (
+                        <tr>
+                            <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                                No data available.
+                            </td>
                         </tr>
-                    ))}
+                    ) : (
+                        data.map((row, index) => (
+                            <tr key={index}>
+                                {columns.map((col) => (
+                                    <td key={col.accessor}>{row[col.accessor]}</td>
+                                ))}
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
         </div>

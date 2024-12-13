@@ -6,8 +6,10 @@ import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Loader from "@/components/Loader";
 
-const center = [59.334591, 18.06324];
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+
+
+const center = [59.334591, 18.06324];
 
 export default function Home() {
     const { data: session, status } = useSession();
