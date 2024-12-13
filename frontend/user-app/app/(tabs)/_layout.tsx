@@ -22,6 +22,24 @@ export default function TabLayout() {
           ),
         }}
       />
+            <Tabs.Screen
+        name="trip"
+        options={{
+          title: 'Trip',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="car" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="bell" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

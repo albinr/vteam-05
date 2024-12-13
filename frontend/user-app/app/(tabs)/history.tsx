@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Index() {
+export default function History() {
 
   // const userLoggedIn: boolean = false;
 
   return (
       <View>
-        <Text>Index</Text>
+        <Text>History</Text>
       </View>
   );
 }
