@@ -32,7 +32,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             min_battery=20,
             status="locked",
             location=(0, 0),
-            simulated=True
+            simulated=False
             ):
 
         self.bike_id = bike_id
@@ -51,13 +51,13 @@ class Bike: # pylint: disable=too-many-instance-attributes
     def add_bike_to_system(self):
         """Add the bike to the system."""
         # Check if already added to database
-
         try:
             requests.post(f"{API_URL}/v1/add_bike", timeout=30, data={
+                "bike_id": self.bike_id,
                 "batteryLevel": self.battery,
                 "longitude": self.location[0],
                 "latitude": self.location[1],
-                "simulated": self.simulated
+                "isSimulated": 1 if self.simulated else 0
             })
             print(f"Added bike {self.bike_id} to database.")
             self.added_to_db = True
