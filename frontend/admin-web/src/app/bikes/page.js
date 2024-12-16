@@ -9,10 +9,12 @@ import { fetchBikes } from "./api";
 import dynamic from "next/dynamic";
 
 const ebikeColumns = [
-    { header: "ID", accessor: "id" },
+    { header: "ID", accessor: "bike_id" },
     { header: "Status", accessor: "status" },
-    { header: "Location", accessor: "location" },
-    { header: "Battery", accessor: "battery" },
+    { header: "Long", accessor: "ST_X(position)" },
+    { header: "Lat", accessor: "ST_Y(position)" },
+
+    { header: "Battery", accessor: "battery_level" },
 ];
 
 export default function Bikes() {
@@ -33,6 +35,7 @@ export default function Bikes() {
             const loadBikes = async () => {
                 try {
                     const data = await fetchBikes();
+                    console.log(data)
                     setBikes(data);
                 } catch (err) {
                     console.log(err.message)

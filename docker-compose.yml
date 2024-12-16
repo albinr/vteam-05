@@ -21,10 +21,12 @@ services:
     restart: always
 
   admin-web:
-    build: ./admin-web
+    build: ./frontend/admin-web
     container_name: admin-web-container
     volumes:
-      - ./admin-web:/admin-web
+      - ./frontend/admin-web:/app
+    ports:
+      - 3000:3000
     networks:
       - bike_network
 

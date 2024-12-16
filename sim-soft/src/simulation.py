@@ -16,7 +16,7 @@ class Simulation:
     """
     Simulation class for starting a simulation with simulated bikes
     """
-    def __init__(self, num_bikes=1, simulated=False):
+    def __init__(self, num_bikes=1, simulated=True):
         self.bikes = [
                         Bike(bike_id=f"{uuid.uuid4()}",
                         location=(56.176, 15.590), simulated=simulated)
