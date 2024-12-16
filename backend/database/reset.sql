@@ -3,6 +3,9 @@ USE vteam;
 source setup.sql
 source ddl.sql
 
+INSERT INTO Pricing (unlock_fee, per_minute_rate, wrong_parking)
+VALUES (15.0, 2.5, 30.0);
+
 -- INSERT INTO User (user_id, Balance, Email)
 -- VALUES (1, 100, 'test@email.com');
 
