@@ -7,6 +7,7 @@ in a system for renting bikes.
 
 import asyncio
 import random
+import uuid
 from datetime import datetime
 import requests
 
@@ -19,7 +20,7 @@ MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 API_URL="http://backend:1337"
 
-BIKE_ID = 123323
+BIKE_ID = uuid.uuid4()
 
 class Bike: # pylint: disable=too-many-instance-attributes
     """
@@ -30,9 +31,9 @@ class Bike: # pylint: disable=too-many-instance-attributes
             bike_id,
             battery=100,
             min_battery=20,
-            status="locked",
+            status="available", # 'available', 'in_use', 'maintenance', 'charging'
             location=(0, 0),
-            simulated=True
+            simulated=False
             ):
 
         self.bike_id = bike_id
@@ -51,13 +52,13 @@ class Bike: # pylint: disable=too-many-instance-attributes
     def add_bike_to_system(self):
         """Add the bike to the system."""
         # Check if already added to database
-
         try:
             requests.post(f"{API_URL}/v1/add_bike", timeout=30, data={
+                "bikeId": self.bike_id,
                 "batteryLevel": self.battery,
                 "longitude": self.location[0],
                 "latitude": self.location[1],
-                "simulated": self.simulated
+                "isSimulated": 1 if self.simulated else 0
             })
             print(f"Added bike {self.bike_id} to database.")
             self.added_to_db = True
@@ -79,14 +80,13 @@ class Bike: # pylint: disable=too-many-instance-attributes
             data = self.get_data()
             print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
             try:
-                requests.put(f"{API_URL}/v1/update_bike", timeout=30, data={
-                    "bike_id": self.bike_id,
-                    "batteryLevel": self.battery,
+                requests.put(f"{API_URL}/v1/bikes/{self.bike_id}",
+                            timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
+                    "battery_level": self.battery,
+                    "status": self.status,
                     "longitude": self.location[0],
                     "latitude": self.location[1],
-                    "status": self.status,
-                    "min_battery": self.min_battery,
-                    "battery_danger": self.battery < self.min_battery
+                    # "battery_danger": self.battery < self.min_battery
                 })
             except requests.exceptions.RequestException as e:
                 print(f"Error sending data to API: {e}")
@@ -112,21 +112,26 @@ class Bike: # pylint: disable=too-many-instance-attributes
         if battery:
             self.battery = battery
 
-    async def run_simulation(self):
+    async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
         # Run all tasks in the background
-        update_task = asyncio.create_task(self.send_update_to_api())
-        battery_task = asyncio.create_task(self.sim_battery())
-        status_task = asyncio.create_task(self.sim_random_bike_status())
-        travel_task = asyncio.create_task(self.sim_travel())
+        if self.simulated:
+            battery_task = asyncio.create_task(self.sim_battery())
+            travel_task = asyncio.create_task(self.sim_travel())
+            status_task = asyncio.create_task(self.sim_random_bike_status())
+            update_task = asyncio.create_task(self.send_update_to_api())
+
+            await asyncio.gather(update_task, battery_task, status_task, travel_task)
+        else:
+            update_task = asyncio.create_task(self.send_update_to_api())
+            await asyncio.gather(update_task)
 
         # Wait for all tasks to finish (running in background)
-        await asyncio.gather(update_task, battery_task, status_task, travel_task)
 
     async def sim_battery(self):
         """Simulate battery drain when bike is unlocked."""
         while self.status != "shutdown":
-            if self.status == "unlocked":
+            if self.status == "in_use":
                 # Simulate battery drain
                 self.battery -= random.uniform(0.01, 0.05)
             if self.status == "charging" and self.battery < 100:
@@ -142,7 +147,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def sim_travel(self):
         """Simulate bike travel."""
         while self.status != "shutdown":
-            if self.status == "unlocked" and self.battery > 0:
+            if self.status == "in_use" and self.battery > 0:
                 # Simulate travel
                 self.location = (self.location[0] + random.uniform(-0.005, 0.005),
                                 self.location[1] + random.uniform(-0.005, 0.005))
@@ -153,7 +158,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
         while self.status != "shutdown":
-            self.status = random.choice(["locked", "unlocked", "idle", "charging"])
+            self.status = random.choice(['available', 'in_use', 'maintenance', 'charging'])
             print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
 
             # Change status every X-Y minutes
@@ -163,4 +168,4 @@ class Bike: # pylint: disable=too-many-instance-attributes
 if __name__ == "__main__":
     # Create a bike object
     bike = Bike(BIKE_ID)
-    asyncio.run(bike.run_simulation())
+    asyncio.run(bike.run_bike_interval())
