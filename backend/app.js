@@ -17,15 +17,15 @@ app.use(cors()); // Added for cors thingy
 app.use(middleware.logIncomingToConsole);
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(port, logStartUpDetailsToConsole);
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use("/v1", v1Router);
 
 // Options for cors
 const corsOptions = {
     headers: [
-      { key: "Access-Control-Allow-Credentials", value: "true" },
-      { key: "Access-Control-Allow-Origin", value: "*" },
-      // ...
+        { key: "Access-Control-Allow-Credentials", value: "true" },
+        { key: "Access-Control-Allow-Origin", value: "*" },
+        // ...
     ],
     origin: [
         "http://admin-web:3000",
@@ -33,7 +33,7 @@ const corsOptions = {
         "http://user-app:8081"
     ],
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  };
+};
 
 // Read from commandline
 
