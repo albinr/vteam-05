@@ -1,9 +1,21 @@
-FROM node:18
+# Docker commands wile in dir admin-web
+# docker build -t admin-webpage .
+# docker run -p 3000:3000 admin-webpage
 
-WORKDIR /admin-web
+FROM node:18-alpine
+
+WORKDIR /app
 
 COPY package*.json ./
 
-VOLUME /admin-web
+RUN npm install
 
-RUN ["npm", "install"]
+COPY . .
+
+RUN npm run build
+
+EXPOSE 3000
+
+# CMD ["npm", "run", "dev"] # For development
+CMD ["npm", "run", "start"]
+
