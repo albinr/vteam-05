@@ -8,6 +8,7 @@ in a system for renting bikes.
 import asyncio
 import random
 from datetime import datetime
+import requests
 
 # Constants
 SLEEP_TIME = 1  # Seconds for simulation update loop
@@ -16,11 +17,15 @@ API_UPDATE_INTERVAL = 5  # Seconds for sending updates to API
 MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
-class Bike:
+API_URL="http://backend:1337"
+
+BIKE_ID = 123323
+
+class Bike: # pylint: disable=too-many-instance-attributes
     """
     Bike class for simulating an electric bike.
     """
-    def __init__( # pylint: disable=too-many-arguments too-many-positional-arguments
+    def __init__( # pylint: disable=too-many-arguments too-many-positional-arguments too-many-instance-attributes
             self,
             bike_id,
             battery=100,
@@ -37,6 +42,28 @@ class Bike:
         self.update_delay = random.uniform(0, 4)
         self.status = status  # locked, unlocked, idle, charging, shutdown
         self.simulated = simulated  # To mark if the bike is simulated
+        self.added_to_db = False
+        self.add_to_db_tries = 0
+
+        while not self.added_to_db and self.add_to_db_tries < 3:
+            self.add_bike_to_system()
+
+    def add_bike_to_system(self):
+        """Add the bike to the system."""
+        # Check if already added to database
+
+        try:
+            requests.post(f"{API_URL}/v1/add_bike", timeout=30, data={
+                "batteryLevel": self.battery,
+                "longitude": self.location[0],
+                "latitude": self.location[1],
+                "simulated": self.simulated
+            })
+            print(f"Added bike {self.bike_id} to database.")
+            self.added_to_db = True
+        except requests.exceptions.RequestException as e:
+            print(f"Error adding bike to database: {e}")
+            self.add_to_db_tries += 1
 
     async def send_update_to_api(self):
         """Send periodic updates to the API."""
@@ -51,6 +78,18 @@ class Bike:
                 # /api/bike-low-battery?
             data = self.get_data()
             print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
+            try:
+                requests.put(f"{API_URL}/v1/update_bike", timeout=30, data={
+                    "bike_id": self.bike_id,
+                    "batteryLevel": self.battery,
+                    "longitude": self.location[0],
+                    "latitude": self.location[1],
+                    "status": self.status,
+                    "min_battery": self.min_battery,
+                    "battery_danger": self.battery < self.min_battery
+                })
+            except requests.exceptions.RequestException as e:
+                print(f"Error sending data to API: {e}")
             await asyncio.sleep(API_UPDATE_INTERVAL)
 
     def get_data(self):
@@ -119,3 +158,9 @@ class Bike:
 
             # Change status every X-Y minutes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
+
+
+if __name__ == "__main__":
+    # Create a bike object
+    bike = Bike(BIKE_ID)
+    asyncio.run(bike.run_simulation())
