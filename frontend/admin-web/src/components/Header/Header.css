@@ -1,0 +1,55 @@
+.header {
+    position: relative;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #333;
+    z-index: 1100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 0 10px;
+}
+
+.header-right button {
+    margin-left: 10px;
+}
+
+.hamburger-menu {
+    color: #333;
+    border: none;
+    padding: 10px 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.hamburger-menu:hover {
+    background-color: #d1d1d1;
+}
+
+.header-login,
+.header-logout {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.header-login:hover,
+.header-logout:hover {
+    background-color: #777;
+}
