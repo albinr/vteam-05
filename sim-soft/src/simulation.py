@@ -5,10 +5,10 @@ This module defines a Simulation class to create simulated bikes and users.
 """
 
 import asyncio
-from bike import Bike
+import uuid
 import atexit
 import requests
-import uuid
+from bike import Bike
 
 API_URL="http://backend:1337"
 
@@ -17,7 +17,11 @@ class Simulation:
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=False):
-        self.bikes = [Bike(bike_id=f"{uuid.uuid4()}", location=(56.176, 15.590), simulated=True) for i in range(1, num_bikes + 1)]
+        self.bikes = [
+                        Bike(bike_id=f"{uuid.uuid4()}",
+                        location=(56.176, 15.590), simulated=simulated)
+                        for _ in range(1, num_bikes + 1)
+                    ]
         self.state = "initialized"
 
     def list_bikes(self):
@@ -51,7 +55,7 @@ class Simulation:
 
 def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
-    requests.delete(f"{API_URL}/v1/bikes/1")
+    requests.delete(f"{API_URL}/v1/bikes/1", timeout=30)
 
     print("Simulation has stopped.")
 

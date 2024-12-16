@@ -7,9 +7,9 @@ in a system for renting bikes.
 
 import asyncio
 import random
+import uuid
 from datetime import datetime
 import requests
-import uuid
 
 # Constants
 SLEEP_TIME = 1  # Seconds for simulation update loop
@@ -80,7 +80,8 @@ class Bike: # pylint: disable=too-many-instance-attributes
             data = self.get_data()
             print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
             try:
-                requests.put(f"{API_URL}/v1/bikes/{self.bike_id}", timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
+                requests.put(f"{API_URL}/v1/bikes/{self.bike_id}",
+                            timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
                     "battery_level": self.battery,
                     "status": self.status,
                     "longitude": self.location[0],
