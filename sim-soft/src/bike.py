@@ -112,16 +112,21 @@ class Bike: # pylint: disable=too-many-instance-attributes
         if battery:
             self.battery = battery
 
-    async def run_simulation(self):
+    async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
         # Run all tasks in the background
-        update_task = asyncio.create_task(self.send_update_to_api())
-        battery_task = asyncio.create_task(self.sim_battery())
-        status_task = asyncio.create_task(self.sim_random_bike_status())
-        travel_task = asyncio.create_task(self.sim_travel())
+        if self.simulated:
+            battery_task = asyncio.create_task(self.sim_battery())
+            travel_task = asyncio.create_task(self.sim_travel())
+            status_task = asyncio.create_task(self.sim_random_bike_status())
+            update_task = asyncio.create_task(self.send_update_to_api())
+
+            await asyncio.gather(update_task, battery_task, status_task, travel_task)
+        else:
+            update_task = asyncio.create_task(self.send_update_to_api())
+            await asyncio.gather(update_task)
 
         # Wait for all tasks to finish (running in background)
-        await asyncio.gather(update_task, battery_task, status_task, travel_task)
 
     async def sim_battery(self):
         """Simulate battery drain when bike is unlocked."""
@@ -163,4 +168,4 @@ class Bike: # pylint: disable=too-many-instance-attributes
 if __name__ == "__main__":
     # Create a bike object
     bike = Bike(BIKE_ID)
-    asyncio.run(bike.run_simulation())
+    asyncio.run(bike.run_bike_interval())

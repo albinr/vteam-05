@@ -16,7 +16,7 @@ class Simulation:
     """
     Simulation class for starting a simulation with simulated bikes
     """
-    def __init__(self, num_bikes=1):
+    def __init__(self, num_bikes=1, simulated=False):
         self.bikes = [Bike(bike_id=f"{uuid.uuid4()}", location=(56.176, 15.590), simulated=True) for i in range(1, num_bikes + 1)]
         self.state = "initialized"
 
@@ -31,8 +31,8 @@ class Simulation:
                 f"Location: {bike.location}")
 
     async def start_bikes(self):
-        """Start the bike update and simulation loop."""
-        tasks = [bike.run_simulation() for bike in self.bikes]
+        """Start the bike update and interval loop."""
+        tasks = [bike.run_bike_interval() for bike in self.bikes]
 
         await asyncio.gather(*tasks)
 
@@ -50,7 +50,7 @@ class Simulation:
                 await bike.update_bike_data(status, location, battery)
 
 def on_exit():
-    """Stop the simulation on exit."""
+    """Stop the simulation on exit and deletes simulated items from database."""
     requests.delete(f"{API_URL}/v1/bikes/1")
 
     print("Simulation has stopped.")
