@@ -17,9 +17,14 @@ filter:
 
 checks:
     python:
-        duplication: true
-        code-complexity: true
-        coding-style: true
+        duplicate_code: true
+        code_rating: true
+        variables_unused_variable: true
+        variables_used_before_assignment: true
+        imports_reimported: true
+        format_line_too_long: true
+        exceptions_broad_except: true
+        string_missing_format_string_key: true
 
 tools:
     pylint:
