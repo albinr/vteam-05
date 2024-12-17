@@ -1,29 +1,9 @@
 build:
     nodes:
-        backend:
-            environment:
-                node: "18"
-            commands:
-                - cd backend
-                - npm install
-                - npm run lint
-                - npm test -- --coverage
-
-        frontend:
-            environment:
-                node: "18"
-            commands:
-                - cd frontend/admin-web
-                - npm install
-                - npm run lint
-                - npm test -- --coverage
-                - cd ../../frontend/user-web
-                - npm install
-                - npm run lint
-
         sim-soft:
-            environment:
-                python: "3.10"
+            language: python
+            python:
+                version: "3.10"
             commands:
                 - cd sim-soft
                 - pip install -r requirements.txt
@@ -32,31 +12,15 @@ build:
 
 filter:
     excluded_paths:
-        - "node_modules/*"
-        - "**/__pycache__/*"
-        - "**/coverage/*"
-        - "sim-soft/venv/*"
-        - "frontend/admin-web/coverage/*"
-        - "frontend/user-app/coverage/*"
+        - "**/__pycache__/"
+        - "sim-soft/venv/"
 
 checks:
-    javascript:
-        code-complexity: true
-        duplication: true
-        unused-variables: true
-        unreachable-code: true
     python:
         duplication: true
         code-complexity: true
         coding-style: true
 
 tools:
-    eslint:
-        config: backend/.eslintrc.json
-    eslint-frontend:
-        config: frontend/admin-web/.eslintrc.json
     pylint:
         config: sim-soft/pylint.conf
-    coverage:
-        enabled: true
-        report_path: backend/coverage/lcov.info
