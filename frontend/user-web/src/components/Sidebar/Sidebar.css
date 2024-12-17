@@ -1,0 +1,78 @@
+/* General Sidebar Styles */
+.sidebar {
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  color: #333;
+  position: fixed;
+  top: 60;
+  left: -250px; /* Initially hidden */
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  left: 0; /* Slide in */
+}
+
+.sidebar-header {
+  padding: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #d7d7d7;
+  text-align: center;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.sidebar-link:hover {
+  background-color: #dbdbdb;
+}
+
+
+/* Overlay Styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .hamburger-menu {
+      display: none; /* Hide hamburger on larger screens */
+  }
+
+  .sidebar {
+      left: 0; /* Always visible on larger screens */
+      position: relative; /* Inline with main content */
+      width: 250px;
+  }
+
+  .sidebar.open {
+      left: 0;
+  }
+
+  .overlay {
+      display: none; /* No overlay needed */
+  }
+}
