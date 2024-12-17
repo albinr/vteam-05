@@ -2,10 +2,10 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect} from "react";
 import Loader from "@/components/Loader";
 
-export default function Home() {
+export default function Account() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -25,7 +25,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1>Home</h1>
+            <h1>Account</h1>
             <p>Welcome, {session.user?.name || "User"}!</p>
             <p>Your email: {session.user?.email || "Not available"}</p>
             <p>Here you can view and manage your account.</p>
