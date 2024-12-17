@@ -76,6 +76,7 @@ export default function Home() {
     // ), [])
 
     const Gmap = dynamic(() => import('@/components/Gmap'), {
+        loading: () => <Loader />,
         ssr: false
     });
     // const center = [57.534591, 18.06324];
