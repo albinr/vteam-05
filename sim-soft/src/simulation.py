@@ -8,7 +8,9 @@ import asyncio
 import uuid
 import atexit
 import requests
-from bike import Bike
+# from bike import Bike
+from wsbike import Bike # bike with websocket connection
+
 
 API_URL="http://backend:1337"
 
