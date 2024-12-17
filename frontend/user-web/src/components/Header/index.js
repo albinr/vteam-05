@@ -13,18 +13,23 @@ export default function Header({ onToggleSidebar }) {
             <div className="header-left">
                 <h1 className="header-title">Ebike-rental</h1>
             </div>
-            <nav className="header-nav">
+
+            <div className="header-right">
+                <nav className="header-nav">
                     <Link href="/" className="header-link">
                         Home
                     </Link>
-                    <Link href="/account" className="header-link">
-                        Account
-                    </Link>
-                    <Link href="/history" className="header-link">
-                        History
-                    </Link>
+                    {session ? (
+                        <>
+                            <Link href="/account" className="header-link">
+                                Account
+                            </Link>
+                            <Link href="/history" className="header-link">
+                                History
+                            </Link>
+                        </>
+                    ) : null}
                 </nav>
-            <div className="header-right">
                 {session ? (
                     <button
                         className="header-logout"

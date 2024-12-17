@@ -22,6 +22,16 @@
     margin: 0 0 0 10px;
 }
 
+.header-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-link {
+    padding: 0 10px;
+}
+
 .header-right button {
     margin-left: 10px;
 }

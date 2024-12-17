@@ -37,7 +37,7 @@ export default function Layout({ children }) {
         <div className="layout">
             <Header onToggleSidebar={toggleSidebar} />
             <div className="layout-body">
-                <div className={`layout-content ${session ? "" : "full-width"}`}>
+                <div className="layout-content">
                     <main className="layout-main">{children}</main>
                 </div>
             </div>
