@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Circle, Polygon } from 'react-native-maps';
+// @ts-ignore
+// import MapView, { Marker, PROVIDER_GOOGLE, Circle, Polygon } from 'react-native-web-maps';
 
 
 // Custom MapView component for handling platform-specific imports
@@ -19,7 +21,7 @@ export default function MapGoogle() {
           longitudeDelta: 0.0421,
         }}
       >
-        <Marker
+        {/* <Marker
           coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
           title="Bike"
           description="A bike parked and ready to be rented!"
@@ -42,7 +44,7 @@ export default function MapGoogle() {
             fillColor="rgba(255, 0, 0, 0.1)" // Semi-transparent red
             strokeColor="red"
             strokeWidth={2}
-        />
+        /> */}
       </MapView>
     </View>
   );

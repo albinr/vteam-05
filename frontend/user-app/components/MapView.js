@@ -1,8 +1,8 @@
+// MapView.js
 import { Platform } from 'react-native';
 
-const MapView = Platform.select({
-  web: require('react-native-web-maps').default, // Use web-based maps for the web platform
-  default: require('react-native-maps').default, // Use native maps for mobile platforms
-});
+// Use the correct library depending on the platform
+// @ts-ignore
+const MapView = Platform.OS === 'web' ? require('react-native-web-maps').default : require('react-native-maps').default;
 
 export default MapView;

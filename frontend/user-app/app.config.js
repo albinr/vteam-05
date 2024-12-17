@@ -36,6 +36,11 @@ export default {
       bundler: "metro",
       output: "single",
       favicon: "./assets/images/favicon.png",
+      config: {
+        "googleMaps": {
+          "apiKey": process.env.GOOGLE_MAPS_API_KEY, // Use API key from .env
+        }
+      }
     },
     plugins: [
       "expo-router",
@@ -53,6 +58,7 @@ export default {
       typedRoutes: true,
     },
     extra: {
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, // Use API key from .env
       router: {
         origin: false,
       },
