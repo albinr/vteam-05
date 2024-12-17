@@ -28,4 +28,5 @@ checks:
 
 tools:
     pylint:
-        config: sim-soft/pylint.conf
+        config:
+            - sim-soft/pylint.conf
