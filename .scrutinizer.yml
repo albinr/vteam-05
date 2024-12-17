@@ -7,7 +7,7 @@ build:
             commands:
                 - cd sim-soft
                 - pip install -r requirements.txt
-                - pylint src/ --rcfile=pylint.conf
+                - pylint src/
                 - python -m unittest discover tests/
 
 filter:
@@ -28,5 +28,10 @@ checks:
 
 tools:
     pylint:
-        config:
-            - sim-soft/pylint.conf
+        basic: true
+        classes: true
+        exceptions: true
+        format: true
+        imports: true
+        variables: true
+        string: true
