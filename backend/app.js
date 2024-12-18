@@ -9,12 +9,15 @@ const express = require("express");
 const app = express();
 const middleware = require("./middleware/index.js");
 
-
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
 
 const cors = require("cors");
+
+require('dotenv').config({ path: '.env.local' });
 
 app.set("view engine", "ejs");
 
@@ -27,6 +30,31 @@ app.use("/docs", express.static(path.join(__dirname, "docs")));
 
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    // Här kan du spara användarprofilen i din databas
+    return cb(null, profile);
+  }
+));
+
+app.use(passport.initialize());
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+});
+
+// app.listen(3000, () => console.log('Server is running on port 3000'));
+
 
 // Options for cors
 const corsOptions = {
