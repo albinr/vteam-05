@@ -1,34 +1,7 @@
-const mysql = require('mysql2/promise');
-const config = require("../data/vteam.json");
+
 const { v4: uuidv4 } = require("uuid");
-// const pool = mysql.createPool(config);
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    multipleStatements: true,
-    queueLimit: 0
-});
 
-// för att testa utan docker
-// const pool = mysql.createPool({
-//     host: config.host,  // Från config-filen
-//     user: config.user,  // Från config-filen
-//     password: config.password,  // Från config-filen
-//     database: config.database,  // Från config-filen
-//     multipleStatements: config.multipleStatements, // Från config-filen
-//     connectionLimit: config.connectionLimit, // Från config-filen
-//     waitForConnections: true,
-//     queueLimit: 0
-// });
-
-process.on("exit", () => {
-    pool.end();
-});
+const pool = require('./db/db.js');
 
 async function showBikes() {
     try {
@@ -86,6 +59,43 @@ async function showTripsByBikeId(bike_id) {
     let res = await pool.query(sql, [bike_id]);
 
     return res;
+}
+
+async function showTripsByUserId(user_id) {
+    let sql = `SELECT 
+                trip_id,
+                bike_id,
+                start_time,
+                end_time,
+                CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
+                CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                speed,
+                cost,
+                duration_minutes,
+                simulation_trip
+               FROM Trip
+               WHERE user_id = ?`;
+
+    let res = await pool.query(sql, [user_id]);
+
+    return res;
+}
+
+async function getUserInfo(user_id) {
+    let sql = `SELECT 
+                user_id,
+                Balance AS balance,
+                Email AS email
+               FROM User
+               WHERE user_id = ?`;
+
+    let res = await pool.query(sql, [user_id]);
+
+    if (res.length === 0) {
+        throw new Error(`No user found with ID ${user_id}`);
+    }
+
+    return res[0];
 }
 
 async function startTrip(bikeId, userId) {
@@ -152,21 +162,17 @@ async function deleteBikes(simulatedOnly) {
     
 }
 
-async function deleteTrips() {
-    const [result] = await pool.query(`CALL RemoveTrips()`);
-
-    if (result && result.affectedRows) {
-        return { message: `Alla resor har raderats` };
-    } else {
-        return { message: "Inga resor är raderade" };
-    }
+async function deleteTrips(simulatedOnly) {
+    const inputRemove = simulatedOnly ? 1 : 0;
+    const [result] = await pool.query(`CALL RemoveTrips(?)`, [inputRemove]);
+    return result;
 }
 
-async function addUser(username, email, balance) {
+async function addUser(email, balance) {
     try {
-        const sql = `INSERT INTO User (Username, Balance, Email) VALUES (?, ?, ?)`;
+        const sql = `INSERT INTO User (Balance, Email) VALUES (?, ?)`;
         
-        const [result] = await pool.query(sql, [username, balance, email]);
+        const [result] = await pool.query(sql, [balance, email]);
         return result;
     } catch (error) {
         console.error("Fel vid skapande av användare:", error);
@@ -178,11 +184,6 @@ async function updateUser(userId, updatedData) {
     try {
         const data = [];
         const newD = [];
-
-        if (updatedData.username) {
-            data.push("username = ?");
-            newD.push(updatedData.username);
-        }
 
         if (updatedData.email !== undefined) {
             data.push("email = ?");
@@ -262,8 +263,6 @@ async function updateBike(bikeId, updatedData) {
     }
 }
 
-
-
 module.exports = {
     "showTrip": showTrip,
     "showBikes": showBikes,
@@ -276,5 +275,7 @@ module.exports = {
     "deleteTrips": deleteTrips,
     "addUser": addUser,
     "updateUser": updateUser,
-    "updateBike": updateBike
+    "updateBike": updateBike,
+    "showTripsByUserId": showTripsByUserId,
+    "getUserInfo": getUserInfo
 };
