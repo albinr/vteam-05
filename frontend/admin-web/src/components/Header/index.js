@@ -1,7 +1,9 @@
 "use client";
 
-import React from 'react';
-import { signIn, signOut, useSession } from "next-auth/react";
+import React from "react";
+import { useSession } from "next-auth/react";
+import LoginButton from "@/components/LoginButton"; // Ensure the path is correct
+import LogoutButton from "@/components/LogoutButton"; // Ensure the path is correct
 import "./Header.css";
 
 export default function Header({ onToggleSidebar }) {
@@ -18,19 +20,13 @@ export default function Header({ onToggleSidebar }) {
             </div>
             <div className="header-right">
                 {session ? (
-                    <button
-                        className="header-logout"
-                        onClick={() => signOut()}
-                    >
-                        Sign Out
-                    </button>
+                    <LogoutButton className="header-logout" />
                 ) : (
-                    <button
+                    <LoginButton
+                        provider="google"
+                        label="Sign In"
                         className="header-login"
-                        onClick={() => signIn("google")}
-                    >
-                        Sign In
-                    </button>
+                    />
                 )}
             </div>
         </header>

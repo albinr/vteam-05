@@ -1,17 +1,22 @@
 "use client";
-import React from 'react';
-import { GoogleMap, Marker, Circle, Polygon, useLoadScript } from '@react-google-maps/api';
-import Loader from '../Loader';
+import React, { useRef } from "react";
+import { GoogleMap, useLoadScript, Marker, Circle, Polygon } from "@react-google-maps/api";
+
+import Loader from "../Loader";
 
 const defaultContainerStyle = {
-    width: '100%',
-    height: '600px',
+    width: "100%",
+    height: "600px",
 };
 
 const defaultMapStyles = [
     {
-        featureType: 'poi',
-        stylers: [{ visibility: 'off' }]
+        featureType: "poi",
+        stylers: [{ visibility: "off" }],
+    },
+    {
+        featureType: "transit",
+        stylers: [{ visibility: "off" }],
     },
 ];
 
@@ -31,6 +36,8 @@ const MapComponent = ({
         googleMapsApiKey,
     });
 
+    const mapRef = useRef(null);
+
     if (loadError) return <div>Error loading maps.</div>;
     if (!isLoaded) return <Loader />;
 
@@ -43,7 +50,9 @@ const MapComponent = ({
                 disableDefaultUI,
                 styles,
             }}
+            onLoad={(map) => (mapRef.current = map)}
         >
+            {/* Render individual markers */}
             {markers.map((marker, idx) => (
                 <Marker
                     key={idx}
@@ -54,6 +63,7 @@ const MapComponent = ({
                 />
             ))}
 
+            {/* Render circles */}
             {circles.map((circle, idx) => (
                 <Circle
                     key={idx}
@@ -63,12 +73,9 @@ const MapComponent = ({
                 />
             ))}
 
+            {/* Render polygons */}
             {polygons.map((polygon, idx) => (
-                <Polygon
-                    key={idx}
-                    paths={polygon.paths}
-                    options={polygon.options}
-                />
+                <Polygon key={idx} paths={polygon.paths} options={polygon.options} />
             ))}
         </GoogleMap>
     );

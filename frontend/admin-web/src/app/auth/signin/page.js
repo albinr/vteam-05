@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import LoginButton from "@/components/LoginButton";
+import "./Signin.css";
+
 
 export default function SignInPage() {
     const { data: session, status } = useSession();
@@ -19,8 +21,8 @@ export default function SignInPage() {
         <div className="signin-container">
             <h1>Sign In</h1>
             <p>Choose a provider to sign in:</p>
-            <button onClick={() => signIn("google")}>Sign in with Google</button>
-            <button onClick={() => signIn("github")}>Sign in with GitHub</button>
+            <LoginButton provider="google" label="Sign in with Google" />
+            <LoginButton provider="github" label="Sign in with GitHub" />
         </div>
     );
 }
