@@ -5,7 +5,6 @@ filter:
     excluded_paths: 
         - "**/__pycache__/*"
         - "sim-soft/venv/*"
-        - "sim-soft/tests/*"
 
 build:
     image: default-bionic
