@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // Use useParams for dynamic route parameters
-import { fetchUserById } from "../api"; // Ensure this is the correct path to your API utility
+import { useParams } from "next/navigation";
+import withAuth from "../../hoc/withAuth";
+import { fetchUserById } from "../api";
 import Loader from "@/components/Loader";
 
-const UserDetails = () => {
+const UserDetails = ({ session }) => {
     const { id } = useParams(); // Get the dynamic route `id`
     const [user, setUser] = useState(null); // Store the user details
     const [loading, setLoading] = useState(true);
@@ -19,8 +20,8 @@ const UserDetails = () => {
                 const data = await fetchUserById(id); // Pass the `id` to the fetch function
                 setUser(data);
             } catch (err) {
-                console.error(err.message);
-                setError(err.message);
+                console.error("Error fetching user details:", err.message);
+                setError("Failed to fetch user details.");
             } finally {
                 setLoading(false);
             }
@@ -29,17 +30,38 @@ const UserDetails = () => {
         loadUser();
     }, [id]);
 
-    if (loading) return <Loader/>;
+    if (loading) {
+        return <Loader />;
+    }
+
+    if (error) {
+        return (
+            <div>
+                <h1>Error</h1>
+                <p className="error">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div>
             <h1>User Details</h1>
-            {error && <p className="error">{error}</p>}
-            <p>User ID: {id}</p>
+            {user ? (
+                <>
+                    <p><strong>ID:</strong> {user.id}</p>
+                    <p><strong>Username:</strong> {user.username}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Balance:</strong> {user.balance}</p>
+                </>
+            ) : (
+                <p>No user details found.</p>
+            )}
             <h2>Payments</h2>
+            {/* Add logic for displaying payments if applicable */}
             <h2>Trips</h2>
+            {/* Add logic for displaying trips if applicable */}
         </div>
     );
 };
 
-export default UserDetails;
+export default withAuth(UserDetails);
