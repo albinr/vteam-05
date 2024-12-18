@@ -1,37 +1,34 @@
+imports:
+    - python
+
+filter:
+    excluded_paths: 
+        - "**/__pycache__/*"
+        - "sim-soft/venv/*"
+        - "sim-soft/tests/*"
+
 build:
+    image: default-bionic
+
     nodes:
-        sim-soft:
+        analysis:
             language: python
             python:
                 version: "3.10"
-            commands:
-                - cd sim-soft
-                - pip install -r requirements.txt
-                - pylint src/
-                - python -m unittest discover tests/
-
-filter:
-    excluded_paths:
-        - "**/__pycache__/"
-        - "sim-soft/venv/"
-
-checks:
-    python:
-        duplicate_code: true
-        code_rating: true
-        variables_unused_variable: true
-        variables_used_before_assignment: true
-        imports_reimported: true
-        format_line_too_long: true
-        exceptions_broad_except: true
-        string_missing_format_string_key: true
-
-tools:
-    pylint:
-        basic: true
-        classes: true
-        exceptions: true
-        format: true
-        imports: true
-        variables: true
-        string: true
+            tests:
+                override:
+                    # Navigate to sim-soft folder
+                    - cd sim-soft
+                    
+                    # Run Pylint for static analysis
+                    - pylint src/ --rcfile=pylint.conf
+                    
+                    # Run unit tests with coverage
+                    - coverage run -m unittest discover tests/
+                    - coverage report -m
+    tests:
+        override:
+            - command: "cd sim-soft && coverage run -m unittest discover tests/"
+                coverage:
+                    file: "sim-soft/coverage.xml"
+                    format: "cobertura"
