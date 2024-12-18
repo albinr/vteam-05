@@ -24,5 +24,6 @@ A system for managing electric scooter rentals across Swedish cities, designed f
 - Tim Swärd
 - Albin Ryberg
 
-<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRlGTuAoIHx3jIDCrChokxqpFRvFJrLsbMqwO3ub-vSKPpKAn8tkuMH-kI8JGwn88bw5Nv5XKZSIEYI/pubhtml?widget=true&amp;headers=false"></iframe>
+[REST API Routes](https://docs.google.com/spreadsheets/d/e/2PACX-1vRlGTuAoIHx3jIDCrChokxqpFRvFJrLsbMqwO3ub-vSKPpKAn8tkuMH-kI8JGwn88bw5Nv5XKZSIEYI/pubhtml)
+
 
