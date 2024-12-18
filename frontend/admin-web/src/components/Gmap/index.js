@@ -49,6 +49,8 @@ const MapComponent = ({
             options={{
                 disableDefaultUI,
                 styles,
+                mapTypeControl: false,
+                mapTypeId: "roadmap"
             }}
             onLoad={(map) => (mapRef.current = map)}
         >
