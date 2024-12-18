@@ -4,6 +4,15 @@ const mysql = require("promise-mysql");
 const config = require("./vteam.json");
 let db;
 
+/**
+ * En testfunktion.
+ * @param {string} name - Namnet.
+ * @returns {string} En hälsning.
+ */
+function greet(name) {
+    return "Hello, " + name;
+  }
+
 async function connect() {
     db = await mysql.createConnection(config);
 

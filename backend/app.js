@@ -8,7 +8,12 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const middleware = require("./middleware/index.js");
+
+
+
 const v1Router = require("./route/v1/bike.js");
+const v2Router = require("./route/v2/api.js");
+
 const cors = require("cors");
 
 app.set("view engine", "ejs");
@@ -18,7 +23,10 @@ app.use(middleware.logIncomingToConsole);
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(port, logStartUpDetailsToConsole);
 app.use(express.urlencoded({ extended: true }));
+app.use("/docs", express.static(path.join(__dirname, "docs")));
+
 app.use("/v1", v1Router);
+app.use("/v2", v2Router);
 
 // Options for cors
 const corsOptions = {
