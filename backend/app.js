@@ -21,7 +21,6 @@ require('dotenv').config({ path: '.env.local' });
 
 app.set("view engine", "ejs");
 
-app.use(cors()); // Added for cors thingy
 app.use(middleware.logIncomingToConsole);
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(port, logStartUpDetailsToConsole);
@@ -31,27 +30,62 @@ app.use("/docs", express.static(path.join(__dirname, "docs")));
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
 
+app.use(require('express-session')({
+    secret: 'your-session-secret',
+    resave: false,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/auth/google/callback"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    // Här kan du spara användarprofilen i din databas
-    return cb(null, profile);
-  }
+},
+    function (accessToken, refreshToken, profile, cb) {
+        // Här kan du spara användarprofilen i din databas
+        console.log(profile);
+        return cb(null, profile);
+    }
 ));
 
-app.use(passport.initialize());
-
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
+passport.serializeUser(function(user, done) {
+    done(null, user); // Serialize user data into the session
 });
+
+passport.deserializeUser(function(obj, done) {
+    done(null, obj); // Deserialize user data from the session
+});
+
+// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// app.get('/auth/google/callback',
+//     passport.authenticate('google', { failureRedirect: '/failed' }),
+//     function (req, res) {
+//         // Successful authentication, redirect home.
+//         // res.redirect('/');
+
+//         res.redirect(req.url);
+//     });
+
+app.get('/auth/google', (req, res, next) => {
+    const returnUrl = req.query.returnUrl || '/';
+    const redirectUrl = `/auth/google/callback?returnUrl=${encodeURIComponent(returnUrl)}`;
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        state: JSON.stringify({ returnUrl }) // Optional: Encode additional state info
+    })(req, res, next);
+});
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/failed' }),
+    (req, res) => {
+        const returnUrl = req.query.returnUrl || '/';
+        res.redirect(returnUrl);
+    }
+);
+
 
 // app.listen(3000, () => console.log('Server is running on port 3000'));
 
@@ -70,6 +104,11 @@ const corsOptions = {
     ],
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
+
+
+app.use(cors(corsOptions)); // Added for cors thingy
+
+// cors(corsOptions)
 
 // Read from commandline
 
