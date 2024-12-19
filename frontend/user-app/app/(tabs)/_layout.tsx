@@ -40,6 +40,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="signin"
+        options={{
+          title: 'Sign-In',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="bell" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
