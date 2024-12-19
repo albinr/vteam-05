@@ -8,7 +8,7 @@ const Login = () => {
 
     useEffect(() => {
         // Redirect to backend for authentication
-        router.push('http://localhost:1337/auth/google');
+        router.push('http://localhost:1337/auth/admin-web/google');
     }, []);
 
     return <div>Redirecting to login...</div>;

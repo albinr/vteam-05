@@ -3,6 +3,11 @@
  */
 "use strict";
 
+const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/";
+const USER_WEB_URL_SUCCESS = "http://localhost:3001/";
+const USER_APP_URL_SUCCESS = "http://localhost:8081/";
+const AUTH_URL_FAILED = "/auth/failed";
+
 const port = process.env.DBWEBB_PORT || 1337;
 const path = require("path");
 const express = require("express");
@@ -41,11 +46,12 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: "/auth/google/callback",
 },
     function (accessToken, refreshToken, profile, cb) {
         // Här kan du spara användarprofilen i din databas
         console.log(profile);
+
         return cb(null, profile);
     }
 ));
@@ -60,35 +66,69 @@ passport.deserializeUser(function(obj, done) {
 
 // app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// app.get('/auth/google/callback',
-//     passport.authenticate('google', { failureRedirect: '/failed' }),
-//     function (req, res) {
-//         // Successful authentication, redirect home.
-//         // res.redirect('/');
+app.get(AUTH_URL_FAILED, (req, res, next) => {
+    res.send("Login failed, please go back to the original page and try again.");
+});
 
-//         res.redirect(req.url);
-//     });
-
-app.get('/auth/google', (req, res, next) => {
-    const returnUrl = req.query.returnUrl || '/';
-    const redirectUrl = `/auth/google/callback?returnUrl=${encodeURIComponent(returnUrl)}`;
+// TODO: Check if user is admin!
+app.get('/auth/admin-web/google', (req, res, next) => {
+    const state = JSON.stringify({
+        successRedirect: ADMIN_WEB_URL_SUCCESS,
+    });
     passport.authenticate('google', {
         scope: ['profile', 'email'],
-        state: JSON.stringify({ returnUrl }) // Optional: Encode additional state info
+        state: state
+    })(req, res, next);
+});
+
+app.get('/auth/user-web/google', (req, res, next) => {
+    const state = JSON.stringify({
+        successRedirect: USER_WEB_URL_SUCCESS,
+    });
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        state: state
+    })(req, res, next);
+});
+
+app.get('/auth/user-app/google', (req, res, next) => {
+    const state = JSON.stringify({
+        successRedirect: USER_APP_URL_SUCCESS,
+    });
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        state: state
     })(req, res, next);
 });
 
 app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/failed' }),
+    passport.authenticate('google', { failureRedirect: AUTH_URL_FAILED }),
     (req, res) => {
-        const returnUrl = req.query.returnUrl || '/';
-        res.redirect(returnUrl);
+        const state = JSON.parse(req.query.state || "{}");
+
+        const successRedirect = state.successRedirect || "/";
+
+        res.redirect(successRedirect); // Redirect to the success URL
     }
 );
 
+// app.get(
+//     (req, res, next) => {
+//         const state = JSON.parse(req.query.state || "{}");
 
-// app.listen(3000, () => console.log('Server is running on port 3000'));
+//         const failureRedirect = state.failureRedirect || "/failed";
 
+//         passport.authenticate('google', {
+//             failureRedirect: failureRedirect,
+//         })(req, res, next);
+//     },
+//     (req, res) => {
+//         const state = JSON.parse(req.query.state || "{}");
+
+//         const successRedirect = state.successRedirect || "/";
+//         res.redirect(successRedirect);
+//     }
+// );
 
 // Options for cors
 const corsOptions = {
