@@ -100,7 +100,18 @@ const corsOptions = {
     origin: [
         "http://admin-web:3000",
         "http://user-web:3001",
-        "http://user-app:8081"
+        "http://user-app:8081",
+        "http://user-app:1900",
+        "http://user-app:1901",
+        "http://user-app:1902",
+        "http://user-app:1903",
+        "http://user-app:1906",
+        "http://localhost:1900",
+        "http://localhost:1901",
+        "http://localhost:1902",
+        "http://localhost:1903",
+        "http://localhost:1906",
+        // "*"
     ],
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
