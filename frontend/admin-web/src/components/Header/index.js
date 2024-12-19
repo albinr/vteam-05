@@ -20,7 +20,18 @@ export default function Header({ onToggleSidebar }) {
             </div>
             <div className="header-right">
                 {session ? (
-                    <LogoutButton className="header-logout" />
+                    <div className="user-info">
+                        {/* Display User's Profile Image */}
+                        <p>{session.user?.name || "User"}</p>
+                        {session.user?.image && (
+                            <img
+                                src={session.user.image}
+                                alt="User Profile"
+                                className="user-profile-image"
+                            />
+                        )}
+                        <LogoutButton className="header-logout" />
+                    </div>
                 ) : (
                     <LoginButton
                         provider="google"

@@ -25,7 +25,7 @@ const chargingStations = [
 ];
 
 const allowedZoneCircle = [
-    { center: { lat: 59.3293, lng: 18.0686 }, radius: 1000, options: { fillColor: "#00ff00", fillOpacity: 0.1, strokeColor: "#00ff00", strokeWeight: 1 } },
+    { center: { lat: 59.3293, lng: 18.0686 }, radius: 16000, options: { fillColor: "#00ff00", fillOpacity: 0.1, strokeColor: "#00ff00", strokeWeight: 1 } },
 ];
 
 const Bikes = ({ session }) => {

@@ -4,11 +4,11 @@
 
 FROM node:18-alpine
 
+COPY package*.json ./
+
 VOLUME /app
 
 WORKDIR /app
-
-COPY package*.json ./
 
 RUN npm install
 

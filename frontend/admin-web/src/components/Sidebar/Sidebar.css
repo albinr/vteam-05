@@ -44,6 +44,11 @@
   background-color: #dbdbdb;
 }
 
+.sidebar-link.active {
+  font-weight: bold;
+  border-left: 6px solid black;
+}
+
 
 /* Overlay Styles */
 .overlay {
