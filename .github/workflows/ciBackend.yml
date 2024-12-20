@@ -12,18 +12,6 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mariadb:latest
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
-          MYSQL_DATABASE: testdb
-          MYSQL_USER: dbadm
-          MYSQL_PASSWORD: scrt_pa_s_db
-        options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=scrt_pa_s_db" --health-timeout=30s --health-retries=3
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,24 +19,17 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18   # Sätt versionen av Node.js
 
       - name: Install dependencies
         run: |
           cd backend
           npm install
 
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..30}; do
-            echo "Checking MySQL status..."
-            mysqladmin --host=localhost --user=root --password=scrt_pa_s_db ping && break || sleep 2
-          done
-
       - name: Set up database schema
         run: |
           echo "Setting up the database schema..."
-          mysql -h localhost -u root -pscrt_pa_s_db testdb < backend/database/setup.sql
+          mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${DATABASE_NAME} < backend/database/setup.sql
 
       - name: Run tests
         run: |
