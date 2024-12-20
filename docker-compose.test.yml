@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  testdatabase:
+    image: mariadb:latest
+    container_name: mariadb-compose-test
+    environment:
+      MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: dbadm
+      MYSQL_PASSWORD: scrt_pa_s_db
+    ports:
+      - "3307:3306"
+    networks:
+      - bike_network
+    volumes:
+      - "./backend/database/setupDev.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-container
+    ports:
+      - "1337:1337"
+    networks:
+      - bike_network
+    depends_on:
+      - testdatabase
+    environment:
+      DB_HOST: testdatabase
+      DB_PORT: 3306
+      DB_USER: dbadm
+      DB_PASSWORD: scrt_pa_s_db
+      DB_NAME: testdb
+    restart: always
+
+networks:
+  bike_network:
+    driver: bridge
