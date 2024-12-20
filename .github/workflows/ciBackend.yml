@@ -46,12 +46,13 @@ jobs:
             sleep 5
           done
         env:
-          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}
+          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}  # Lösenordet för MariaDB (lägg till detta som en secret i GitHub)
 
-      - name: Set up database schema
+      - name: Set up the database schema
         run: |
           echo "Setting up the database schema..."
           mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db testdb < backend/database/setupDev.sql
+          mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db testdb < backend/database/resetDev.sql
         env:
           scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}
 
