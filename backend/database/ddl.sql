@@ -2,7 +2,6 @@
 -- creates the diffrent tables
 -- 
 
--- dsf
 
 DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
