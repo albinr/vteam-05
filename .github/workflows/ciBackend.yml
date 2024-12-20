@@ -18,11 +18,11 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
-          MYSQL_DATABASE: testdb
-          MYSQL_USER: dbadm
-          MYSQL_PASSWORD: scrt_pa_s_db
-        options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=scrt_pa_s_db" --health-timeout=30s --health-retries=3
+          MARIADB_ROOT_PASSWORD: root_password
+          MARIADB_DATABASE: testdb
+          MARIADB_USER: test_user
+          MARIADB_PASSWORD: test_password
+        options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=root_password" --health-timeout=30s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -31,30 +31,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18   # Sätt versionen av Node.js
+          node-version: 18
 
       - name: Install dependencies
         run: |
           cd backend
           npm install
 
-      - name: Wait for MariaDB to be ready
-        run: |
-          echo "Waiting for MariaDB to be ready..."
-          until mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db -e "SHOW DATABASES"; do
-            echo "Waiting for MariaDB..."
-            sleep 5
-          done
-        env:
-          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}  # Lösenordet för MariaDB (lägg till detta som en secret i GitHub)
-
       - name: Set up the database schema
         run: |
-          echo "Setting up the database schema..."
-          mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db testdb < backend/database/setupDev.sql
-          mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db testdb < backend/database/resetDev.sql
-        env:
-          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}
+          until mysqladmin ping --host=localhost --user=root --password=root_password --silent; do
+            echo "Waiting for MariaDB to be ready..."
+            sleep 2
+          done
+
+          # Anslut till databasen och kör SQL-skripten
+          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/setupDev.sql
+          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/resetDev.sql
 
       - name: Run tests
         run: |
