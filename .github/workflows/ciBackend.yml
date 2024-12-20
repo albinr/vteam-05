@@ -38,10 +38,14 @@ jobs:
           cd backend
           npm install
 
+      - name: List database folder to verify existence of SQL files
+        run: |
+          ls -l backend/database/
+
       - name: Set up the database schema
         run: |
-          mariadb -h 127.0.0.1 -u root -proot_password testdb < backend/database/setupDev.sql
-          mariadb -h 127.0.0.1 -u root -proot_password testdb < backend/database/resetDev.sql
+          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/setupDev.sql
+          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/resetDev.sql
 
       - name: Run tests
         run: |
