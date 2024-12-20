@@ -12,14 +12,40 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
 
+    services:
+      testdatabase:
+        image: mariadb:latest
+        env:
+          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: dbadm
+          MYSQL_PASSWORD: scrt_pa_s_db
+        ports:
+          - 3307:3306
+        options: --health-cmd="mysqladmin ping --host localhost --user=root --password=scrt_pa_s_db" --health-interval=10s --health-timeout=5s --health-retries=5
+
+      backend:
+        build:
+          context: ./backend
+          dockerfile: Dockerfile
+        ports:
+          - 1337:1337
+        environment:
+          DB_HOST: testdatabase
+          DB_PORT: 3306
+          DB_USER: dbadm
+          DB_PASSWORD: scrt_pa_s_db
+          DB_NAME: testdb
+        depends_on:
+          - testdatabase
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and start test services
+      - name: Build backend image and run services
         run: |
-          docker-compose build backend
-          docker-compose -f "docker-compose.yml" up -d testdatabase backend
+          docker-compose -f "docker-compose.yml" up -d
 
       - name: Run tests
         run: |
