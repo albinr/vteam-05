@@ -31,14 +31,26 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18   # Sätt versionen av Node.js
+          node-version: 18
 
       - name: Install dependencies
         run: |
-          cd backend           # Navigera till backend-mappen
-          npm install          # Installera backend-beroenden
+          cd backend
+          npm install
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            echo "Checking MySQL status..."
+            mysqladmin --host=localhost --user=root --password=scrt_pa_s_db ping && break || sleep 2
+          done
+
+      - name: Set up database schema
+        run: |
+          echo "Setting up the database schema..."
+          mysql -h localhost -u root -pscrt_pa_s_db testdb < backend/database/setup.sql
 
       - name: Run tests
         run: |
-          cd backend           # Navigera till backend-mappen
-          npm test             # Kör backend-tester
+          cd backend
+          npm test
