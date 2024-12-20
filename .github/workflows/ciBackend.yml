@@ -38,13 +38,6 @@ jobs:
           cd backend
           npm install
 
-      - name: Wait for MariaDB to be ready
-        run: |
-          until mysqladmin ping --host=localhost --user=root --password=root_password --silent; do
-            echo "Waiting for MariaDB to be ready..."
-            sleep 5
-          done
-
       - name: Set up the database schema
         run: |
           mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/setupDev.sql
