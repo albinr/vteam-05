@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "**" ]
     paths:
-      - 'frontend/admin-web/**'
+      - 'frontend/**'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'frontend/admin-web/**'
+      - 'frontend/**'
 
 jobs:
   test-frontend:
