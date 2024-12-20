@@ -18,7 +18,7 @@ jobs:
 
       - name: Build and start test services
         run: |
-          docker compose build backend
+          docker-compose build backend
           docker-compose -f "docker-compose.yml" up -d testdatabase backend
 
       - name: Run tests
