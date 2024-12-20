@@ -1,6 +1,6 @@
 -- 
 -- creates the diffrent tables
--- 
+-- sdf
 
 
 DROP PROCEDURE IF EXISTS StartTrip;
