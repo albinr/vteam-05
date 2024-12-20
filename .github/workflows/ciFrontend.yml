@@ -1,0 +1,34 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - 'frontend/admin-web/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'frontend/admin-web/**'
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          cd frontend/admin-web
+          npm install
+
+      - name: Run Jest tests
+        run: |
+          cd frontend/admin-web
+          npm test
