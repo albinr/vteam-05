@@ -1,22 +1,21 @@
-name: Backend CI
-
-on:
-  push:
-    branches: [ "**" ]
-    paths:
-      - 'backend/**'
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'backend/**'
-
 jobs:
   test-backend:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mariadb:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: dbadm
+          MYSQL_PASSWORD: scrt_pa_s_db
+        options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=scrt_pa_s_db" --health-timeout=30s --health-retries=3
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -27,10 +26,6 @@ jobs:
         run: |
           cd backend
           npm install
-
-     # - name: Run ESLint
-     #   run: |
-     #     npx eslint backend
 
       - name: Run tests
         run: |
