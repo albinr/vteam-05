@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker-compose exec backend npm test
+          docker-compose docker-compose.test.yml exec backend npm test
 
       - name: Shutdown services
         run: |
