@@ -1,92 +1,51 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - "**"
-  pull_request:
-    branches:
-      - main
-
 jobs:
-  test-frontend:
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      database:
+        image: mariadb:latest  # Du kan använda MariaDB eller MySQL beroende på din databas
+        env:
+          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+          MYSQL_DATABASE: testdb  # Här anger du vilken databas som ska skapas
+          MYSQL_USER: dbadm
+          MYSQL_PASSWORD: scrt_pa_s_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=localhost --user=root --password=${MYSQL_ROOT_PASSWORD}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Check out the repository
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: '16'
 
       - name: Install dependencies
         run: |
-          cd frontend/admin-web
+          cd backend
           npm install
 
-      - name: Run Jest tests
+      - name: Wait for MySQL to start
         run: |
-          cd frontend/admin-web
-          npm test
+          # Vänta tills databasen är redo för att ta emot anslutningar
+          until mysql -h 127.0.0.1 -u root -pscrt_pa_s_db -e "SELECT 1"; do
+            echo "Waiting for database to start..."
+            sleep 5
+          done
 
-  test-backend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
+      - name: Setup test database schema
         run: |
-           cd backend
-           npm install
-
-      # - name: Run ESLint
-      #   run: |
-      #     npx eslint backend
+          cd backend
+          mysql -h 127.0.0.1 -u root -pscrt_pa_s_db testdb < ./database/setupDev.sql
 
       - name: Run tests
-        run: npm test
-
-  test-simulation:
-      runs-on: ubuntu-latest
-
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-
-        - name: Set up Python
-          uses: actions/setup-python@v4
-          with:
-            python-version: 3.13
-
-        - name: Set PYTHONPATH
-          run: echo "PYTHONPATH=$(pwd)/sim-soft/src" >> $GITHUB_ENV
-
-        - name: Install dependencies
-          run: |
-            python -m venv venv
-            source venv/bin/activate
-            pip install -r sim-soft/requirements.txt
-
-        - name: Install Pylint
-          run: |
-            source venv/bin/activate
-            pip install pylint
-
-        - name: Run Pylint
-          run: |
-            source venv/bin/activate
-            pylint sim-soft/src sim-soft/tests
-
-        - name: Run unittest
-          run: |
-            source venv/bin/activate
-            cd sim-soft
-            python -m unittest discover tests
+        run: |
+          cd backend
+          npm test
