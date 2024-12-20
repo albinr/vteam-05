@@ -12,11 +12,17 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
 
-    env:
-      DB_HOST: localhost         # Databasserverns värd, om det är lokalt så kan du använda localhost
-      DB_USER: root              # Användare för MariaDB (root i detta fall)
-      DB_PASSWORD: scrt_pa_s_db  # Lösenord för root-användaren
-      DATABASE_NAME: testdb      # Namnet på databasen (testdb här)
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: dbadm
+          MYSQL_PASSWORD: scrt_pa_s_db
+        options: --health-cmd="mysqladmin ping --host=localhost --user=root --password=scrt_pa_s_db" --health-timeout=30s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -32,10 +38,22 @@ jobs:
           cd backend
           npm install
 
+      - name: Wait for MariaDB to be ready
+        run: |
+          echo "Waiting for MariaDB to be ready..."
+          until mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db -e "SHOW DATABASES"; do
+            echo "Waiting for MariaDB..."
+            sleep 5
+          done
+        env:
+          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}
+
       - name: Set up database schema
         run: |
           echo "Setting up the database schema..."
-          mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD $DATABASE_NAME < backend/database/setup.sql  # Kör SQL-skriptet för att sätta upp databasen
+          mysql --protocol=tcp -h localhost -u dbadm -p$scrt_pa_s_db testdb < backend/database/setupDev.sql
+        env:
+          scrt_pa_s_db: ${{ secrets.MYSQL_PASSWORD }}
 
       - name: Run tests
         run: |
