@@ -24,10 +24,10 @@ jobs:
       - name: Build and start test services
         run: |
           docker-compose -f docker-compose.test.yml up -d --build
-
+          docker-compose docker-compose.test.yml exec backend
       - name: Run tests
         run: |
-          docker-compose docker-compose.test.yml exec backend npm test
+          npm test
 
       - name: Shutdown services
         run: |
