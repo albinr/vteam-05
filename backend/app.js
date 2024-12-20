@@ -3,7 +3,7 @@
  */
 "use strict";
 
-const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/";
+const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/auth/login-success";
 const USER_WEB_URL_SUCCESS = "http://localhost:3001/";
 const USER_APP_URL_SUCCESS = "http://localhost:8081/";
 const AUTH_URL_FAILED = "/auth/failed";
@@ -13,6 +13,7 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const middleware = require("./middleware/index.js");
+const jwt = require('jsonwebtoken');
 
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -108,7 +109,20 @@ app.get('/auth/google/callback',
 
         const successRedirect = state.successRedirect || "/";
 
-        res.redirect(successRedirect); // Redirect to the success URL
+        const user = req.user;
+
+        const token = jwt.sign({
+            id: user.id,
+            email: user.emails[0].value,
+            name: user.displayName,
+            image: user.photos[0].value
+        }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+
+        console.log(token);
+
+        res.redirect(successRedirect + "?token=" + token);
     }
 );
 
