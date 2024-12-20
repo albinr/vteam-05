@@ -44,8 +44,8 @@ jobs:
 
       - name: Set up the database schema
         run: |
-          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/setupDev.sql
-          mysql -h 127.0.0.1 -u root -proot_password testdb < backend/database/resetDev.sql
+          mysql -h 127.0.0.1 -u root -proot_password testdb < $(pwd)/backend/database/setupDev.sql
+          mysql -h 127.0.0.1 -u root -proot_password testdb < $(pwd)/backend/database/resetDev.sql
 
       - name: Run tests
         run: |
