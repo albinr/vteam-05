@@ -35,7 +35,7 @@ services:
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
     restart: always
-    command: ["npm", "test"]  # Lägg till detta för att köra testerna vid uppstart
+    command: ["npm", "test"]
 
 networks:
   bike_network:
