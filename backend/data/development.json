@@ -1,5 +1,5 @@
 {
-    "host": "testdatabase",
+    "host": "mariadb",
     "user": "dbadm",
     "password": "scrt_pa_s_db",
     "database": "testdb",
