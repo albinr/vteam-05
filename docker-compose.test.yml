@@ -34,7 +34,6 @@ services:
       DB_USER: dbadm
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
-    restart: always
     command: bash -c "npm install && npm test"
 
 networks:
