@@ -22,29 +22,38 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
-    # 2. Ställ in Docker Compose
-    - name: Set up Docker Compose
-      run: |
-        docker-compose -f docker-compose.yml up -d testdatabase backend
 
-    # 3. Vänta på att backend-tjänsten ska vara redo
-    - name: Wait for backend to be ready
-      run: |
-        until docker logs backend-container 2>&1 | grep -q "Server is running"; do
-          echo "Waiting for backend to start..."
-          sleep 2
-        done
+      uses: actions/checkout@v3
 
-    # 4. Kör testerna
-    - name: Run tests
-      run: |
-        docker exec backend-container npm test
+      # 2. Starta databasen och backend
+      - name: Start Docker Compose services
+        run: |
+          docker-compose -f docker-compose.yml up -d testdatabase backend
 
-    # 5. Stäng ned tjänsterna
-    - name: Tear down
-      if: always()
-      run: |
-        docker-compose -f docker-compose.yml down
+      # 3. Vänta på att databasen ska vara redo
+      - name: Wait for test database to be ready
+        run: |
+          until docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -e "SHOW DATABASES;" 2>/dev/null | grep -q testdb; do
+            echo "Waiting for database to be ready..."
+            sleep 2
+          done
+
+      # 4. Kör backend-tester
+      - name: Run backend tests
+        run: |
+          docker exec backend-container npm test
+
+      # 5. Kontrollera databasens struktur och innehåll (valfritt)
+      - name: Validate database schema and data
+        run: |
+          docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -D testdb -e "SHOW TABLES;"
+          docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -D testdb -e "SELECT * FROM some_table LIMIT 1;"
+
+      # 6. Stäng ned tjänsterna
+      - name: Tear down
+        if: always()
+        run: |
+          docker-compose -f docker-compose.yml down
 
           
 
