@@ -21,35 +21,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Build the backend image
+      - name: Build and start test services
         run: |
-          docker build -t vteam-05-backend ./backend
-
-      - name: Start test database
-        run: |
-          docker run -d --name mariadb-compose-test \
-            -e MYSQL_ROOT_PASSWORD=scrt_pa_s_db \
-            -e MYSQL_DATABASE=testdb \
-            -e MYSQL_USER=dbadm \
-            -e MYSQL_PASSWORD=scrt_pa_s_db \
-            -p 3307:3306 \
-            mariadb:latest
-
-      - name: Run tests in backend
-        run: |
-          docker run --rm --name backend-test-container \
-            --network host \
-            -e DB_HOST=localhost \
-            -e DB_PORT=3307 \
-            -e DB_USER=dbadm \
-            -e DB_PASSWORD=scrt_pa_s_db \
-            -e DB_NAME=testdb \
-            vteam-05-backend npm test
-
-      - name: Shutdown services
-        run: |
-          docker stop mariadb-compose-test
-          docker rm mariadb-compose-test
-
+          docker-compose -f docker-compose.test.yml up -d --build
           
 
