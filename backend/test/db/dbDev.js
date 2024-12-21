@@ -12,7 +12,7 @@ const pool = mysql.createPool(
               port: 3306,
               user: "dbadm",
               password: 'scrt_pa_s_db',
-              database: "testdb",  // "testdb" när i testmiljö
+              database: "testdb",
               waitForConnections: true,
               connectionLimit: 10,
               multipleStatements: true,
