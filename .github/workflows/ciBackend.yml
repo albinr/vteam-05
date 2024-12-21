@@ -18,14 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: install npm
-        run: |
-          cd backend
-          npm install
-      - name: Run backend tests
-        run: |
-          cd backend
-          npm test
 
       - name: Set up Docker
         run: |
@@ -35,6 +27,10 @@ jobs:
       - name: Build and start test services
         run: |
           docker-compose -f docker-compose.test.yml up -d --build
+
+      - name: List running containers
+        run: |
+          docker ps
 
       - name: test with container
         run: |
