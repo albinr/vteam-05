@@ -15,32 +15,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Check out the repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-
-      - name: Set up Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - name: Build and start test services
-        run: |
-          docker-compose -f docker-compose.test.yml up -d --build
-
-      - name: List running containers
-        run: |
-          docker ps
-
-      - name: test with container
-        run: |
-            docker exec backend-container npm test
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # Use Docker Compose Action to build and run services, then test
+      - name: Run Docker Compose Tests
+        uses: adambirds/docker-compose-action@v1.5.0
         with:
-          node-version: 18
+          compose-file: "./docker-compose.test.yml"
+          up-flags: "--build"
+          down-flags: "--volumes"
+          test-container: "backend-container"
+          test-command: "npm test"
 
-      - name: Tear down services
-        if: always()
-        run: docker-compose down
+
+# jobs:
+#   test-backend:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+
+#       - name: Set up Docker
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y docker-compose
+
+#       - name: Build and start test services
+#         run: |
+#           docker-compose -f docker-compose.test.yml up -d --build
+
+#       - name: List running containers
+#         run: |
+#           docker ps
+
+#       - name: test with container
+#         run: |
+#             docker exec backend-container npm test
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
+
+#       - name: Tear down services
+#         if: always()
+#         run: docker-compose down
