@@ -26,7 +26,7 @@ describe('Bike Module Integration Tests', () => {
 
     test('should update a bike and fetch it', async () => {
         await updateBike("test123", {battery_level:0, status: "charging" })
-        const updated = await showBike("test123")
+        const updated = await showBike("test123sd")
 
         expect(updated[0].battery_level).toEqual(0)
         expect(updated[0].status).toEqual("charging")
