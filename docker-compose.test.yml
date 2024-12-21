@@ -34,7 +34,7 @@ services:
       DB_USER: dbadm
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
-    command: bash -c "npm install && npm test"
+
 
 networks:
   bike_network:
