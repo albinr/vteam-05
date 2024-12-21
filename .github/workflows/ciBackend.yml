@@ -32,6 +32,10 @@ jobs:
         with:
           node-version: 18
 
+      - name: install npm
+        run: |
+          cd backend
+          npm install
       - name: Run backend tests
         run: |
           cd backend
