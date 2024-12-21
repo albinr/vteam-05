@@ -15,10 +15,6 @@ const pool = mysql.createPool(
               user: "dbadm",
               password: 'scrt_pa_s_db',
               database: "testdb",
-              waitForConnections: true,
-              connectionLimit: 10,
-              multipleStatements: true,
-              queueLimit: 0,
           }
         : {
               ...config,
