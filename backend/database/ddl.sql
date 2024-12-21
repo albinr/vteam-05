@@ -1,6 +1,6 @@
 -- 
 -- creates the diffrent tables
--- dsafs
+-- dsafsdsaf
 
 
 DROP PROCEDURE IF EXISTS StartTrip;
