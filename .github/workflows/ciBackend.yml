@@ -10,50 +10,22 @@ on:
 
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Check out koden
-    - name: Check out code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Docker
+      - name: Set up Docker
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
-
-      uses: actions/checkout@v3
-
-      # 2. Starta databasen och backend
-      - name: Start Docker Compose services
+      - name: Build and start test services
         run: |
-          docker-compose -f docker-compose.yml up -d testdatabase backend
-
-      # 3. Vänta på att databasen ska vara redo
-      - name: Wait for test database to be ready
-        run: |
-          until docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -e "SHOW DATABASES;" 2>/dev/null | grep -q testdb; do
-            echo "Waiting for database to be ready..."
-            sleep 2
-          done
-
-      # 4. Kör backend-tester
-      - name: Run backend tests
-        run: |
-          docker exec backend-container npm test
-
-      # 5. Kontrollera databasens struktur och innehåll (valfritt)
-      - name: Validate database schema and data
-        run: |
-          docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -D testdb -e "SHOW TABLES;"
-          docker exec mariadb-compose-test mysql -udbadm -pscrt_pa_s_db -D testdb -e "SELECT * FROM some_table LIMIT 1;"
-
-      # 6. Stäng ned tjänsterna
-      - name: Tear down
-        if: always()
-        run: |
-          docker-compose -f docker-compose.yml down
+          docker-compose -f docker-compose.test.yml up -d --build
+          docker exec backend-container
+          npm test
 
           
 
