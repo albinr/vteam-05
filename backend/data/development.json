@@ -1,8 +1,8 @@
 {
-    "host": "Timpa.local",
+    "host": "testdatabase",
     "user": "dbadm",
-    "password": "P@ssw0rd",
+    "password": "scrt_pa_s_db",
     "database": "testdb",
     "multipleStatements": true,
     "connectionLimit": 10
-}
+  }
