@@ -35,7 +35,7 @@ services:
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
     restart: always
-    command: ["npm", "test"]
+    command: ["sh", "-c", "./wait-for-it.sh testdatabase:3306 -- npm test || exit 1"]
 
 networks:
   bike_network:
