@@ -29,7 +29,7 @@ describe('Bike Module Integration Tests', () => {
         const updated = await showBike("test123")
 
         expect(updated[0].battery_level).toEqual(0)
-        expect(updated[0].status).toEqual("charging12")
+        expect(updated[0].status).toEqual("charging")
     })
 
 
