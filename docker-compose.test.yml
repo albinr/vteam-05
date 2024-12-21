@@ -35,7 +35,6 @@ services:
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
 
-
 networks:
   bike_network:
     driver: bridge
