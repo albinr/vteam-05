@@ -29,9 +29,8 @@ jobs:
 
       - name: test with container
         run: |
-            docker exec -it backend-container bash
-            npm test
-          
+            docker exec -T backend bash -c "npm install && npm test"
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
