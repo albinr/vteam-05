@@ -34,6 +34,11 @@ services:
       DB_USER: dbadm
       DB_PASSWORD: scrt_pa_s_db
       DB_NAME: testdb
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: '1.0'
 
 
 networks:
