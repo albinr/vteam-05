@@ -18,6 +18,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: install npm
+        run: |
+          cd backend
+          npm install
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test
+
       - name: Set up Docker
         run: |
           sudo apt-get update
@@ -35,15 +44,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: install npm
-        run: |
-          cd backend
-          npm install
-      - name: Run backend tests
-        run: |
-          cd backend
-          npm test
 
       - name: Tear down services
         if: always()
