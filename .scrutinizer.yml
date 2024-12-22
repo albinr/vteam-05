@@ -1,25 +1,32 @@
-build:
-    nodes:
-        backend:
-            environment:
-                node: "18"
-            commands:
-                - cd backend
-                - npm install
-                - npm run lint  # Endast körning av lint för kodkvalitetsanalys
+imports:
+    - node
 
 filter:
-    excluded_paths:
-        - "node_modules/*"
-        - "backend/node_modules/*"
+    excluded_paths: [node_modules/*, test/*, sim-soft/*, frontend/*] # Backend inkluderas eftersom det inte finns här
 
-checks:
-    javascript:
-        code_rating: true  # Generell kvalitetsbedömning
-        no_unused_vars: true  # Kontrollera oanvända variabler
-        no_unreachable: true  # Kontrollera oåtkomlig kod
-        duplicate_code: true  # Kontrollera kodduplication
+build:
+    image: default-bionic
 
-tools:
-    eslint:
-        config: backend/.eslintrc.json
+    nodes:
+        my-tests:
+            environment:
+                node:
+                    version: 18.18.0
+                    # version: 16.20.0
+                    # version: 14.21.3
+        analysis:
+            tests:
+                override:
+                    - npm run lint
+                    # - eslint-run # Uncomment if a specific eslint command is used
+    tests:
+        override:
+            -   command: "npm test -- --dir=backend" # Exekverar tester i backend
+                # command: "npx jest backend --coverage" # Coverage inom backend
+                coverage:
+                    file: "coverage/clover.xml"
+                    format: "lcov"
+
+    environment:
+        node:
+            version: 18.18.0
