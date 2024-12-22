@@ -1,6 +1,6 @@
 
 filter:
-    excluded_paths: [node_modules/*, test/*, tests/*, frontend/*]
+    excluded_paths: [node_modules/*, test/*, tests/*]
 
 checks:
     javascript: true
