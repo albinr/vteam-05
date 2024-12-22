@@ -1,32 +1,13 @@
-imports:
-    - node
 
 filter:
-    excluded_paths: [node_modules/*, test/*, sim-soft/*, frontend/*] # Backend inkluderas eftersom det inte finns här
+    excluded_paths: [node_modules/*, test/*, sim-soft/*, frontend/*]
+
+checks:
+    javascript: true
 
 build:
-    image: default-bionic
-
     nodes:
-        my-tests:
-            environment:
-                node:
-                    version: 18.18.0
-                    # version: 16.20.0
-                    # version: 14.21.3
         analysis:
             tests:
                 override:
-                    - npm run lint
-                    # - eslint-run # Uncomment if a specific eslint command is used
-    tests:
-        override:
-            -   command: "npm test -- --dir=backend" # Exekverar tester i backend
-                # command: "npx jest backend --coverage" # Coverage inom backend
-                coverage:
-                    file: "coverage/clover.xml"
-                    format: "lcov"
-
-    environment:
-        node:
-            version: 18.18.0
+                    - js-scrutinizer-run
