@@ -16,10 +16,10 @@ filter:
 
 checks:
     javascript:
-        code-complexity: true
-        duplication: true
-        unused-variables: true
-        unreachable-code: true
+        code_rating: true  # Generell kvalitetsbedömning
+        no_unused_vars: true  # Kontrollera oanvända variabler
+        no_unreachable: true  # Kontrollera oåtkomlig kod
+        duplicate_code: true  # Kontrollera kodduplication
 
 tools:
     eslint:
