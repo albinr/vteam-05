@@ -1,9 +1,10 @@
 
 filter:
-    excluded_paths: [node_modules/*, test/*, sim-soft/*, frontend/*]
+    excluded_paths: [node_modules/*, test/*, frontend/*]
 
 checks:
     javascript: true
+    python: true
 
 build:
     nodes:
@@ -11,3 +12,4 @@ build:
             tests:
                 override:
                     - js-scrutinizer-run
+                    - python-scrutinizer-run
