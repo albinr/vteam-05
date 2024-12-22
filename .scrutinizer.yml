@@ -1,6 +1,6 @@
 
 filter:
-    excluded_paths: [node_modules/*, test/*, frontend/*]
+    excluded_paths: [node_modules/*, test/*, tests/*, frontend/*]
 
 checks:
     javascript: true
@@ -10,6 +10,4 @@ build:
     nodes:
         analysis:
             tests:
-                override:
-                    - js-scrutinizer-run
-                    - python-scrutinizer-run
+                override: [js-scrutinizer-run, python-scrutinizer-run]
