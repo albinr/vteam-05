@@ -10,4 +10,4 @@ build:
     nodes:
         analysis:
             tests:
-                override: [js-scrutinizer-run, python-scrutinizer-run]
+                override: [js-scrutinizer-run, py-scrutinizer-run]
