@@ -3,7 +3,6 @@ build:
         backend:
             environment:
                 node: "18"
-                NODE_ENV: "test"
             commands:
                 - cd backend
                 - npm install
