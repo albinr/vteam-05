@@ -16,7 +16,7 @@ build:
         coverage:
             tests:
                 override:
-                    - command: echo "Skipping tests; using pre-generated coverage report"
+                    - command: make test
                     - coverage:
                           file: backend/coverage/lcov.info
                           format: lcov
