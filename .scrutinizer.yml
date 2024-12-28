@@ -14,9 +14,9 @@ build:
         coverage:
             tests:
                 override:
-                - command: echo "Skipping tests"  # Detta kommando gör ingenting, vi kör inga tester
+                - command: make test  # Detta kommando gör ingenting, vi kör inga tester
                     coverage:
-                    file: 'coverage/lcov-report/lcov.info'  # Här anger du platsen för den redan genererade täckningsrapporten
+                    file: 'backend/coverage/lcov.info'  # Här anger du platsen för den redan genererade täckningsrapporten
                     format: 'lcov'
 
                 # coverage:
