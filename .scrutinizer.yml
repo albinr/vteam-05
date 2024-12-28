@@ -12,15 +12,14 @@ build:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
 
-build:
-  nodes:
-    coverage:
-      tests:
-        override:
-          - command: make test
-            coverage:
-              file: '/backend/coverage/lcov.info'
-              format: 'lcov'
+
+        coverage:
+            tests:
+                override:
+                - command: make test
+                    coverage:
+                        file: '/backend/coverage/lcov.info'
+                        format: 'lcov'
 
         # coverage:
         #     tests:
