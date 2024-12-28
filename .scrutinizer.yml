@@ -12,6 +12,6 @@ build:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
 
-            coverage:
-                paths:
-                        - backend/coverage/lcov.info
+            # coverage:
+            #     paths:
+            #             - backend/coverage/lcov.info
