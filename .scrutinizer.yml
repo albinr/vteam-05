@@ -12,8 +12,15 @@ build:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
 
-            commands:
-                - "cp backend/coverage/lcov.info ./lcov.info"
+build:
+  nodes:
+    coverage:
+      tests:
+        override:
+          - command: make test
+            coverage:
+              file: '/backend/coverage/lcov.info'
+              format: 'lcov'
 
         # coverage:
         #     tests:
