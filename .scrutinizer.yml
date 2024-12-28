@@ -11,7 +11,13 @@ build:
         analysis:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
-
+        coverage:
+            tests:
+                override:
+                - command: echo "Skipping tests"  # Detta kommando gör ingenting, vi kör inga tester
+                    coverage:
+                    file: 'coverage/lcov-report/lcov.info'  # Här anger du platsen för den redan genererade täckningsrapporten
+                    format: 'lcov'
 
                 # coverage:
                 #     file: backend/coverage/lcov.info
