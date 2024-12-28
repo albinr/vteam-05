@@ -18,7 +18,7 @@ build:
                 override:
                 - command: make test
                     coverage:
-                        file: '/backend/coverage/lcov.info'
+                        file: '/backend/coverage/lcov.coverage'
                         format: 'lcov'
 
         # coverage:
