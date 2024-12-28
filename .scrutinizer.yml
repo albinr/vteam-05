@@ -14,7 +14,6 @@ build:
         coverage:
             tests:
                 override:
-                  - command: ./run-my-tests  # Lägg till ditt testkommando här
                     coverage:
                       file: backend/coverage/coverage.xml  # Ange rätt filväg till Clover-rapporten
                       format: clover  # Formatet är Clover (XML)
