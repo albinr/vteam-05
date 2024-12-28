@@ -12,6 +12,13 @@ build:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
 
-            # coverage:
-            #     paths:
-            #             - backend/coverage/lcov.info
+        coverage:
+            tests:
+                override:
+                    - command: ./my-test-run
+                    coverage:
+                        file: backend/coverage/lcov.info
+
+                        # These formats are supported:
+                        # clover, cobertura, jacoco, python-cc, ruby-cc, go-cc, lcov
+                        format: lcov
