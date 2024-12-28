@@ -14,7 +14,7 @@ build:
         coverage:
             tests:
                 override:
-                - command: make test  # Detta kommando gör ingenting, vi kör inga tester
+                - command: echo "nothing"
                     coverage:
                     file: 'backend/coverage/lcov.info'  # Här anger du platsen för den redan genererade täckningsrapporten
                     format: 'lcov'
