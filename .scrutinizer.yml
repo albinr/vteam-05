@@ -1,6 +1,6 @@
 
 filter:
-    excluded_paths: [node_modules/*, test/*, tests/*]
+    excluded_paths: [node_modules/*, test/*, tests/*, sim-soft/*]
 
 checks:
     javascript: true
@@ -11,3 +11,7 @@ build:
         analysis:
             tests:
                 override: [js-scrutinizer-run, py-scrutinizer-run]
+
+            coverage:
+                paths:
+                        - backend/coverage/lcov.info

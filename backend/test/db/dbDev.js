@@ -1,7 +1,7 @@
 //sss
 
 const mysql = require('mysql2/promise');
-const config = require('../../data/development.json');
+const config = require('../../data/noDocker.json');
 require('dotenv').config();
 
 const useDocker = process.env.USE_DOCKER === 'true';
