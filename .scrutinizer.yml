@@ -14,7 +14,7 @@ build:
         coverage:
             tests:
                 override:
-                  - command: true
+                  - command: echo "no test"
                     coverage:
                       file: backend/coverage/clover.xml  # Ange rätt filväg till Clover-rapporten
                       format: clover  # Formatet är Clover (XML)
