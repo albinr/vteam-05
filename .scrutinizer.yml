@@ -14,10 +14,11 @@ build:
         coverage:
             tests:
                 override:
-                - command: echo "nothing"
+                - command: ./run-my-tests
                     coverage:
-                    file: 'backend/coverage/lcov.info'  # Här anger du platsen för den redan genererade täckningsrapporten
-                    format: 'lcov'
+                    file: backend/coverage/coverage.xml   # <- Set this to where we find the coverage data.
+                                                #    The path is relative to the current directory.
+                    format: clover
 
                 # coverage:
                 #     file: backend/coverage/lcov.info
