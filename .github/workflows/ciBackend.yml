@@ -33,7 +33,7 @@ jobs:
       # Collect Coverage Report
       - name: Copy Coverage Report
         run: |
-          docker cp backend-container:/usr/src/app/coverage ./coverage
+          docker cp backend-container:/usr/src/app/backend/coverage ./coverage
           ls -al ./coverage # Kontrollera att rapporten finns lokalt
 
       # Upload Coverage as Artifact

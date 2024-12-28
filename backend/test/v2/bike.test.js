@@ -1,6 +1,6 @@
 const { addBike, showBikes, showBike, deleteBike, updateBike } = require('../../src/modules/bike.js');
 
-// Byt ut db/db.js mot testDBsd
+// Byt ut db/db.js mot testDBsdsdf
 jest.mock('../../src/db/db.js', () => require('../db/dbDev.js'));
 
 describe('Bike Module Integration Tests', () => {
