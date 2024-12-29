@@ -44,6 +44,18 @@ router.get("/", async (req, res) => {
     res.json(bikes);
 });
 
+// Hämta en Cykel
+router.get("/:bikeId", async (req, res) => {
+    const { bikeId } = req.params;
+    try {
+        const bikes = await bike.showBike(bikeId);
+
+        res.json(bikes);
+    } catch (error) {
+        res.json({ message: `Cykel med ID ${bikeId} finns inte` });
+    }
+});
+
 // Uppdatera cykel
 router.put("/:bikeId", async (req, res) => {
     const { bikeId } = req.params;
