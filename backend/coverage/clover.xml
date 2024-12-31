@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1735489652193" clover="3.2.0">
-  <project timestamp="1735489652193" name="All files">
-    <metrics statements="65" coveredstatements="51" conditionals="25" coveredconditionals="15" methods="7" coveredmethods="6" elements="97" coveredelements="72" complexity="0" loc="65" ncloc="65" packages="2" files="2" classes="2"/>
+<coverage generated="1735610203726" clover="3.2.0">
+  <project timestamp="1735610203726" name="All files">
+    <metrics statements="108" coveredstatements="79" conditionals="33" coveredconditionals="19" methods="13" coveredmethods="11" elements="154" coveredelements="109" complexity="0" loc="108" ncloc="108" packages="2" files="3" classes="3"/>
     <package name="src.modules">
-      <metrics statements="55" coveredstatements="42" conditionals="21" coveredconditionals="13" methods="6" coveredmethods="6"/>
+      <metrics statements="98" coveredstatements="70" conditionals="29" coveredconditionals="17" methods="12" coveredmethods="11"/>
       <file name="bike.js" path="/home/tiqma/dbwebb-kurser/vteam-05/backend/src/modules/bike.js">
         <metrics statements="55" coveredstatements="42" conditionals="21" coveredconditionals="13" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
@@ -62,21 +62,67 @@
         <line num="120" count="2" type="stmt"/>
         <line num="123" count="1" type="stmt"/>
       </file>
+      <file name="user.js" path="/home/tiqma/dbwebb-kurser/vteam-05/backend/src/modules/user.js">
+        <metrics statements="43" coveredstatements="28" conditionals="8" coveredconditionals="4" methods="6" coveredmethods="5"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="37" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="53" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+      </file>
     </package>
     <package name="test.db">
       <metrics statements="10" coveredstatements="9" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="0"/>
       <file name="dbDev.js" path="/home/tiqma/dbwebb-kurser/vteam-05/backend/test/db/dbDev.js">
         <metrics statements="10" coveredstatements="9" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="0"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
       </file>
     </package>
   </project>

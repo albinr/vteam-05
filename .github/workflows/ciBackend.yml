@@ -30,18 +30,6 @@ jobs:
           test-command: "npm test"
           annotate: "true"
         
-      # Collect Coverage Report
-      - name: Copy Coverage Report
-        run: |
-          docker cp backend-container:/usr/src/app/backend/coverage ./coverage
-          ls -al ./coverage # Kontrollera att rapporten finns lokalt
-
-      # Upload Coverage as Artifact
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: ./coverage
 
 
 # jobs:

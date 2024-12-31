@@ -11,6 +11,13 @@ async function getUserInfo(user_id) {
     return res[0];
 }
 
+async function getAllUsers() {
+    const sql = `SELECT user_id, Balance AS balance, Email AS email FROM User`;
+    const [res] = await pool.query(sql);
+
+    return res;
+}
+
 async function addUser(email, balance) {
     try {
         const sql = `INSERT INTO User (Balance, Email) VALUES (?, ?)`;
@@ -54,15 +61,32 @@ async function updateUser(userId, updatedData) {
     }
 }
 
-async function deleteUsers(simulatedOnly) {
-    const inputRemove = simulatedOnly ? 1 : 0;
-    const [result] = await pool.query(`CALL RemoveUsers(?)`, [inputRemove]);
-    return result;
+async function deleteUsers() {
+    try {
+        const [result] = await pool.query(`DELETE FROM User`);
+        return result;
+    } catch (error) {
+        console.error("Error att ta bort användare:", error);
+        throw error;
+    }
+}
+
+async function deleteUser(userId) {
+    try {
+        const [result] = await pool.query(`DELETE FROM User WHERE user_id = ?`, [userId]);
+        
+        return result;
+    } catch (error) {
+        console.error("Error att ta bort användare:", error);
+        throw error;
+    }
 }
 
 module.exports = {
     getUserInfo,
     addUser,
     updateUser,
-    deleteUsers
+    deleteUsers,
+    getAllUsers,
+    deleteUser
 };

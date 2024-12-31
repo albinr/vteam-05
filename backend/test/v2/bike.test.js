@@ -3,7 +3,7 @@ const { addBike, showBikes, showBike, deleteBike, updateBike, deleteBikes } = re
 // Byt ut db/db.js mot testDBsdsdf
 jest.mock('../../src/db/db.js', () => require('../db/dbDev.js'));
 
-describe('Bike Module Integration Tests', () => {
+describe('Bike Module Tests', () => {
     beforeAll(async () => {
         await addBike('test123', 100, 10, 20);
         await addBike('test456', 50, 11, 22, 1);
@@ -17,7 +17,6 @@ describe('Bike Module Integration Tests', () => {
 
     test('should fetch all bikes successfully', async () => {
         const bikes = await showBikes();
-        console.log(bikes)
         expect(bikes).toEqual([
             { bike_id: 'test123', status: "available", battery_level: 100, longitude: 10, latitude: 20 },
             { bike_id: 'test456', status: "available", battery_level: 50, longitude: 11, latitude: 22 },
