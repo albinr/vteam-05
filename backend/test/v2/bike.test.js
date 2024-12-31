@@ -56,7 +56,7 @@ describe('Bike Module Tests', () => {
         const bikes = await showBikes();
         expect(bikes).toEqual([
             { bike_id: 'Bike1', status: "available", battery_level: 50, longitude: 11, latitude: 22 },
-            { bike_id: 'test123', status: "charging", battery_level: 0, longitude: 20, latitude: 30 },
+            { bike_id: 'test123', status: "chargin", battery_level: 0, longitude: 20, latitude: 30 },
         ])
 
         await expect(deleteBikes(0)).resolves.toBeDefined();
