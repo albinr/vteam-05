@@ -33,7 +33,7 @@ describe('User Module Tests', () => {
         const updatedUser = await getUserInfo(2);
 
         expect(updatedUser).toEqual(expect.objectContaining({
-            email: "updated@hotmai.com",
+            email: "updated@hotmail.com",
             balance: 50,
         })); 
     });
@@ -51,7 +51,7 @@ describe('User Module Tests', () => {
         const allAfter = await getAllUsers();
 
         expect(allAfter).toEqual([
-            { email: "updated@hotmai.com", balance: 50, user_id: 2 }
+            { email: "updated@hotmail.com", balance: 50, user_id: 2 }
         ]);
     });
 
