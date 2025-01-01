@@ -21,6 +21,10 @@ describe('User Module Tests', () => {
 
         await addBike(bikeId1, 100, 10, 10, 1);
         await addBike(bikeId2, 100, 11, 11, 1);
+
+        await endTrip(bikeId1)
+
+        await endTrip(bikeId2)
     });
 
     afterEach(async () => {
