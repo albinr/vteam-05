@@ -13,6 +13,10 @@ describe('User Module Tests', () => {
 
     beforeEach(async () => {
         // Skapa användare och cyklar för varje test
+        const testDB = require('../db/dbDev.js');
+        await testDB.query('DELETE FROM Trip');
+        await testDB.query('DELETE FROM User');
+        await testDB.query('DELETE FROM Bike');
         userId1 = (await addUser("test1@gmail.com", 100)).insertId;
         userId2 = (await addUser("test2@gmail.com", 100)).insertId;
 
