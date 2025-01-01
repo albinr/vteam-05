@@ -5,9 +5,18 @@ const trip = require("../../src/modules/trip.js");
 
 // Visa alla resor
 router.get("/", async (req, res) => {
-    const trips = await trip.showTrip();
+    const trips = await trip.showAllTrips();
     res.json(trips);
 });
+
+// Visa resor av en användare
+router.get("/from/:userId", async (req, res) => {
+    const { userId } = req.params;
+
+    const trips = await trip.showTripsByUser(userId)
+
+    res.json(trips)
+})
 
 // Visa resor från en viss cykel
 router.get("/:bike_id", async (req, res) => {
@@ -50,5 +59,14 @@ router.delete("/:isSimulated", async (req, res) => {
         });
     }
 });
+
+// Radera utifrån tripId
+router.delete("/one/:tripId", async (req, res) => {
+    const { userId } = req.params;
+
+    const trips = await trip.deleteTripById(userId)
+
+    res.json(trips)
+})
 
 module.exports = router;
