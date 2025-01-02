@@ -73,7 +73,7 @@ router.get("/", async (req, res) => {
 
 router.delete("/", async (req, res) => {
     const delUsers = await user.deleteUsers();
-    res.json(delUsers)
-})
+    res.json(delUsers);
+});
 
 module.exports = router;
