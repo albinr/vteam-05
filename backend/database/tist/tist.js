@@ -13,7 +13,7 @@ async function connect() {
 }
 
 async function Bikes() {
-    const sql = "SELECT * FROM Bike WHERE bike_id = 1";
+    const sql = "SELECT * FROM Bike WHERE bike_id = '1'";
     return await db.query(sql);
 };
 
@@ -32,7 +32,7 @@ async function BikeMoving() {
         async function BikeMove() {
             if (count >= max) {
                 console.log("Trip is over");
-                resolve(); // Signal completion of the movement
+                resolve();
                 return;
             }
 
@@ -53,7 +53,7 @@ async function BikeMoving() {
             console.log(`bike 1 moved to ${coordinates1.lat}, ${coordinates1.lng}`);
             console.log(`bike 2 moved to ${coordinates2.lat}, ${coordinates2.lng}`);
 
-            setTimeout(BikeMove, 100);
+            setTimeout(BikeMove, 10000);
         }
 
         await BikeMove();
