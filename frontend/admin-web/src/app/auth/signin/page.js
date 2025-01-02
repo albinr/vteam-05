@@ -1,21 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoginButton from "@/components/LoginButton";
 import "./Signin.css";
 
 
 export default function SignInPage() {
-    const { data: session, status } = useSession();
     const router = useRouter();
-
-    useEffect(() => {
-        if (status === "authenticated") {
-            router.push("/");
-        }
-    }, [status, router]);
 
     return (
         <div className="signin-container">

@@ -1,22 +1,24 @@
-import { useSession, signIn } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
 
 const withAuth = (WrappedComponent) => {
     return (props) => {
-        const { data: session, status } = useSession();
+        const [session, setSession] = useState(null);
 
         useEffect(() => {
-            if (status === "unauthenticated") {
-                signIn();
+            const user = sessionStorage.getItem("user");
+            if (user) {
+                setSession({ user: JSON.parse(user) });
+            } else {
+                setSession(null);
             }
-        }, [status]);
+        }, []);
 
-        if (status === "loading") {
-            return <Loader/>;
+        if (session === null) {
+            return <Loader />;
         }
 
-        if (!session) {
+        if (!session || !session.user) {
             return null;
         }
 

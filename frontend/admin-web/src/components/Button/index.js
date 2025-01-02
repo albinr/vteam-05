@@ -2,16 +2,19 @@
 
 import "./Button.css";
 
-const Button = ({ label, onClick, className = "", disabled = false, type = "button" }) => {
+const Button = ({ label, onClick, href, className = "", disabled = false, type = "button", ...props }) => {
+    const Element = href ? "a" : "button";
     return (
-        <button
+        <Element
+            href={href}
             type={type}
             onClick={onClick}
             className={`button ${className}`}
             disabled={disabled}
+            {...props}
         >
             {label}
-        </button>
+        </Element>
     );
 };
 
