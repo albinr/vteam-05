@@ -1,18 +1,21 @@
-FROM node:18
+# Docker commands wile in dir admin-web
+# docker build -t admin-webpage .
+# docker run -p 3000:3000 admin-webpage
 
-COPY package*.json ./
-
-VOLUME /user-app
+FROM node:18-alpine
 
 WORKDIR /user-app
 
-EXPOSE 8081
+COPY package*.json ./
 
-RUN ["npm", "install"]
+RUN npm install
 
-RUN ["npm", "install", "--global", "@expo/ngrok@^4.1.0"]
+COPY . .
 
-# Freeze on startup
-# CMD ["tail", "-f", "/dev/null"]
+VOLUME /user-app
 
-CMD ["npx", "expo", "start", "-c", "--tunnel"]
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "start"]
