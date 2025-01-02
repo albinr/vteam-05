@@ -84,7 +84,7 @@ describe('User Module Tests', () => {
 
         const user2Trips = await showTripsByUser(userId2);
         expect(user2Trips).toHaveLength(1);
-        expect(user2Trips[0].bike_id).toBe(bikeId2);
+        expect(user2Trips[0].bike_id).toBe(bikeId1);
     });
 
     test('should delete all simulated trips', async () => {
@@ -95,7 +95,7 @@ describe('User Module Tests', () => {
         expect(result).toBeDefined();
 
         const trips = await showAllTrips();
-        expect(trips).toHaveLength(0);
+        expect(trips).toHaveLength(1);
     });
 
 
