@@ -1,6 +1,6 @@
 const pool = require('../db/db.js');
 
-async function showTrip() {
+async function showAllTrips() {
     try {
         const [rows] = await pool.query(`
             SELECT
@@ -10,13 +10,35 @@ async function showTrip() {
                 end_time,
                 CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
                 CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
-                CONCAT(price, 'kr') AS price,
+                CONCAT(cost, 'kr') AS price,
                 speed
             FROM Trip
         `);
         return rows;
     } catch (error) {
         console.error("Error att hämta Trip:", error);
+        throw error;
+    }
+}
+
+async function showTripsByUser(userId) {
+    try {
+        const [rows] = await pool.query(`
+            SELECT
+                trip_id,
+                bike_id,
+                start_time,
+                end_time,
+                CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
+                CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                CONCAT(cost, 'kr') AS price,
+                speed
+            FROM Trip
+            WHERE user_id = ?
+        `, [userId]);
+        return rows;
+    } catch (error) {
+        console.error("Error att hämta resor för användare:", error);
         throw error;
     }
 }
@@ -47,9 +69,21 @@ async function deleteTrips(simulatedOnly) {
     return result;
 }
 
+async function deleteTripById(tripId) {
+    try {
+        const [result] = await pool.query('DELETE FROM Trip WHERE trip_id = ?', [tripId]);
+        return result.affectedRows > 0;
+    } catch (error) {
+        console.error("Error att radera resan:", error);
+        throw error;
+    }
+}
+
 module.exports = {
-    showTrip,
+    showAllTrips,
     startTrip,
     endTrip,
-    deleteTrips
+    deleteTrips,
+    showTripsByUser,
+    deleteTripById
 };

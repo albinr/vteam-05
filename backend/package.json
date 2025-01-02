@@ -6,7 +6,7 @@
     "scripts": {
       "start": "node app.js",
       "dev": "nodemon app.js",
-      "test": "NODE_ENV=test jest",
+      "test": "NODE_ENV=test jest --coverage",
       "clean": "rm -rf node_modules package-lock.json",
       "lint": "eslint ."
     },

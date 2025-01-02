@@ -20,22 +20,24 @@ async function showBikes() {
 }
 
 async function showBike(bikeId) {
-    try {
-        const [rows] = await pool.query(`
-            SELECT
-                bike_id,
-                status,
-                battery_level,
-                ST_X(position) AS longitude,
-                ST_Y(position) AS latitude
-            FROM Bike
-            WHERE bike_id = ?
-        `, [bikeId]);
-        return rows;
-    } catch (error) {
-        console.error("Error att hämta cykel:", error);
-        throw error;
+    
+    const [rows] = await pool.query(`
+        SELECT
+            bike_id,
+            status,
+            battery_level,
+            ST_X(position) AS longitude,
+            ST_Y(position) AS latitude
+        FROM Bike
+        WHERE bike_id = ?
+    `, [bikeId]);
+
+    if (rows.length === 0) {
+        throw new Error(`Error att hämta cykel: Cykel med ID ${bikeId} finns inte`);
     }
+    
+    return rows;
+    
 }
 
 async function addBike(bikeId, batteryLevel, longitude, latitude, isSimulated = 0) {

@@ -38,11 +38,11 @@ router.get("/:userId/trips", async (req, res) => {
     res.json(userTrips);
 });
 
-
+// Radera alla simulerade eller alla användare
 router.delete("/:isSimulated", async (req, res) => {
     const simulatedOnly = req.params.isSimulated === "1";
     try {
-        await trip.deleteTrips(simulatedOnly);
+        await user.deleteUsers(simulatedOnly);
         res.json({
             message: simulatedOnly ? "Simulerade användare har tagits bort" : "Alla användare har tagits bort"
         });
@@ -53,5 +53,27 @@ router.delete("/:isSimulated", async (req, res) => {
         });
     }
 });
+
+// Radera en användare
+router.delete("/one/:userId", async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await user.deleteUser(userId);
+        res.json({ message: `Användare med ID ${userId} har raderats` });
+    } catch (error) {
+        res.json({ error: error.message || "Något gick fel vid borttagning av användare." });
+    }
+});
+
+// Hämta alla användare
+router.get("/", async (req, res) => {
+    const allUsers = await user.getAllUsers();
+    res.json(allUsers);
+});
+
+router.delete("/", async (req, res) => {
+    const delUsers = await user.deleteUsers();
+    res.json(delUsers)
+})
 
 module.exports = router;
