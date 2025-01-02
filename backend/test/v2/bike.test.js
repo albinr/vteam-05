@@ -47,22 +47,22 @@ describe('Bike Module Tests', () => {
         );
     })
 
-    // test('should delete all simulated bikes or all bikes', async () => {
-    //     await addBike('simulatedBike1', 50, 11, 22, 1);
-    //     await addBike('simulatedBike2', 50, 11, 22, 1);
-    //     await addBike('Bike1', 50, 11, 22);
+    test('should delete all simulated bikes or all bikes', async () => {
+        await addBike('simulatedBike1', 50, 11, 22, 1);
+        await addBike('simulatedBike2', 50, 11, 22, 1);
+        await addBike('Bike1', 50, 11, 22);
 
-    //     await deleteBikes(1)
-    //     const bikes = await showBikes();
-    //     expect(bikes).toEqual([
-    //         { bike_id: 'Bike1', status: "available", battery_level: 50, longitude: 11, latitude: 22 },
-    //         { bike_id: 'test123', status: "charging", battery_level: 0, longitude: 20, latitude: 30 },
-    //     ])
+        await deleteBikes(1)
+        const bikes = await showBikes();
+        expect(bikes).toEqual([
+            { bike_id: 'Bike1', status: "available", battery_level: 50, longitude: 11, latitude: 22 },
+            { bike_id: 'test123', status: "charging", battery_level: 0, longitude: 20, latitude: 30 },
+        ])
 
-    //     await expect(deleteBikes(0)).resolves.toBeDefined();
-    //     const bikesx = await showBikes();
+        await expect(deleteBikes(0)).resolves.toBeDefined();
+        const bikesx = await showBikes();
 
-    //     await expect(bikesx).toEqual([])
-    // })
+        await expect(bikesx).toEqual([])
+    })
 
 });
