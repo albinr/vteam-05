@@ -26,8 +26,11 @@ class User:
         self.email = email
         self.balance = 1000 - random.randint(0, 300)
         self.bike = None
+        self.added_to_db = False
+        self.added_to_db_tries = 0
 
-        self.register()
+        while not self.added_to_db and self.added_to_db_tries < 3:
+            self.register()
 
     # async def update(self):
     #     """Simulate user activity."""
@@ -44,13 +47,16 @@ class User:
         Method for registering the user
         """
         try:
-            requests.post(f"{API_URL}/v1/add_user", timeout=30, data={
-                "username": self.username,
+            requests.post(f"{API_URL}/v2/users", timeout=30, data={
+                # "username": self.username,
                 "email": self.email,
                 "balance": self.balance
             })
+            self.added_to_db = True
+            self.added_to_db_tries += 1
         except requests.exceptions.RequestException as e:
             print(f"[User {self.user_id}] Error registering user: {e}")
+            self.added_to_db_tries += 1
             return
 
         # regiser the user
