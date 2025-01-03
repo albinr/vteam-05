@@ -185,19 +185,18 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
         while self.status != "shutdown":
-            # self.status = random.choice(['available', 'in_use', 'maintenance', 'charging'])
-            # self.status = random.choice(['available',
-            #                             'available',
-            #                             'available',
-            #                             'charging',
-            #                             'charging',
-            #                             'maintenance'])
-            self.status = random.choice(['in_use',
-                            'in_use',
-                            'available',
-                            'charging',
-                            'charging',
-                            'maintenance'])
+            self.status = random.choice(['available',
+                                        'available',
+                                        'available',
+                                        'charging',
+                                        'charging',
+                                        'maintenance'])
+            # self.status = random.choice(['in_use',
+            #                 'in_use',
+            #                 'available',
+            #                 'charging',
+            #                 'charging',
+            #                 'maintenance'])
             print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
 
             # Change status every X-Y minutes
