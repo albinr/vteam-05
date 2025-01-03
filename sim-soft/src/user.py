@@ -8,11 +8,13 @@ in a system for renting bikes.
 import random
 import asyncio
 import requests
+import math
 
 MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 RETRY_INTERVAL = 5
+RENT_TIME_MAX = 100 # Max rent time in seconds
 
 API_URL="http://backend:1337"
 
@@ -25,6 +27,7 @@ class User:
         self.username = username
         self.email = email
         self.balance = 1000 - random.randint(0, 300)
+        self.bikes = []
         self.bike = None
         self.added_to_db = False
         self.added_to_db_tries = 0
@@ -59,8 +62,13 @@ class User:
             self.added_to_db_tries += 1
             return
 
-        # regiser the user
         print(f"[{self.user_id}] User registered")
+
+    def update_bikes(self, list_of_bikes):
+        """
+        Method for updating list of bikes.
+        """
+        self.bikes = list_of_bikes
 
     async def run_user_interval(self):
         """Start the loop for simulating user."""
@@ -75,28 +83,32 @@ class User:
         Method for renting a bike for the user
         """
         # fetch bikes and choose one
-        # set the bike instance in self.bike
-
         while not self.bike:
-            # get random bike with status available??
-            try:
-                # Get available bikes
-                # bikes = requests.get(f"{API_URL}/v1/bikes/available")
+            # If random 1-10 is 1, rent bike
+            if not self.bikes:
+                pass
 
-                # if not bikes:
-                #     pass
-                # self.bike = random.choice(bikes).bike_id
-                # print("pass")
-                raise NotImplementedError("Not implemented")
+            if random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+                try:
+                    if not self.bike:
+                        for bike in self.bikes:
+                            if bike["status"] == "available":
+                                self.bike = bike["bike_id"]
+                                print(f"[User {self.user_id}] Bike rented: {self.bike}")
+                                break
+                except requests.exceptions.RequestException as e:
+                    print(f"[User {self.user_id}] Error renting bike: {e}")
 
-                # Request (pots) to rent bike (trip)
-            except NotImplementedError as _:
-                # print(f"[User {self.user_id}] Error renting bike: {e}")
-                await asyncio.sleep(RETRY_INTERVAL)
+                if self.bike and random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+                    # return bike
+                    print(f"[User {self.user_id}] Bike returned: {self.bike}")
+                    pass
 
-        if self.bike:
+            await asyncio.sleep(RETRY_INTERVAL)
+
+        # if self.bike:
             # Return bike
-            print("pass")
+            # print("pass")
 
         await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
