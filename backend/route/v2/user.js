@@ -8,18 +8,18 @@ const express = require("express");
 const router = express.Router();
 const user = require("../../src/modules/user.js");
 
-
+// lägg till en ny användare
 router.post("/", async (req, res) => {
-    const { email, balance = 0 } = req.body;
+    const { email, balance = 0, isSimulated = 0 } = req.body;
     try {
-        const result = await user.addUser(email, balance);
+        const result = await user.addUser(email, balance, isSimulated);
         res.json({ message: "Användare skapad", userId: result.insertId });
     } catch (error) {
         res.json({ error: error.message || "Något gick fel vid skapande av användare." });
     }
 });
 
-
+// uppdatera en användare
 router.put("/:userId", async (req, res) => {
     const { userId } = req.params;
     const updatedData = req.body;
@@ -31,7 +31,7 @@ router.put("/:userId", async (req, res) => {
     }
 });
 
-
+// hämta alla trips av en användare
 router.get("/:userId/trips", async (req, res) => {
     const { userId } = req.params;
     const userTrips = await user.showTripsByUserId(userId);

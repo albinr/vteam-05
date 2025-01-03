@@ -26,7 +26,8 @@ CREATE TABLE Bike
 CREATE TABLE User (
   user_id INT AUTO_INCREMENT PRIMARY KEY,
   Balance FLOAT,
-  Email VARCHAR (255) UNIQUE
+  Email VARCHAR (255) UNIQUE,
+  simulation_user INT DEFAULT 0
 );
 
 CREATE TABLE Trip
@@ -159,6 +160,22 @@ BEGIN
     DELETE FROM Bike WHERE simulation = 1;
   ELSE
     DELETE FROM Bike;
+  END IF;
+END
+;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE RemoveUsers(
+  IN input_remove INT
+)
+BEGIN
+  IF input_remove = 1 THEN
+    DELETE FROM User WHERE simulation_user = 1;
+  ELSE
+    DELETE FROM User;
   END IF;
 END
 ;;
