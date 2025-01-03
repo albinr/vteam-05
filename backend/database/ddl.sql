@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS Bike;
 --
 CREATE TABLE Bike
 (
-  bike_id VARCHAR(30) PRIMARY KEY,
+  bike_id VARCHAR(36) PRIMARY KEY,
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE User (
 CREATE TABLE Trip
 (
   trip_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id VARCHAR(30) NOT NULL,
+  bike_id VARCHAR(36) NOT NULL,
   user_id INT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME,
@@ -62,7 +62,7 @@ CREATE TABLE Trip
 CREATE TABLE BikeMovement
 (
   movement_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id VARCHAR(30) NOT NULL,
+  bike_id VARCHAR(36) NOT NULL,
   position POINT NOT NULL,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id)
 );
@@ -88,7 +88,7 @@ CREATE TABLE Zone
 DELIMITER ;;
 
 CREATE PROCEDURE StartTrip(
-  IN input_bike_id VARCHAR(30),
+  IN input_bike_id VARCHAR(36),
   IN input_user_id INT
 )
 BEGIN
@@ -122,7 +122,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE EndTrip(
-  IN input_bike_id VARCHAR(30)
+  IN input_bike_id VARCHAR(36)
 )
 BEGIN
   DECLARE bike_start_position POINT;
@@ -182,7 +182,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE LogBikeMovement(
-  IN input_bike_id VARCHAR(30),
+  IN input_bike_id VARCHAR(36),
   IN new_position POINT
 )
 BEGIN
