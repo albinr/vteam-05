@@ -1,24 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-// import { useSession } from "next-auth/react";
 import LoginButton from "@/components/LoginButton"; // Ensure the path is correct
 import LogoutButton from "@/components/LogoutButton"; // Ensure the path is correct
 import "./Header.css";
 
 export default function Header({ onToggleSidebar }) {
-    // const { data: session } = useSession();
 
     const [session, setSession] = useState(null);
 
     useEffect(() => {
-        const user = sessionStorage.getItem("user");
+        const user = localStorage.getItem("user");
         if (user) {
             setSession({ user: JSON.parse(user) });
         } else {
             setSession(null);
         }
-    }, []);
+
+    }, [localStorage]);
 
 
     return (
