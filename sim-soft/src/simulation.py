@@ -8,6 +8,8 @@ import asyncio
 import uuid
 import atexit
 import requests
+import signal
+import sys
 from bike import Bike
 from user import User
 
@@ -64,20 +66,28 @@ class Simulation:
 def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
-        requests.delete(f"{API_URL}/v1/bikes/1", timeout=30)
+        requests.delete(f"{API_URL}/v2/bikes/all/1", timeout=30)
+        print(f"Simulated bikes deleted from database!")
     except requests.exceptions.RequestException as e:
         print(f"Error deleting bike data: {e}")
 
     try:
         # Remove simulated users
-        # requests.delete(f"{API_URL}/v1/users/1", timeout=30)
-        pass
+        requests.delete(f"{API_URL}/v2/users/1", timeout=30)
+        print(f"Simulated users deleted from database!")
     except requests.exceptions.RequestException as e:
-        print(f"Error deleting user: {e}")
+        print(f"Error deleting users: {e}")
 
     print("Simulation has stopped.")
 
+def handle_signal():
+    on_exit()
+    sys.exit(0)
+
 atexit.register(on_exit)
+signal.signal(signal.SIGINT, handle_signal)
+signal.signal(signal.SIGTERM, handle_signal)
+
 
 if __name__ == "__main__":
     # Create a simulation with X bikes
