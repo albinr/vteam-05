@@ -15,6 +15,8 @@ from user import User
 
 API_URL="http://backend:1337"
 
+FETCH_INTERVAL = 5
+
 class Simulation:
     """
     Simulation class for starting a simulation with simulated bikes
@@ -48,7 +50,33 @@ class Simulation:
         bike_tasks = [bike.run_bike_interval() for bike in self.bikes]
         user_tasks = [user.run_user_interval() for user in self.users]
 
-        await asyncio.gather(*bike_tasks, *user_tasks)
+        get_bikes_task = asyncio.create_task(self.get_bikes())
+
+        await asyncio.gather(*bike_tasks, *user_tasks, get_bikes_task)
+
+    async def get_bikes(self):
+        """
+        Get all bikes from the API.
+        """
+        while True:
+            try:
+                bikes = requests.get(f"{API_URL}/v2/bikes", timeout=30)
+                if bikes.status_code != 200:
+                    # Throw error
+                    raise requests.exceptions.RequestException(f"Error getting bikes: {bikes.status_code}")
+
+                self.bikes = bikes.json()
+
+                print("Sending bikes to users...")
+
+                for user in self.users:
+                    user.update_bikes(self.bikes)
+
+            except requests.exceptions.RequestException as e:
+                    print(f"Error getting bikes: {bikes.status_code}")
+
+            await asyncio.sleep(FETCH_INTERVAL)
+
 
     async def start(self):
         """Start the simulation and run bike updates."""
