@@ -1,7 +1,8 @@
 -- 
 -- creates the diffrent tables
--- sdsdfssdsdsdfssdfssdf
+-- 
 
+USE vteam;
 
 DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
@@ -30,7 +31,7 @@ CREATE TABLE Bike
 -- table för att skapa användare
 --
 CREATE TABLE User (
-  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id VARCHAR(60) PRIMARY KEY,
   balance FLOAT,
   Email VARCHAR (255) UNIQUE,
   simulation_user INT DEFAULT 0
@@ -43,7 +44,7 @@ CREATE TABLE Trip
 (
   trip_id INT AUTO_INCREMENT PRIMARY KEY,
   bike_id VARCHAR(36) NOT NULL,
-  user_id INT NOT NULL,
+  user_id VARCHAR(60) NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME,
   start_position POINT NOT NULL,
@@ -89,24 +90,20 @@ DELIMITER ;;
 
 CREATE PROCEDURE StartTrip(
   IN input_bike_id VARCHAR(36),
-  IN input_user_id INT
+  IN input_user_id VARCHAR(60)
 )
 BEGIN
-  DECLARE bike_start_position POINT;
-  DECLARE is_simulated INT;
 
+  DECLARE bike_start_position POINT;
 
   IF (SELECT status FROM Bike WHERE bike_id = input_bike_id) = 'available' THEN
-
-    SELECT position, simulation INTO bike_start_position, is_simulated
+    SELECT position INTO bike_start_position
     FROM Bike
     WHERE bike_id = input_bike_id;
+    INSERT INTO Trip (bike_id, user_id, start_time, start_position)
+    VALUES (input_bike_id, input_user_id, NOW(), bike_start_position);
 
-    INSERT INTO Trip (bike_id, user_id, start_time, start_position, simulation_trip)
-    VALUES (input_bike_id, input_user_id, NOW(), bike_start_position, is_simulated);
-
-    UPDATE Bike
-    SET status = 'in_use'
+    UPDATE Bike SET status = 'in_use'
     WHERE bike_id = input_bike_id;
   ELSE
     SELECT CONCAT('Bike ', input_bike_id, ' is Unavailable') AS message;
@@ -262,7 +259,7 @@ BEGIN
   DECLARE t_wrongparking FLOAT DEFAULT 30;
   DECLARE t_discount FLOAT DEFAULT 15;
   DECLARE t_cost FLOAT;
-  DECLARE t_user_id INT;
+  DECLARE t_user_id VARCHAR(60);
 
   SELECT start_time, end_time, user_id INTO t_start_time, t_end_time, t_user_id
   FROM Trip
@@ -299,7 +296,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE UpdareStatus(
-  IN u_bike_id VARCHAR(50),
+  IN u_bike_id VARCHAR(36),
   IN new_status VARCHAR(50)
 )
 BEGIN
@@ -330,7 +327,7 @@ DELIMITER ;
 DELIMITER ;;
 
 CREATE PROCEDURE AddMoney(
-  IN u_user_id INT,
+  IN u_user_id VARCHAR(60),
   IN add_money FLOAT
 )
 BEGIN
