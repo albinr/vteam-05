@@ -9,6 +9,7 @@ import uuid
 import atexit
 import requests
 from bike import Bike
+from user import User
 
 API_URL="http://backend:1337"
 
@@ -21,7 +22,13 @@ class Simulation:
                         Bike(bike_id=f"{uuid.uuid4()}",
                         location=(56.176, 15.590), simulated=simulated)
                         for _ in range(1, num_bikes + 1)
-                    ]
+        ]
+
+        self.users = [
+            User(user_id=f"{i}", username=f"user{i}", email=f"user{i}@gmail.com")
+            for i in range(1, num_bikes + 1)
+        ]
+
         self.state = "initialized"
 
     def list_bikes(self):
@@ -36,9 +43,10 @@ class Simulation:
 
     async def start_bikes(self):
         """Start the bike update and interval loop."""
-        tasks = [bike.run_bike_interval() for bike in self.bikes]
+        bike_tasks = [bike.run_bike_interval() for bike in self.bikes]
+        user_tasks = [user.run_user_interval() for user in self.users]
 
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*bike_tasks, *user_tasks)
 
     async def start(self):
         """Start the simulation and run bike updates."""
@@ -55,7 +63,17 @@ class Simulation:
 
 def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
-    requests.delete(f"{API_URL}/v1/bikes/1", timeout=30)
+    try:
+        requests.delete(f"{API_URL}/v1/bikes/1", timeout=30)
+    except requests.exceptions.RequestException as e:
+        print(f"Error deleting bike data: {e}")
+
+    try:
+        # Remove simulated users
+        # requests.delete(f"{API_URL}/v1/users/1", timeout=30)
+        pass
+    except requests.exceptions.RequestException as e:
+        print(f"Error deleting user: {e}")
 
     print("Simulation has stopped.")
 
@@ -71,6 +89,7 @@ if __name__ == "__main__":
         """
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
+
 
         # Update bike 2's battery level
         # await simulation.update_bike_data(bike_id=1, battery=50)
