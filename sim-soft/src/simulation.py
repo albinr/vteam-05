@@ -94,6 +94,12 @@ class Simulation:
 def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
+        # Remove simulated trips
+        requests.delete(f"{API_URL}/v2/trips/1", timeout=30)
+    except requests.exceptions.RequestException as e:
+        print(f"Error deleting trip data: {e}")
+
+    try:
         requests.delete(f"{API_URL}/v2/bikes/all/1", timeout=30)
         print(f"Simulated bikes deleted from database!")
     except requests.exceptions.RequestException as e:
