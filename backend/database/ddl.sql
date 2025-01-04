@@ -2,7 +2,7 @@
 -- creates the diffrent tables
 -- 
 
--- USE vteam;
+USE vteam;
 
 DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
