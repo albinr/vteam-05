@@ -2,18 +2,19 @@
 -- creates the diffrent tables
 -- 
 
-USE vteam;
+-- USE vteam;
 
 DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
 DROP PROCEDURE IF EXISTS LogBikeMovement;
 DROP PROCEDURE IF EXISTS RemoveBikes;
+DROP PROCEDURE IF EXISTS RemoveUsers;
 DROP PROCEDURE IF EXISTS TripCost;
 DROP PROCEDURE IF EXISTS UpdareStatus;
-DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS BikeMovement;
 DROP TABLE IF EXISTS Trip;
 DROP TABLE IF EXISTS Bike;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS BikeMovement;
 
 --
 -- table för att skapa elsparkcyklarna
@@ -209,6 +210,7 @@ END
 
 DELIMITER ;
 
+
 DELIMITER ;;
 
 CREATE PROCEDURE RemoveTrips(
@@ -295,7 +297,7 @@ DELIMITER ;
 
 DELIMITER ;;
 
-CREATE PROCEDURE UpdareStatus(
+CREATE PROCEDURE UpdateStatus(
   IN u_bike_id VARCHAR(36),
   IN new_status VARCHAR(50)
 )

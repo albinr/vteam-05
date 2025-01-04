@@ -1,5 +1,5 @@
 const { 
-    getUserInfo, addUser, updateUser, deleteUsers, getAllUsers, deleteUser
+    getUserInfo, addUser, updateUser, deleteUsers, getAllUsers, deleteUser 
 } = require('../../src/modules/user.js');
 const { showAllTrips, startTrip, endTrip, deleteTrips, showTripsByUser } = require('../../src/modules/trip.js');
 const { addBike } = require('../../src/modules/bike.js');
@@ -8,47 +8,49 @@ const { addBike } = require('../../src/modules/bike.js');
 jest.mock('../../src/db/db.js', () => require('../db/dbDev.js'));
 
 describe('User Module Tests', () => {
-    let userId1, userId2;
-    let bikeId1, bikeId2;
+    let userId1, userId2, bikeId1, bikeId2;
 
     beforeAll(async () => {
         const testDB = require('../db/dbDev.js');
         await testDB.query('DELETE FROM Trip');
         await testDB.query('DELETE FROM User');
         await testDB.query('DELETE FROM Bike');
-    })
+    });
 
     beforeEach(async () => {
-        // Skapa användare och cyklar för varje test
+        // Generera unika användar-ID
+        userId1 = `user1_${Date.now()}`;
+        userId2 = `user2_${Date.now()}`;
         
-        userId1 = (await addUser("test1@gmail.com", 100)).insertId;
-        userId2 = (await addUser("test2@gmail.com", 100)).insertId;
-
-        bikeId1 = "testBike1";
-        bikeId2 = "testBike2";
-
+        // Lägg till användare i databasen
+        await addUser(userId1, "test1@gmail.com", 100, 1);
+        await addUser(userId2, "test2@gmail.com", 100, 1);
+        
+        // Generera unika cykel-ID
+        bikeId1 = `bike1_${Date.now()}`;
+        bikeId2 = `bike2_${Date.now()}`;
+        
+        // Lägg till cyklar i databasen
         await addBike(bikeId1, 100, 10, 10, 1);
         await addBike(bikeId2, 100, 11, 11, 1);
 
-        await endTrip(bikeId1)
-
-        await endTrip(bikeId2)
+        // Se till att alla trippar avslutas före test
+        await endTrip(bikeId1);
+        await endTrip(bikeId2);
     });
 
     afterEach(async () => {
-        // Rensa databasen efter varje test
         const testDB = require('../db/dbDev.js');
         await testDB.query('DELETE FROM Trip');
         await testDB.query('DELETE FROM User');
         await testDB.query('DELETE FROM Bike');
-        await testDB.query('ALTER TABLE User AUTO_INCREMENT = 1');
-        
+        await testDB.query('ALTER TABLE User AUTO_INCREMENT = 1'); // Återställ auto-inkrement
     });
 
     afterAll(async () => {
         const testDB = require('../db/dbDev.js');
         await testDB.end();
-    })
+    });
 
     test('should start a trip successfully', async () => {
         const result = await startTrip(bikeId1, userId1);
@@ -90,15 +92,15 @@ describe('User Module Tests', () => {
     });
 
     test('should delete all simulated trips', async () => {
+        await deleteTrips(0)
         await startTrip(bikeId1, userId1);
         await startTrip(bikeId2, userId2);
 
         const result = await deleteTrips(1);
+        await deleteTrips(0);
         expect(result).toBeDefined();
 
         const trips = await showAllTrips();
         expect(trips).toHaveLength(0);
     });
-
-
 });

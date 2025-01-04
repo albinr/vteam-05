@@ -12,16 +12,16 @@ async function getUserInfo(user_id) {
 }
 
 async function getAllUsers() {
-    const sql = `SELECT user_id, Balance AS balance, Email AS email FROM User`;
+    const sql = `SELECT user_id, Balance AS balance, Email AS email, simulation_user FROM User`;
     const [res] = await pool.query(sql);
 
     return res;
 }
 
-async function addUser(email, balance) {
+async function addUser(user_id, email, balance, isSimulated = 0) {
     try {
-        const sql = `INSERT INTO User (Balance, Email) VALUES (?, ?)`;
-        const [result] = await pool.query(sql, [balance, email]);
+        const sql = `INSERT INTO User (user_id, balance, Email, simulation_user) VALUES (?, ?, ?, ?)`;
+        const [result] = await pool.query(sql, [user_id, balance, email, isSimulated]);
         return result;
     } catch (error) {
         console.error("Fel vid skapande av användare:", error);
@@ -61,10 +61,11 @@ async function updateUser(userId, updatedData) {
     }
 }
 
-async function deleteUsers() {
+async function deleteUsers(simulatedOnly) {
     try {
-        const [result] = await pool.query(`DELETE FROM User`);
-        return result;
+        const inputRemove = simulatedOnly ? 1 : 0;
+        const [result] = await pool.query(`CALL RemoveUsers(?)`, [inputRemove]);
+    return result;
     } catch (error) {
         console.error("Error att ta bort användare:", error);
         throw error;
