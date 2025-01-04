@@ -73,12 +73,21 @@ class Bike: # pylint: disable=too-many-instance-attributes
         await asyncio.sleep(self.update_delay)
 
         while self.status != "shutdown":
-            if self.battery < self.min_battery:
-                print(f"[Bike {self.bike_id:2}] Battery low! Sending alert to API.")
-                # Send alert to API
-                # /api/bike-low-battery?
-            data = self.get_data()
-            print(f"[Bike {self.bike_id:2}] Sending data to API: {data}")
+            try:
+                new_data = requests.get(
+                    f"{API_URL}/v1/bikes/{self.bike_id}",
+                    timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9
+                )
+
+                if new_data.status_code == 200:
+                    data = new_data.json()
+                    self.battery = data["battery_level"]
+                    self.status = data["status"]
+                    self.location = (data["longitude"], data["latitude"])
+            except requests.exceptions.RequestException as e:
+                print(f"Error getting data from API: {e}")
+
+            print(f"[Bike {self.bike_id:2}] Sending data to API")
             try:
                 requests.put(f"{API_URL}/v1/bikes/{self.bike_id}",
                             timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
@@ -158,7 +167,13 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
         while self.status != "shutdown":
-            self.status = random.choice(['available', 'in_use', 'maintenance', 'charging'])
+            # self.status = random.choice(['available', 'in_use', 'maintenance', 'charging'])
+            self.status = random.choice(['available',
+                                        'available',
+                                        'available',
+                                        'charging',
+                                        'charging',
+                                        'maintenance'])
             print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
 
             # Change status every X-Y minutes
