@@ -14,7 +14,7 @@ const express = require("express");
 const app = express();
 const middleware = require("./middleware/index.js");
 const jwt = require('jsonwebtoken');
-
+const { findOrCreateUser } = require('./src/modules/user.js');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -49,11 +49,13 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/auth/google/callback",
 },
-    function (accessToken, refreshToken, profile, cb) {
-        // Här kan du spara användarprofilen i din databas
-        console.log(profile);
-
-        return cb(null, profile);
+    async function (accessToken, refreshToken, profile, cb) {
+        try {
+            await findOrCreateUser(profile);
+            return cb(null, profile);
+        } catch (error) {
+            return cb(error);
+        }
     }
 ));
 
