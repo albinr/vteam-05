@@ -6,7 +6,7 @@ const withAuth = (WrappedComponent) => {
         const [session, setSession] = useState(null);
 
         useEffect(() => {
-            const user = sessionStorage.getItem("user");
+            const user = localStorage.getItem("user");
             if (user) {
                 setSession({ user: JSON.parse(user) });
             } else {

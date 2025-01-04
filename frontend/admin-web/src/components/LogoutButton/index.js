@@ -1,11 +1,18 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import Button from "@/components/Button";
+import { useRouter} from "next/navigation";
+
 
 const LogoutButton = ({ label = "Sign Out", className = "" }) => {
+    const router = new useRouter();
+
     const handleLogout = () => {
-        signOut();
+        localStorage.removeItem("user")
+        localStorage.removeItem("token")
+        // router.push("/auth/signin");
+        window.location.href = "/auth/signin";
+
     };
 
     return (

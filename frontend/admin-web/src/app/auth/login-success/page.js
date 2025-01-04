@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import LoginButton from "@/components/LoginButton";
+// import LoginButton from "@/components/LoginButton";
 
 
 export default function LoginSuccess() {
@@ -14,20 +13,22 @@ export default function LoginSuccess() {
         let token = searchParams.get("token");
         // Get token from query and clean it up afterwards
         if (token) {
-            router.replace(router.pathname, undefined, { shallow: true });
+            // router.replace(router.pathname, undefined, { shallow: true });
             console.log("Setting token in local storage: ", token);
             localStorage.setItem("token", token);
 
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace('-', '+').replace('_', '/');
-            sessionStorage.setItem("user", JSON.stringify(JSON.parse(window.atob(base64))));
+            localStorage.setItem("user", JSON.stringify(JSON.parse(window.atob(base64))));
 
-            router.push("/");
+            // router.push("/");
+            window.location.href = "/";
         }
 
         if (!token) {
             console.log("No token found");
-            router.push("/auth/signin");
+            // router.push("/auth/signin");
+            window.location.href = "/auth/signin";
         }
     }, [searchParams, router]);
 
