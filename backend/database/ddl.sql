@@ -287,7 +287,7 @@ BEGIN
     cost = t_cost
   WHERE Trip_id = input_trip_id;
 
-  UPDATE user
+  UPDATE User
   SET 
     balance = balance - t_cost
   WHERE user_id = t_user_id;
