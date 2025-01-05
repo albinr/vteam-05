@@ -10,16 +10,37 @@ L.Icon.Default.mergeOptions({
 });
 
 export const addBikeMarker = (bikeData) => {
-    const { id, position, battery, status } = bikeData;
+    // const { id, position, battery, status } = bikeData;
+    const { bike_id, battery_level, latitude, longitude, status } = bikeData;
+
+    const handleButtonClick = () => {
+        if (status !== "available") {
+            console.log("Bike is not available for rent");
+            return;
+        }
+        console.log("Renting bike: ", bike_id);
+    };
+
     return (
         <Marker
-            key={id}
-            position={position}
+            key={bike_id}
+            position={[longitude, latitude]}
         >
             <Popup>
-                <strong>Bike {id}</strong><br />
-                Battery: {battery}%<br />
-                Status: {status}
+                <strong>{bike_id}</strong><br />
+                <span style={{
+                    color: status === "available" ? "green"
+                    : status === "rented" ?? status === "charging" ? "orange"
+                    : status === "maintance" ? "red"
+                    : "red"
+                }}>{status}</span><br />
+                Battery: {battery_level}%<br />
+                {
+                    status === "available" ?
+                        <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
+                        :
+                        <button id={bike_id} className="rent-button" disabled>Not Available</button>
+                }
             </Popup>
         </Marker>
     );

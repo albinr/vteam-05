@@ -29,16 +29,17 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {markers.map((marker) => {
-                switch (marker.type) {
-                    case "bike":
-                        return addBikeMarker(marker);
-                    case "station":
-                        return addStationMarker(marker);
-                    case "zone":
-                        return addZoneMarker(marker);
-                    default:
-                        return null;
-                }
+                // switch (marker.type) {
+                //     case "bike":
+                //         return addBikeMarker(marker);
+                //     case "station":
+                //         return addStationMarker(marker);
+                //     case "zone":
+                //         return addZoneMarker(marker);
+                //     default:
+                //         return null;
+                // }
+                return addBikeMarker(marker);
             })}
         </MapContainer>
     );
