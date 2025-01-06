@@ -8,11 +8,13 @@ in a system for renting bikes.
 import random
 import asyncio
 import requests
+import math
 
 MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 RETRY_INTERVAL = 5
+RENT_TIME_MAX = 10 # Max rent time in seconds
 
 API_URL="http://backend:1337"
 
@@ -25,36 +27,39 @@ class User:
         self.username = username
         self.email = email
         self.balance = 1000 - random.randint(0, 300)
+        self.bikes = []
         self.bike = None
+        self.added_to_db = False
+        self.added_to_db_tries = 0
 
-        self.register()
-
-    # async def update(self):
-    #     """Simulate user activity."""
-    #     if self.bike:
-    #         # Example of updating location if traveling might be changed to routes?
-    #         self.bike.location = (self.location[0] + random.uniform(-0.01, 0.01),
-    #                         self.location[1] + random.uniform(-0.01, 0.01))
-    #         print(f"[User {self.user_id}] Traveling. New location: {self.location}")
-    #     else:
-    #         print(f"[User {self.user_id}] Waiting for a bike.")
+        while not self.added_to_db and self.added_to_db_tries < 3:
+            self.register()
 
     def register(self):
         """
         Method for registering the user
         """
         try:
-            requests.post(f"{API_URL}/v1/add_user", timeout=30, data={
-                "username": self.username,
+            requests.post(f"{API_URL}/v2/users", timeout=30, data={
+                # "username": self.username,
+                "id": self.user_id,
                 "email": self.email,
                 "balance": self.balance
             })
+            self.added_to_db = True
+            self.added_to_db_tries += 1
         except requests.exceptions.RequestException as e:
             print(f"[User {self.user_id}] Error registering user: {e}")
+            self.added_to_db_tries += 1
             return
 
-        # regiser the user
         print(f"[{self.user_id}] User registered")
+
+    def update_bikes(self, list_of_bikes):
+        """
+        Method for updating list of bikes.
+        """
+        self.bikes = list_of_bikes
 
     async def run_user_interval(self):
         """Start the loop for simulating user."""
@@ -69,30 +74,34 @@ class User:
         Method for renting a bike for the user
         """
         # fetch bikes and choose one
-        # set the bike instance in self.bike
 
-        while not self.bike:
-            # get random bike with status available??
-            try:
-                # Get available bikes
-                # bikes = requests.get(f"{API_URL}/v1/bikes/available")
+        while True:
+            if not self.bikes:
+                pass
 
-                # if not bikes:
-                #     pass
-                # self.bike = random.choice(bikes).bike_id
-                # print("pass")
-                raise NotImplementedError("Not implemented")
+            if not self.bike:
+                if random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+                    for bike in self.bikes:
+                        if not self.bike:
+                            if bike["status"] == "available":
+                                try:
+                                    requests.post(f"{API_URL}/v2/trips/start/{bike['bike_id']}/{self.user_id}", timeout=30)
 
-                # Request (pots) to rent bike (trip)
-            except NotImplementedError as _:
-                # print(f"[User {self.user_id}] Error renting bike: {e}")
-                await asyncio.sleep(RETRY_INTERVAL)
+                                    self.bike = bike["bike_id"]
+                                    print(f"[User {self.user_id}] Bike rented: {self.bike}")
+                                except requests.exceptions.RequestException as e:
+                                    print(f"[User {self.user_id}] Error renting bike: {e}")
+            elif self.bike and random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+                # return bike
+                try:
+                    requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+                    print(f"[User {self.user_id}] Bike returned: {self.bike}")
+                except requests.exceptions.RequestException as e:
+                    print(f"[User {self.user_id}] Error returning bike: {e}")
 
-        if self.bike:
-            # Return bike
-            print("pass")
+            await asyncio.sleep(RETRY_INTERVAL)
 
-        await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
+            # await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
 
     async def return_bike(self):
