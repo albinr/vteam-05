@@ -1,24 +1,29 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import LoginButton from "@/components/LoginButton"; // Ensure the path is correct
-import LogoutButton from "@/components/LogoutButton"; // Ensure the path is correct
+// import LoginButton from "@/components/LoginButton";
+import LogoutButton from "@/components/LogoutButton";
 import "./Header.css";
+import Cookies from "js-cookie";
+import Button from "../Button";
 
 export default function Header({ onToggleSidebar }) {
-
     const [session, setSession] = useState(null);
 
     useEffect(() => {
-        const user = localStorage.getItem("user");
-        if (user) {
-            setSession({ user: JSON.parse(user) });
+        const userCookie = Cookies.get("user");
+
+        if (userCookie) {
+            try {
+                setSession({ user: JSON.parse(userCookie) });
+            } catch (error) {
+                console.error("Failed to parse user cookie:", error);
+                setSession(null);
+            }
         } else {
             setSession(null);
         }
-
-    }, [localStorage]);
-
+    }, []);
 
     return (
         <header className="header">
@@ -43,10 +48,9 @@ export default function Header({ onToggleSidebar }) {
                         <LogoutButton className="header-logout" />
                     </div>
                 ) : (
-                    <LoginButton
-                        provider="google"
-                        label="Sign In"
-                        className="header-login"
+                    <Button
+                        href="/auth/signin"
+                        label={"Sign in"}
                     />
                 )}
             </div>
