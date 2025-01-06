@@ -43,6 +43,28 @@ async function showTripsByUser(userId) {
     }
 }
 
+async function showTripsByBikeId(bikeId) {
+    try {
+        const [rows] = await pool.query(`
+            SELECT
+                trip_id,
+                bike_id,
+                start_time,
+                end_time,
+                CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
+                CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                CONCAT(cost, 'kr') AS price,
+                speed
+            FROM Trip
+            WHERE bike_id = ?
+        `, [bikeId]);
+        return rows;
+    } catch (error) {
+        console.error("Error att hämta resor för en cykel:", error);
+        throw error;
+    }
+}
+
 async function startTrip(bikeId, userId) {
     try {
         const [result] = await pool.query('CALL StartTrip(?, ?)', [bikeId, userId]);
@@ -85,5 +107,6 @@ module.exports = {
     endTrip,
     deleteTrips,
     showTripsByUser,
+    showTripsByBikeId,
     deleteTripById
 };

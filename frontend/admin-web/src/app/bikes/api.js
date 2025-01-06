@@ -28,8 +28,8 @@ export const updateBike = async (bikeData) => {
 }
 
 // Fetch bike tips by id
-export const fetchBikeTripsById = async (id) => {
-    return apiClient.get(`/bikes/${id}/trips`);
+export const fetchTripsByBikeId = async (id) => {
+    return apiClient.get(`/trips/${id}`);
 };
 
 // Current api fetches
