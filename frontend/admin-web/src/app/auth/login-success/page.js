@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-// import LoginButton from "@/components/LoginButton";
-
+import Cookies from "js-cookie";
 
 export default function LoginSuccess() {
     const router = new useRouter();
@@ -17,17 +16,23 @@ export default function LoginSuccess() {
             console.log("Setting token in local storage: ", token);
             localStorage.setItem("token", token);
 
+            Cookies.set("token", token, { expires: 30 });
+
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace('-', '+').replace('_', '/');
             localStorage.setItem("user", JSON.stringify(JSON.parse(window.atob(base64))));
+    
+            Cookies.set("user", JSON.stringify(JSON.parse(window.atob(base64)), { expires: 30 }));
 
-            // router.push("/");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+
             window.location.href = "/";
         }
 
         if (!token) {
             console.log("No token found");
-            // router.push("/auth/signin");
             window.location.href = "/auth/signin";
         }
     }, [searchParams, router]);

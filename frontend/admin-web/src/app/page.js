@@ -1,8 +1,5 @@
 "use client";
 
-// import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
 import withAuth from "../app/hoc/withAuth";
 import dynamic from "next/dynamic";
 import Loader from "@/components/Loader";
@@ -45,9 +42,6 @@ const allowedZoneCircle = [
 ];
 
 const Home = ({ session }) => {
-    // if (!session) {
-    //     return <Loader />;
-    // }
 
     const Gmap = dynamic(() => import('@/components/Gmap'), {
         loading: () => <Loader />,

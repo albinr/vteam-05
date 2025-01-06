@@ -7,17 +7,17 @@ import { fetchUserById } from "../api";
 import Loader from "@/components/Loader";
 
 const UserDetails = ({ session }) => {
-    const { id } = useParams(); // Get the dynamic route `id`
-    const [user, setUser] = useState(null); // Store the user details
+    const { id } = useParams();
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!id) return; // Avoid running if `id` is not available
+        if (!id) return;
 
         const loadUser = async () => {
             try {
-                const data = await fetchUserById(id); // Pass the `id` to the fetch function
+                const data = await fetchUserById(id);
                 setUser(data);
             } catch (err) {
                 console.error("Error fetching user details:", err.message);
