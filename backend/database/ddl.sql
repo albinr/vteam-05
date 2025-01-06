@@ -1,5 +1,5 @@
 -- 
--- creates the diffrent tables
+-- creates the diffrent tabless
 -- 
 
 --USE vteam;
