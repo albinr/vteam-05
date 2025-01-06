@@ -35,6 +35,8 @@ class Simulation:
 
         self.state = "initialized"
 
+        self.distrubute_bikes()
+
     def list_bikes(self):
         """List all bikes and their data."""
         print("[Simulation] Current Bikes:")
@@ -67,8 +69,6 @@ class Simulation:
 
                 self.bikes = bikes.json()
 
-                print("Sending bikes to users...")
-
                 for user in self.users:
                     user.update_bikes(self.bikes)
 
@@ -77,6 +77,15 @@ class Simulation:
 
             await asyncio.sleep(FETCH_INTERVAL)
 
+    def distrubute_bikes(self):
+        """
+        Distrubute bikes to users.
+        """
+        for user in self.users:
+            for bike in self.bikes:
+                if bike.status == "available":
+                    bike.status = "rented"
+                    user.bike = bike.bike_id
 
     async def start(self):
         """Start the simulation and run bike updates."""

@@ -29,6 +29,7 @@ class User:
         self.balance = 1000 - random.randint(0, 300)
         self.bikes = []
         self.bike = None
+        self.bike_rented = False
         self.added_to_db = False
         self.added_to_db_tries = 0
 
@@ -42,9 +43,10 @@ class User:
         try:
             requests.post(f"{API_URL}/v2/users", timeout=30, data={
                 # "username": self.username,
-                "id": self.user_id,
+                "user_id": self.user_id,
                 "email": self.email,
-                "balance": self.balance
+                "balance": self.balance,
+                "isSimulated": 1
             })
             self.added_to_db = True
             self.added_to_db_tries += 1
@@ -75,32 +77,57 @@ class User:
         """
         # fetch bikes and choose one
 
+        # while True:
+        #     if not self.bikes:
+        #         pass
+
+        #     if not self.bike:
+        #         if random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+        #             for bike in self.bikes:
+        #                 if not self.bike:
+        #                     if bike["status"] == "available":
+        #                         try:
+        #                             requests.post(f"{API_URL}/v2/trips/start/{bike['bike_id']}/{self.user_id}", timeout=30)
+
+        #                             self.bike = bike["bike_id"]
+        #                             print(f"[User {self.user_id}] Bike rented: {self.bike}")
+        #                         except requests.exceptions.RequestException as e:
+        #                             print(f"[User {self.user_id}] Error renting bike: {e}")
+        #     elif self.bike and random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+        #         # return bike
+        #         try:
+        #             requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+        #             self.bike = None
+        #             print(f"[User {self.user_id}] Bike returned: {self.bike}")
+        #         except requests.exceptions.RequestException as e:
+        #             print(f"[User {self.user_id}] Error returning bike: {e}")
+
+        #     await asyncio.sleep(RETRY_INTERVAL)
+
         while True:
-            if not self.bikes:
-                pass
+            if self.bike:
+                if not self.bike_rented:
+                # rent bike if not rented already
+                    if random.randint(1, RETRY_INTERVAL) == 1:
+                        try:
+                            requests.post(f"{API_URL}/v2/trips/start/{self.bike}/{self.user_id}", timeout=30)
+                            self.bike_rented = True
+                            print(f"[User {self.user_id}] Bike rented: {self.bike}")
+                        except requests.exceptions.RequestException as e:
+                            print(f"[User {self.user_id}] Error renting bike: {e}")
 
-            if not self.bike:
-                if random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
-                    for bike in self.bikes:
-                        if not self.bike:
-                            if bike["status"] == "available":
-                                try:
-                                    requests.post(f"{API_URL}/v2/trips/start/{bike['bike_id']}/{self.user_id}", timeout=30)
+                if self.bike_rented:
+                    if random.randint(1, RETRY_INTERVAL) == 1:
+                        try:
+                            requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+                            self.bike_rented = False
+                            print(f"[User {self.user_id}] Bike returned: {self.bike}")
+                        except requests.exceptions.RequestException as e:
+                            print(f"[User {self.user_id}] Error returning bike: {e}")
 
-                                    self.bike = bike["bike_id"]
-                                    print(f"[User {self.user_id}] Bike rented: {self.bike}")
-                                except requests.exceptions.RequestException as e:
-                                    print(f"[User {self.user_id}] Error renting bike: {e}")
-            elif self.bike and random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
-                # return bike
-                try:
-                    requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
-                    print(f"[User {self.user_id}] Bike returned: {self.bike}")
-                except requests.exceptions.RequestException as e:
-                    print(f"[User {self.user_id}] Error returning bike: {e}")
+                # return bike after random time
 
             await asyncio.sleep(RETRY_INTERVAL)
-
             # await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
 
