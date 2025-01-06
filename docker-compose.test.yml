@@ -21,9 +21,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: backend-container
+    container_name: backend-container-test
     ports:
-      - "1337:1337"
+      - "1338:1337"
     networks:
       - bike_network
     depends_on:

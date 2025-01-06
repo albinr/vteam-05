@@ -25,7 +25,7 @@ jobs:
         with:
           compose-file: "docker-compose.test.yml"
           up-flags: "--build"
-          test-container: "backend-container"
+          test-container: "backend-container-test"
           run: "docker ps"
           test-command: "npm test"
           annotate: "true"
