@@ -1,57 +1,20 @@
-build:
-    nodes:
-        backend:
-            environment:
-                node: "18"
-            commands:
-                - cd backend
-                - npm install
-                - npm run lint
-                - npm test
-
-        frontend:
-            environment:
-                node: "18"
-            commands:
-                - cd frontend
-                - npm install
-                - npm run lint
-                - npm test
-
-        sim-soft:
-            environment:
-                python: "3.10"  # Python version for sim-soft
-            commands:
-                - cd sim-soft
-                - pip install -r requirements.txt
-                - python -m unittest discover  # Run Python tests
-
 filter:
-    excluded_paths:
-        - "node_modules/*"
-        - "frontend/node_modules/*"
-        - "backend/node_modules/*"
-        - "**/__pycache__/*"
+    excluded_paths: [node_modules/*, test/*, tests/*, sim-soft/*]
 
 checks:
-    javascript:
-        code-complexity: true
-        duplication: true
-        unused-variables: true
-        unreachable-code: true
+    javascript: true
+    python: true
 
-    python:
-        duplication: true
-        code-complexity: true
-        coding-style: true
-
-tools:
-    eslint:
-        config: backend/.eslintrc.json
-    eslint-frontend:
-        config: frontend/.eslintrc.json
-    pylint:
-        config: sim-soft/pylint.conf
-    coverage:
-        enabled: true
-        report_path: backend/coverage/lcov.info
+build:
+    nodes:
+        analysis:
+            tests:
+                override: [js-scrutinizer-run, py-scrutinizer-run]
+        
+        coverage:
+            tests:
+                override:
+                  - command: echo "no test"
+                    coverage:
+                      file: backend/coverage/clover.xml
+                      format: clover

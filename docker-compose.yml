@@ -31,18 +31,22 @@ services:
       - bike_network
 
   user-web:
-    build: ./user-web
+    build: ./frontend/user-web
     container_name: user-web-container
     volumes:
-      - ./user-web:/user-web
+      - ./frontend/user-web:/app
+    ports:
+      - 3001:3001
     networks:
       - bike_network
 
   user-app:
-    build: ./user-app
+    build: ./frontend/user-app
     container_name: user-app-container
     volumes:
-      - ./user-app:/user-app
+      - ./frontend/user-app:/app
+    ports:
+      - 3002:3002
     networks:
       - bike_network
 

@@ -6,50 +6,131 @@ in a system for renting bikes.
 """
 
 import random
-import time
-# from src.bike import Bike
+import asyncio
+import requests
+import math
+
+MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
+MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
+
+RETRY_INTERVAL = 5
+RETURN_OR_HIRE_PROBABILITY = 5
+RENT_INTERVAL = 60
+
+API_URL="http://backend:1337"
 
 class User:
     """
     User class for simulation a user
     """
-    def __init__(self, user_id, username, bike_id):
+    def __init__(self, user_id, username, email):
         self.user_id = user_id
         self.username = username
-        self.bike_id = bike_id
-        self.bike = None # Holder for bike class- A user starts without a bike
+        self.email = email
+        self.balance = 1000 - random.randint(0, 300) # Kanske ta bort (bara i databasen?)
+        self.bikes = []
+        self.bike = None
+        self.bike_rented = False
+        self.added_to_db = False
+        self.added_to_db_tries = 0
 
-    async def update(self):
-        """Simulate user activity."""
-        if self.bike:
-            # Example of updating location if traveling might be changed to routes?
-            self.bike.location = (self.location[0] + random.uniform(-0.01, 0.01),
-                            self.location[1] + random.uniform(-0.01, 0.01))
-            print(f"[User {self.user_id}] Traveling. New location: {self.location}")
-        else:
-            print(f"[User {self.user_id}] Waiting for a bike.")
+        while not self.added_to_db and self.added_to_db_tries < 3:
+            self.register()
 
-    async def register(self):
+    def register(self):
         """
         Method for registering the user
         """
-        # regiser the user
-        print("hello")
+        try:
+            requests.post(f"{API_URL}/v2/users", timeout=30, data={
+                # "username": self.username,
+                "user_id": self.user_id,
+                "email": self.email,
+                "balance": self.balance,
+                "isSimulated": 1
+            })
+            self.added_to_db = True
+            self.added_to_db_tries += 1
+        except requests.exceptions.RequestException as e:
+            print(f"[User {self.user_id}] Error registering user: {e}")
+            self.added_to_db_tries += 1
+            return
+
+        print(f"[{self.user_id}] User registered")
+
+    def update_bikes(self, list_of_bikes):
+        """
+        Method for updating list of bikes.
+        """
+        self.bikes = list_of_bikes
+
+    async def run_user_interval(self):
+        """Start the loop for simulating user."""
+        # Run all tasks in the background
+        update_task = asyncio.create_task(self.rent_bike())
+
+
+        await asyncio.gather(update_task)
 
     async def rent_bike(self):
         """
         Method for renting a bike for the user
         """
         # fetch bikes and choose one
-        # set the bike instance in self.bike
-        print("hello")
 
-    async def travel(self, location):
-        """
-        Method for updating the users bike to simulate travel
-        """
-        # self.bike.update(location)
-        print("hello", location)
+        # while True:
+        #     if not self.bikes:
+        #         pass
+
+        #     if not self.bike:
+        #         if random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+        #             for bike in self.bikes:
+        #                 if not self.bike:
+        #                     if bike["status"] == "available":
+        #                         try:
+        #                             requests.post(f"{API_URL}/v2/trips/start/{bike['bike_id']}/{self.user_id}", timeout=30)
+
+        #                             self.bike = bike["bike_id"]
+        #                             print(f"[User {self.user_id}] Bike rented: {self.bike}")
+        #                         except requests.exceptions.RequestException as e:
+        #                             print(f"[User {self.user_id}] Error renting bike: {e}")
+        #     elif self.bike and random.randint(1, math.floor(RENT_TIME_MAX / RETRY_INTERVAL)) == 1:
+        #         # return bike
+        #         try:
+        #             requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+        #             self.bike = None
+        #             print(f"[User {self.user_id}] Bike returned: {self.bike}")
+        #         except requests.exceptions.RequestException as e:
+        #             print(f"[User {self.user_id}] Error returning bike: {e}")
+
+        #     await asyncio.sleep(RETRY_INTERVAL)
+
+        while True:
+            if self.bike:
+                if not self.bike_rented:
+                # rent bike if not rented already
+                    if random.randint(1, RETRY_INTERVAL) == 1:
+                        try:
+                            requests.post(f"{API_URL}/v2/trips/start/{self.bike}/{self.user_id}", timeout=30)
+                            self.bike_rented = True
+                            print(f"[User {self.user_id}] Bike rented: {self.bike}")
+                        except requests.exceptions.RequestException as e:
+                            print(f"[User {self.user_id}] Error renting bike: {e}")
+
+                if self.bike_rented:
+                    if random.randint(1, RETRY_INTERVAL) == 1:
+                        try:
+                            requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+                            self.bike_rented = False
+                            print(f"[User {self.user_id}] Bike returned: {self.bike}")
+                        except requests.exceptions.RequestException as e:
+                            print(f"[User {self.user_id}] Error returning bike: {e}")
+
+                # return bike after random time
+
+            await asyncio.sleep(RENT_INTERVAL)
+            # await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
+
 
     async def return_bike(self):
         """
@@ -59,10 +140,9 @@ class User:
         # bike locks
         print("hello")
 
-    async def run(self):
-        """
-        Run the user
-        """
-        while True:
-            self.update()
-            time.sleep(5)
+    # async def run(self):
+    #     """
+    #     Run the user
+    #     """
+    #     while True:
+    #         time.sleep(5)

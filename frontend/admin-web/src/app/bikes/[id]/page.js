@@ -1,26 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // Use useParams for dynamic route parameters
-import { fetchBikeById } from "../api"; // Ensure this is the correct path to your API utility
+import { useParams } from "next/navigation";
+import withAuth from "../../hoc/withAuth";
+import { fetchBikeById } from "../api";
 import Loader from "@/components/Loader";
 
-const BikeDetails = () => {
-    const { id } = useParams(); // Get the dynamic route `id`
-    const [bike, setBike] = useState(null); // Store the bike details
+const BikeDetails = ({ session }) => {
+    const { id } = useParams();
+    const [bike, setBike] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!id) return; // Avoid running if `id` is not available
+        if (!id) return;
 
         const loadBike = async () => {
             try {
-                const data = await fetchBikeById(id); // Pass the `id` to the fetch function
+                const data = await fetchBikeById(id);
                 setBike(data);
             } catch (err) {
-                console.error(err.message);
-                setError(err.message);
+                console.error("Error fetching bike details:", err.message);
+                setError("Failed to fetch bike details.");
             } finally {
                 setLoading(false);
             }
@@ -29,15 +30,36 @@ const BikeDetails = () => {
         loadBike();
     }, [id]);
 
-    if (loading) return <Loader/>;
+    if (loading) {
+        return <Loader />;
+    }
+
+    if (error) {
+        return (
+            <div>
+                <h1>Error</h1>
+                <p className="error">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div>
             <h1>Bike Details</h1>
-            {error && <p className="error">{error}</p>}
-            <p>Bike ID: {id}</p>
+            <p>Welcome, {session.user?.name || "User"}!</p>
+            {bike ? (
+                <>
+                    <p><strong>Bike ID:</strong> {bike.id}</p>
+                    <p><strong>Status:</strong> {bike.status}</p>
+                    <p><strong>Battery Level:</strong> {bike.battery_level}%</p>
+                    <p><strong>Longitude:</strong> {bike["ST_X(position)"]}</p>
+                    <p><strong>Latitude:</strong> {bike["ST_Y(position)"]}</p>
+                </>
+            ) : (
+                <p>No bike details available.</p>
+            )}
         </div>
     );
 };
 
-export default BikeDetails;
+export default withAuth(BikeDetails);

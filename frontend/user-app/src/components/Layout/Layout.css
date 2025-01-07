@@ -1,0 +1,43 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    /* Stacks Header on top */
+    height: 100vh;
+    /* Full viewport height */
+}
+
+.layout-body {
+    display: flex;
+    /* Sidebar and Content side by side */
+    flex: 1;
+    /* Take up remaining space below Header */
+}
+
+.layout-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Main content takes remaining space */
+    overflow: auto;
+    /* Scroll if content overflows */
+}
+
+.layout-main {
+    flex: 1;
+    /* padding: 16px; */
+    background-color: #f3f4f6;
+    /* Light gray background */
+}
+
+header {
+    background-color: white;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+}
+
+footer {
+    background-color: white;
+    text-align: center;
+    padding: 16px;
+    box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+}

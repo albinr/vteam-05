@@ -1,62 +1,97 @@
 -- 
--- creates the diffrent tables
+-- creates the diffrent tabless
 -- 
 
-USE vteam;
+--USE vteam;
 
 DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
 DROP PROCEDURE IF EXISTS LogBikeMovement;
 DROP PROCEDURE IF EXISTS RemoveBikes;
-DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS BikeMovement;
+DROP PROCEDURE IF EXISTS RemoveUsers;
+DROP PROCEDURE IF EXISTS TripCost;
+DROP PROCEDURE IF EXISTS UpdareStatus;
 DROP TABLE IF EXISTS Trip;
 DROP TABLE IF EXISTS Bike;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS BikeMovement;
 
+--
+-- table för att skapa elsparkcyklarna
+--
 CREATE TABLE Bike
 (
-  bike_id VARCHAR (50) PRIMARY KEY,
+  bike_id VARCHAR(36) PRIMARY KEY,
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
   battery_level INT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
   simulation INT DEFAULT 0
 );
 
+--
+-- table för att skapa användare
+--
 CREATE TABLE User (
-  user_id INT AUTO_INCREMENT PRIMARY KEY,
-  Username VARCHAR (50),
-  Balance FLOAT,
-  Email VARCHAR (255)
+  user_id VARCHAR(60) PRIMARY KEY,
+  balance FLOAT,
+  Email VARCHAR (255) UNIQUE,
+  simulation_user INT DEFAULT 0
 );
 
+--
+-- table för att skapa resor
+--
 CREATE TABLE Trip
 (
   trip_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id VARCHAR(50) NOT NULL,
-  user_id INT NOT NULL,
+  bike_id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(60) NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME,
   start_position POINT NOT NULL,
   end_position POINT,
-  price INT,
+  duration_minutes INT,
+  cost INT,
   speed FLOAT,
+  simulation_trip INT DEFAULT 0,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id),
   FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
-CREATE TABLE BikeMovement (
+--
+-- table för att uppdatera cyklarnas position.
+--
+CREATE TABLE BikeMovement
+(
   movement_id INT AUTO_INCREMENT PRIMARY KEY,
-  bike_id VARCHAR(50) NOT NULL,
+  bike_id VARCHAR(36) NOT NULL,
   position POINT NOT NULL,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id)
 );
 
+--
+-- table för att skapa alla soner 
+--
+CREATE TABLE Zone
+(
+  zone_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  city VARCHAR(50) NOT NULL,
+  type ENUM('parking', 'chargestation', 'wrongly_parked'),
+  coordinates POINT NOT NULL,
+  capacity INT,
+  radius INT DEFAULT 25
+);
 
+
+--
+-- en procedure för att starta en resa med en användare och en cykel.
+--
 DELIMITER ;;
 
 CREATE PROCEDURE StartTrip(
-  IN input_bike_id VARCHAR(50),
-  IN input_user_id INT
+  IN input_bike_id VARCHAR(36),
+  IN input_user_id VARCHAR(60)
 )
 BEGIN
 
@@ -79,42 +114,73 @@ END
 ;;
 DELIMITER ;
 
+--
+-- en procedure för att avsluta resan och lägga till dem sista sakerna i trip.
+--
 DELIMITER ;;
 
 CREATE PROCEDURE EndTrip(
-  IN input_bike_id VARCHAR(50)
+  IN input_bike_id VARCHAR(36)
 )
 BEGIN
-
+  DECLARE bike_start_position POINT;
   DECLARE bike_end_position POINT;
+  DECLARE new_trip_id INT;
+  DECLARE matched_zone_type ENUM('parking', 'chargestation', 'wrongly_parked');
+  DECLARE start_right BOOLEAN DEFAULT FALSE;
 
-  IF (SELECT status FROM Bike WHERE bike_id = input_bike_id) = 'in_use' THEN
-    SELECT position INTO bike_end_position
-    FROM Bike
-    WHERE bike_id = input_bike_id;
-    UPDATE Trip
-    SET
-      end_time = NOW(),
-      end_position = bike_end_position
-    WHERE bike_id = input_bike_id
+  SELECT trip_id INTO new_trip_id
+  FROM Trip
+  WHERE bike_id = input_bike_id
     AND end_time IS NULL;
 
-    UPDATE Bike
-    SET
-      status = 'available'
-    WHERE bike_id = input_bike_id;
+  SELECT start_position INTO bike_start_position
+  FROM Trip
+  WHERE trip_id = new_trip_id;
+
+  SELECT COUNT(*) > 0 INTO start_right
+  FROM Zone
+  WHERE (type = 'parking' OR type = 'chargestation')
+  AND ST_Distance_Sphere(coordinates, bike_start_position) <= radius;
+
+  SELECT position INTO bike_end_position
+  FROM Bike
+  WHERE bike_id = input_bike_id;
+
+  SELECT type INTO matched_zone_type
+  FROM Zone
+  WHERE ST_Distance_Sphere(coordinates, bike_end_position) <= radius;
+
+  UPDATE Trip
+  SET 
+    end_time = NOW(),
+    end_position = bike_end_position
+  WHERE trip_id = new_trip_id;
+
+  IF matched_zone_type = 'parking' OR matched_zone_type = 'chargestation' THEN
+    IF start_right THEN
+      CALL TripCost(new_trip_id, matched_zone_type);
+    ELSE
+      CALL TripCost(new_trip_id, 'discount');
+    END IF;
   ELSE
-    SELECT CONCAT('Bike ', input_bike_id, ' has not started a trip and can not end') AS message;
+    CALL TripCost(new_trip_id, 'wrongly_parked');
   END IF;
 
-END
-;;
+  UPDATE Bike
+  SET status = 'available'
+  WHERE bike_id = input_bike_id;
+
+END;;
 DELIMITER ;
 
+--
+-- Procedure som upddaterar bike table till sin nya position
+--
 DELIMITER ;;
 
 CREATE PROCEDURE LogBikeMovement(
-  IN input_bike_id VARCHAR(50),
+  IN input_bike_id VARCHAR(36),
   IN new_position POINT
 )
 BEGIN
@@ -144,12 +210,133 @@ END
 
 DELIMITER ;
 
+
 DELIMITER ;;
 
-CREATE PROCEDURE RemoveTrips()
+CREATE PROCEDURE RemoveTrips(
+  IN input_remove INT
+)
 BEGIN
-  DELETE FROM Trip;
+  IF input_remove = 1 THEN
+    DELETE FROM Trip WHERE simulation_trip = 1;
+  ELSE
+    DELETE FROM Trip;
+  END IF;
 END
 ;;
 
 DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE RemoveUsers(
+  IN input_remove INT
+)
+BEGIN
+  IF input_remove = 1 THEN
+    DELETE FROM User WHERE simulation_user = 1;
+  ELSE
+    DELETE FROM User;
+  END IF;
+END
+;;
+
+DELIMITER ;
+
+--
+-- räknar ut hur mycket resan kommer kosta
+--
+DELIMITER ;;
+
+CREATE PROCEDURE TripCost(
+  IN input_trip_id INT,
+  IN input_zone VARCHAR(50)
+)
+BEGIN
+  DECLARE t_start_time DATETIME;
+  DECLARE t_end_time DATETIME;
+  DECLARE t_duration_minutes INT;
+  DECLARE t_unlock_fee FLOAT DEFAULT 20;
+  DECLARE t_per_minute_rate FLOAT DEFAULT 2.5;
+  DECLARE t_wrongparking FLOAT DEFAULT 30;
+  DECLARE t_discount FLOAT DEFAULT 15;
+  DECLARE t_cost FLOAT;
+  DECLARE t_user_id VARCHAR(60);
+
+  SELECT start_time, end_time, user_id INTO t_start_time, t_end_time, t_user_id
+  FROM Trip
+  WHERE trip_id = input_trip_id;
+
+  SELECT input_zone AS message;
+
+  SET t_duration_minutes = TIMESTAMPDIFF(MINUTE, t_start_time, t_end_time);
+
+  SET t_cost = t_unlock_fee + (t_duration_minutes * t_per_minute_rate);
+
+  IF input_zone = 'discount' THEN 
+    SET t_cost = t_cost - t_discount;
+  END IF;
+
+  IF input_zone = 'wrongly_parked' THEN
+    SET t_cost = t_cost + t_wrongparking;
+  END IF;
+
+  UPDATE Trip
+  SET
+    duration_minutes = t_duration_minutes,
+    cost = t_cost
+  WHERE Trip_id = input_trip_id;
+
+  UPDATE User
+  SET 
+    balance = balance - t_cost
+  WHERE user_id = t_user_id;
+END
+;;
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE UpdateStatus(
+  IN u_bike_id VARCHAR(36),
+  IN new_status VARCHAR(50)
+)
+BEGIN
+  UPDATE bike
+  SET
+    status = new_status
+  WHERE bike_id = u_bike_id;
+END
+;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE GetAvailableBikes()
+BEGIN
+  SELECT
+    bike_id,
+    status,
+    battery_level,
+    CONCAT(ST_X(position), ' ', ST_Y(position)) AS position
+  FROM Bike
+  WHERE status = 'available';
+END;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE AddMoney(
+  IN u_user_id VARCHAR(60),
+  IN add_money FLOAT
+)
+BEGIN
+  UPDATE User
+  SET balance = balance + add_money
+  WHERE user_id = u_user_id;
+END;;
+
+DELIMITER ;
+

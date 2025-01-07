@@ -1,20 +1,12 @@
 "use strict";
 const express = require("express");
-const { graphqlHTTP } = require("express-graphql");
-const { schema, root } = require("../../graphql/bikegraph.js");
-const bike = require("../../src/bike.js");
+
+const bike = require("../../src/first.js");
 
 const router = express.Router();
 const app = express();
 
 app.use(express.json());
-
-// GraphQL route(används inte, kanske inför)
-router.use("/graphql", graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true,
-}));
 
 // Route för att lägga till en ny cykel
 router.post("/add_bike", async (req, res) => {
@@ -106,16 +98,27 @@ router.delete("/bikes/:isSimulated", async (req, res) => {
 });
 
 // Route för att radera alla resor
-router.delete("/trips", async (req, res) => {
-    await bike.deleteTrips();
-    res.json({ message: 'Alla resor har raderats.' });
+router.delete("/trips/:isSimulated", async (req, res) => {
+    const simulatedOnly = req.params.isSimulated === "1";
+
+    try {
+        await bike.deleteTrips(simulatedOnly);
+        res.json({
+            message: simulatedOnly ? "Simulerade resor har tagits bort" : "Alla resor har tagits bort"
+        });
+    } catch (error) {
+        console.error("Error vid borttagning av resor:", error.message);
+        res.json({
+            error: error.message || "Något gick fel vid borttagning av resor."
+        });
+    }
 });
 
 // Route för att lägga till en ny användare
 router.post("/add_user", async (req, res) => {
-    const { username, email, balance = 0 } = req.body;
+    const { email, balance = 0 } = req.body;
 
-    const result = await bike.addUser(username, email, balance);
+    const result = await bike.addUser(email, balance);
 
     res.json({ message: "Användare skapad", userId: result.insertId });
 });
@@ -144,6 +147,26 @@ router.put("/bikes/:bikeId", async (req, res) => {
         console.error("Error vid uppdatering av cykel:", error.message);
         res.json({ error: error.message || "Något gick fel vid uppdatering av cykeln." });
     }
+});
+
+// Route för visa resor från en viss cykel
+router.get("/user/trips/:user_id", async (req, res) => {
+    const { user_id } = req.params;
+
+    const user = await bike.showTripsByUserId(user_id);
+
+    console.log(user);
+    res.json(user);
+});
+
+// Route för visa resor från en viss cykel
+router.get("/user/:user_id", async (req, res) => {
+    const { user_id } = req.params;
+
+    const user = await bike.getUserInfo(user_id);
+
+    console.log(user);
+    res.json(user);
 });
 
 module.exports = router;

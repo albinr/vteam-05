@@ -1,0 +1,8 @@
+{
+  "host": "testdatabase",
+  "user": "dbadm",
+  "password": "scrt_pa_s_db",
+  "database": "testdb",
+  "multipleStatements": true,
+  "connectionLimit": 10
+}

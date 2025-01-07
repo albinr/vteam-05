@@ -1,0 +1,29 @@
+{
+    "plugins": ["jsdoc-route-plugin"],
+    "recurseDepth": 10,
+    "source": {
+      "exclude": [ 
+        "build",
+        "node_modules"
+       ],
+      "includePattern": ".+\\.js(doc|x)?$",
+      "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "module",
+    "tags": {
+      "allowUnknownTags": true,
+      "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+      "cleverLinks": false,
+      "monospaceLinks": false,
+      "default": {
+        "outputSourceFiles": false
+      }
+    },
+    "opts": {
+      "encoding": "utf8",
+      "recurse": true,
+      "destination": "./docs"
+    }
+  }

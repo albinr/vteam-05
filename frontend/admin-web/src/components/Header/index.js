@@ -1,11 +1,29 @@
 "use client";
 
-import React from 'react';
-import { signIn, signOut, useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+// import LoginButton from "@/components/LoginButton";
+import LogoutButton from "@/components/LogoutButton";
 import "./Header.css";
+import Cookies from "js-cookie";
+import Button from "../Button";
 
 export default function Header({ onToggleSidebar }) {
-    const { data: session } = useSession();
+    const [session, setSession] = useState(null);
+
+    useEffect(() => {
+        const userCookie = Cookies.get("user");
+
+        if (userCookie) {
+            try {
+                setSession({ user: JSON.parse(userCookie) });
+            } catch (error) {
+                console.error("Failed to parse user cookie:", error);
+                setSession(null);
+            }
+        } else {
+            setSession(null);
+        }
+    }, []);
 
     return (
         <header className="header">
@@ -18,19 +36,22 @@ export default function Header({ onToggleSidebar }) {
             </div>
             <div className="header-right">
                 {session ? (
-                    <button
-                        className="header-logout"
-                        onClick={() => signOut()}
-                    >
-                        Sign Out
-                    </button>
+                    <div className="user-info">
+                        <p>{session.user?.name || "User"}</p>
+                        {session.user?.image && (
+                            <img
+                                src={session.user.image}
+                                alt="User Profile"
+                                className="user-profile-image"
+                            />
+                        )}
+                        <LogoutButton className="header-logout" />
+                    </div>
                 ) : (
-                    <button
-                        className="header-login"
-                        onClick={() => signIn("google")}
-                    >
-                        Sign In
-                    </button>
+                    <Button
+                        href="/auth/signin"
+                        label={"Sign in"}
+                    />
                 )}
             </div>
         </header>
