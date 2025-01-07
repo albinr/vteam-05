@@ -83,11 +83,41 @@ async function deleteUser(userId) {
     }
 }
 
+
+async function findOrCreateUser(oauthUser) {
+    try {
+        const user_id = oauthUser.id;
+        const email = oauthUser.emails[0].value;
+        const name = oauthUser.displayName;
+        const photo = oauthUser.photos[0].value;
+
+        const sqlFindUser = `SELECT user_id, balance, email FROM User WHERE user_id = ?`;
+        const [existingUser] = await pool.query(sqlFindUser, [user_id]);
+
+        if (existingUser.length > 0) {
+            return existingUser[0];
+        }
+
+        const initialBalance = 0;
+        const sqlAddUser = `
+            INSERT INTO User (user_id, balance, email, simulation_user)
+            VALUES (?, ?, ?, ?)
+        `;
+        await pool.query(sqlAddUser, [user_id, initialBalance, email, 0]);
+
+        return { user_id, email, balance: initialBalance };
+    } catch (error) {
+        console.error("Error vid hantering av Google-inloggning:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     getUserInfo,
     addUser,
     updateUser,
     deleteUsers,
     getAllUsers,
-    deleteUser
+    deleteUser,
+    findOrCreateUser
 };
