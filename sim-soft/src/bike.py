@@ -50,6 +50,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.simulated = simulated  # To mark if the bike is simulated
         self.added_to_db = False
         self.add_to_db_tries = 0
+        self.user_owner = None
 
         while not self.added_to_db and self.add_to_db_tries < 3:
             self.add_bike_to_system()
@@ -82,19 +83,19 @@ class Bike: # pylint: disable=too-many-instance-attributes
         await asyncio.sleep(self.update_delay)
 
         while self.status != "shutdown":
-            try:
-                new_data = requests.get(
-                    f"{API_URL}/v2/bikes/{self.bike_id}",
-                    timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9
-                )
+            # try:
+            #     new_data = requests.get(
+            #         f"{API_URL}/v2/bikes/{self.bike_id}",
+            #         timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9
+            #     )
 
-                if new_data.status_code == 200:
-                    data = new_data.json()[0]
-                    # self.battery = data["battery_level"]
-                    # self.status = data["status"]
-                    # self.location = (data["longitude"], data["latitude"])
-            except requests.exceptions.RequestException as e:
-                print(f"Error getting data from API: {e}")
+            #     # if new_data.status_code == 200:
+            #     #     data = new_data.json()[0]
+            #         # self.battery = data["battery_level"]
+            #         # self.status = data["status"]
+            #         # self.location = (data["longitude"], data["latitude"])
+            # except requests.exceptions.RequestException as e:
+            #     print(f"Error getting data from API: {e}")
 
             print(f"[Bike {self.bike_id:2}] Sending data to API...")
             try:
