@@ -83,9 +83,14 @@ class Simulation:
         """
         for user in self.users:
             for bike in self.bikes:
-                if bike.status == "available":
-                    bike.status = "rented"
+                if user.bike:
+                    break
+
+                if not bike.user_owner:
+                    bike.status = "in_use"
+                    bike.user_owner = user.user_id
                     user.bike = bike.bike_id
+                    break
 
     async def start(self):
         """Start the simulation and run bike updates."""
@@ -104,7 +109,7 @@ def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
         # Remove simulated trips
-        requests.delete(f"{API_URL}/v2/trips/1", timeout=30)
+        requests.delete(f"{API_URL}/v2/trips/0", timeout=30) # TODO: Change from 0 to 1 when fixed in db
     except requests.exceptions.RequestException as e:
         print(f"Error deleting trip data: {e}")
 

@@ -14,7 +14,8 @@ MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 RETRY_INTERVAL = 5
-RENT_TIME_MAX = 10 # Max rent time in seconds
+RETURN_OR_HIRE_PROBABILITY = 5
+RENT_INTERVAL = 60
 
 API_URL="http://backend:1337"
 
@@ -26,7 +27,7 @@ class User:
         self.user_id = user_id
         self.username = username
         self.email = email
-        self.balance = 1000 - random.randint(0, 300)
+        self.balance = 1000 - random.randint(0, 300) # Kanske ta bort (bara i databasen?)
         self.bikes = []
         self.bike = None
         self.bike_rented = False
@@ -127,7 +128,7 @@ class User:
 
                 # return bike after random time
 
-            await asyncio.sleep(RETRY_INTERVAL)
+            await asyncio.sleep(RENT_INTERVAL)
             # await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
 
