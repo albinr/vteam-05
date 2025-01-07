@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 // import LoginButton from "@/components/LoginButton";
-// import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "@/components/LogoutButton";
 import { FaLocationDot, FaSquareArrowUpRight, FaBell } from "react-icons/fa6";
 
 import "./Navigation.css";
@@ -32,6 +32,9 @@ export default function Navigation() {
                 </li>
                 <li>
                     <a href="/history"><FaBell /></a>
+                </li>
+                <li>
+                    <LogoutButton />
                 </li>
             </ul>
         </nav>

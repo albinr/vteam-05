@@ -26,7 +26,12 @@ export const addBikeMarker = (bikeData) => {
             key={bike_id}
             position={[longitude, latitude]}
         >
-            <Popup>
+            <Popup
+                style={{
+                    window: "90vw",
+                    heigh: "90vh"
+                }}
+            >
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"

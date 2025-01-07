@@ -43,7 +43,7 @@ export default function MapPage() {
 
     return (
         <div id="map-page-container">
-            {bikes.length > 0 ? <Map markers={bikes} /> : <p>Loading...</p>}
+            {bikes.length > 0 ? <Map markers={bikes} /> : <Map markers={[]} />}
         </div>
     );
 }
