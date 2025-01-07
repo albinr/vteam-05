@@ -1,18 +1,19 @@
-FROM node:18
+FROM node:18-alpine
 
 COPY package*.json ./
 
-VOLUME /user-app
+VOLUME /app
 
-WORKDIR /user-app
+WORKDIR /app
 
-EXPOSE 8081
+RUN npm install
 
-RUN ["npm", "install"]
+COPY . .
 
-RUN ["npm", "install", "--global", "@expo/ngrok@^4.1.0"]
+# RUN npm run build
 
-# Freeze on startup
-# CMD ["tail", "-f", "/dev/null"]
+EXPOSE 3002
 
-CMD ["npx", "expo", "start", "-c", "--tunnel"]
+CMD ["npm", "run", "dev"] 
+# CMD ["npm", "run", "start"]
+

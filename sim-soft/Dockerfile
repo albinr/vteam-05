@@ -13,10 +13,8 @@ RUN pip install -r requirements.txt
 # CMD ["python3", "simulation.py"]
 
 # cli test with entrypoint
-# ENTRYPOINT ["python", "cli.py", "start", "--num-bikes 100"]
+ENTRYPOINT ["python", "cli.py", "start", "--num-bikes", "5"]
 # CMD ["python", "cli.py", "start", "--num-bikes", "3000"]
-CMD ["python", "cli.py", "start", "--num-bikes", "1000"]
-
 
 # Freeze program on startup
 # CMD ["tail", "-f", "/dev/null"]

@@ -1,0 +1,38 @@
+.not-found-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full height */
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+.not-found-title {
+    font-size: 96px;
+    font-weight: bold;
+    margin: 0;
+    color: #ff6b6b;
+}
+
+.not-found-text {
+    font-size: 18px;
+    margin: 20px 0;
+}
+
+.not-found-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.not-found-link:hover {
+    background-color: #555;
+}
