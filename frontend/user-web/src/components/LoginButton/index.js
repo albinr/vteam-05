@@ -12,7 +12,7 @@ const LoginButton = ({ provider, label, className = "" }) => {
         <Button
             label={label}
             // onClick={handleLogin}
-            href={`${process.env.NEXT_PUBLIC_API_AUTH_URL}/admin-web/${provider}`}
+            href={`${process.env.NEXT_PUBLIC_API_AUTH_URL}/user-web/${provider}`}
             // onClick={`${process.env.NEXT_PUBLIC_API_AUTH_URL}/admin-web/${provider}`}
             className={`login-button ${className}`}
         />
