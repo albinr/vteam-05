@@ -33,6 +33,6 @@ SELECT
     name,
     city,
     type,
-    ST_PointFromText(CONCAT('POINT(', longitude, ' ', latitude, ')')),
+    ST_PointFromText(CONCAT('POINT(', latitude , ' ', longitude, ')')),
     capacity
 FROM TempZone;
