@@ -23,7 +23,11 @@ const Table = ({ columns, data, onRowClick }) => {
                         </tr>
                     ) : (
                         data.map((row, index) => (
-                            <tr key={index}>
+                            <tr
+                                key={index}
+                                onClick={() => onRowClick && onRowClick(row)}
+                                className={onRowClick ? "clickable-row" : ""}
+                            >
                                 {columns.map((col) => (
                                     <td key={col.accessor}>{row[col.accessor]}</td>
                                 ))}

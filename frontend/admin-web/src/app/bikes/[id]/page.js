@@ -3,35 +3,44 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import withAuth from "../../hoc/withAuth";
-import { fetchBikeById } from "../api";
+import { fetchBikeById, fetchTripsByBikeId } from "../api";
 import Loader from "@/components/Loader";
 
 const BikeDetails = ({ session }) => {
     const { id } = useParams();
     const [bike, setBike] = useState(null);
+    const [trips, setTrips] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!id) return;
+        if (!id) {
+            setError("Invalid bike ID.");
+            setLoading(false);
+            return;
+        }
 
-        const loadBike = async () => {
+        const loadBikeData = async () => {
             try {
-                const data = await fetchBikeById(id);
-                setBike(data);
+                const bike = await fetchBikeById(id);
+                const trips = await fetchTripsByBikeId(id);
+                console.log(bike)
+                console.log(trips)
+                setBike(...bike);
+                setTrips(trips);
             } catch (err) {
-                console.error("Error fetching bike details:", err.message);
-                setError("Failed to fetch bike details.");
+                console.error("Error fetching data:", err.message);
+                setError("Failed to fetch bike details or trips.");
             } finally {
                 setLoading(false);
             }
         };
 
-        loadBike();
+        loadBikeData();
     }, [id]);
 
     if (loading) {
-        return <Loader />;
+        return <Loader/>;
     }
 
     if (error) {
@@ -43,20 +52,27 @@ const BikeDetails = ({ session }) => {
         );
     }
 
+    if (!bike) {
+        return <p>No bike details available.</p>;
+    }
+
     return (
         <div>
             <h1>Bike Details</h1>
-            <p>Welcome, {session.user?.name || "User"}!</p>
-            {bike ? (
-                <>
-                    <p><strong>Bike ID:</strong> {bike.id}</p>
-                    <p><strong>Status:</strong> {bike.status}</p>
-                    <p><strong>Battery Level:</strong> {bike.battery_level}%</p>
-                    <p><strong>Longitude:</strong> {bike["ST_X(position)"]}</p>
-                    <p><strong>Latitude:</strong> {bike["ST_Y(position)"]}</p>
-                </>
-            ) : (
-                <p>No bike details available.</p>
+            <p><strong>Bike ID:</strong> {bike.bike_id}</p>
+            <p><strong>Status:</strong> {bike.status}</p>
+            <p><strong>Battery Level:</strong> {bike.battery_level}%</p>
+            <p><strong>Longitude:</strong> {bike.longitude || "N/A"}</p>
+            <p><strong>Latitude:</strong> {bike.latitude || "N/A"}</p>
+            {trips && (
+                <div>
+                    <h2>Trips</h2>
+                    <ul>
+                        {trips.map((trip) => (
+                            <li key={trip.id}>{trip.details}</li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </div>
     );

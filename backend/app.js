@@ -23,6 +23,25 @@ const v2Router = require("./route/v2/api.js");
 
 const cors = require("cors");
 
+// Options for cors
+const corsOptions = {
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: [
+        "http://admin-web:3000",
+        "http://user-web:3001",
+        "http://user-app:3002",
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002"
+        // "*"
+    ],
+    credentials: true,
+    optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
 require('dotenv').config({ path: '.env.local' });
 
 app.set("view engine", "ejs");
@@ -146,34 +165,6 @@ app.get('/auth/google/callback',
 //     }
 // );
 
-// Options for cors
-const corsOptions = {
-    headers: [
-        { key: "Access-Control-Allow-Credentials", value: "true" },
-        { key: "Access-Control-Allow-Origin", value: "*" },
-        // ...
-    ],
-    origin: [
-        "http://admin-web:3000",
-        "http://user-web:3001",
-        "http://user-app:8081",
-        "http://user-app:1900",
-        "http://user-app:1901",
-        "http://user-app:1902",
-        "http://user-app:1903",
-        "http://user-app:1906",
-        "http://localhost:1900",
-        "http://localhost:1901",
-        "http://localhost:1902",
-        "http://localhost:1903",
-        "http://localhost:1906",
-        // "*"
-    ],
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
-
-app.use(cors(corsOptions)); // Added for cors thingy
 
 // cors(corsOptions)
 

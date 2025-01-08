@@ -5,9 +5,17 @@
     padding: 20px;
 }
 
-.dashboard-map {
+.dash-map {
     width: 100%;
-    height: 400px;
+    height: 300px;
+    border: 10px solid lightgray;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.dash-links {
+    display: flex;
+    justify-content: space-evenly;
 }
 
 .dashboard-widgets {

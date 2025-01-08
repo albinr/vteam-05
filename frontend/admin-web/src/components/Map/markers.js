@@ -9,17 +9,44 @@ L.Icon.Default.mergeOptions({
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
+const bikeIcon = L.icon({
+    iconUrl: "/icons/bike-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+});
+
+
 export const addBikeMarker = (bikeData) => {
-    const { id, position, battery, status } = bikeData;
+    // const { id, position, battery, status } = bikeData;
+    const { bike_id, battery_level, latitude, longitude, status } = bikeData;
+
+    const handleButtonClick = () => {
+        console.log("Clicked bike: ", bike_id);
+    };
+
     return (
         <Marker
-            key={id}
-            position={position}
+            key={bike_id}
+            position={[longitude, latitude]}
+            icon={bikeIcon}
         >
             <Popup>
-                <strong>Bike {id}</strong><br />
-                Battery: {battery}%<br />
-                Status: {status}
+                <strong>{bike_id}</strong><br />
+                <span style={{
+                    color: status === "available" ? "green"
+                    : status === "rented" ?? status === "charging" ? "orange"
+                    : status === "maintance" ? "red"
+                    : "red"
+                }}>{status}</span><br />
+                Battery: {battery_level}%<br />
+                {
+                    status === "available" ?
+                        <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
+                        :
+                        <button id={bike_id} className="rent-button" disabled>Not Available</button>
+                }
             </Popup>
         </Marker>
     );

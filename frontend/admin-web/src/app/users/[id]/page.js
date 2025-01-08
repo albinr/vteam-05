@@ -3,31 +3,53 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import withAuth from "../../hoc/withAuth";
-import { fetchUserById } from "../api";
+import { fetchUserById, fetchUserTripsById, fetchUserPaymentsById } from "../api";
 import Loader from "@/components/Loader";
 
 const UserDetails = ({ session }) => {
-    const { id } = useParams();
+    const { id } = useParams(); // Ensure `id` is coming from the URL
     const [user, setUser] = useState(null);
+    const [trips, setTrips] = useState([]);
+    const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!id) return;
+        if (!id) {
+            setError("Invalid user ID.");
+            setLoading(false);
+            return;
+        }
 
-        const loadUser = async () => {
+        const loadUserData = async () => {
             try {
-                const data = await fetchUserById(id);
-                setUser(data);
+                console.log("Fetching user details for ID:", id);
+
+                // Fetch user details
+                const userData = await fetchUserById(id);
+                console.log("User data:", userData);
+
+                // Fetch user trips
+                const userTrips = await fetchUserTripsById(id);
+                console.log("User trips:", userTrips);
+
+                // Fetch user payments
+                const userPayments = await fetchUserPaymentsById(id);
+                console.log("User payments:", userPayments);
+
+                // Update states
+                setUser(userData);
+                setTrips(userTrips || []);
+                setPayments(userPayments || []);
             } catch (err) {
-                console.error("Error fetching user details:", err.message);
-                setError("Failed to fetch user details.");
+                console.error(`Error fetching data: ${err.message}`);
+                setError(`Failed to fetch user details, trips, or payments. API error: ${err.message}`);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadUser();
+        loadUserData();
     }, [id]);
 
     if (loading) {
@@ -43,23 +65,36 @@ const UserDetails = ({ session }) => {
         );
     }
 
+    if (!user) {
+        return <p>No User details available.</p>;
+    }
+
     return (
         <div>
             <h1>User Details</h1>
-            {user ? (
-                <>
-                    <p><strong>ID:</strong> {user.id}</p>
-                    <p><strong>Username:</strong> {user.username}</p>
-                    <p><strong>Email:</strong> {user.email}</p>
-                    <p><strong>Balance:</strong> {user.balance}</p>
-                </>
-            ) : (
-                <p>No user details found.</p>
+            <p><strong>User ID:</strong> {user.user_id}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Balance:</strong> {user.balance}</p>
+            {trips.length > 0 && (
+                <div>
+                    <h2>Trips</h2>
+                    <ul>
+                        {trips.map((trip) => (
+                            <li key={trip.id}>{trip.details}</li>
+                        ))}
+                    </ul>
+                </div>
             )}
-            <h2>Payments</h2>
-            {/* Add logic for displaying payments if applicable */}
-            <h2>Trips</h2>
-            {/* Add logic for displaying trips if applicable */}
+            {payments.length > 0 && (
+                <div>
+                    <h2>Payments</h2>
+                    <ul>
+                        {payments.map((payment) => (
+                            <li key={payment.id}>{payment.details}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
