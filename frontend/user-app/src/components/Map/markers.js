@@ -1,5 +1,7 @@
 import { Marker, Popup} from "react-leaflet";
 import L from "leaflet";
+import { apiClient } from "@/services/apiClient";
+import Cookies from "js-cookie";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,12 +15,31 @@ export const addBikeMarker = (bikeData) => {
     // const { id, position, battery, status } = bikeData;
     const { bike_id, battery_level, latitude, longitude, status } = bikeData;
 
-    const handleButtonClick = () => {
+    const handleButtonClick = async () => {
         if (status !== "available") {
             console.log("Bike is not available for rent");
             return;
         }
-        console.log("Renting bike: ", bike_id);
+
+        const userId = Cookies.get("user") ? JSON.parse(Cookies.get("user")).id : null;
+
+        if (!bike_id || !userId) {
+            console.log("Missing bikeId or userId");
+            return;
+        }
+
+        try {
+            console.log("Renting bike: ", bike_id);
+            await apiClient.post(`/trips/start/${bike_id}/${userId}`);
+
+            // Redirect to "/trip"
+            window.location.href = "/trip";
+
+        } catch (error) {
+            console.error("Error starting trip:", error);
+            return error;
+        }
+
     };
 
     return (
