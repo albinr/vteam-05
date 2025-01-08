@@ -8,3 +8,9 @@
 .rent-button {
     width: 100%;
 }
+
+.leaflet-popup-content {
+    /* width: 70vw;
+    height: 50vh; */
+    font-size: 2rem;
+}
