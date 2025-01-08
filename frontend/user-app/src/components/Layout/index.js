@@ -6,6 +6,7 @@ import { useState } from "react";
 // import Sidebar from "@/components/Sidebar";
 // import Loader from "@/components/Loader";
 import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import "./Layout.css";
 
 export default function Layout({ children }) {
@@ -37,6 +38,7 @@ export default function Layout({ children }) {
     return (
         <div className="layout">
             <div className="layout-body">
+                <Header />
                 {/* <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} /> */}
                 <div className={`layout-content`}>
                     <main className="layout-main">{children}</main>
