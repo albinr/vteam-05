@@ -40,7 +40,7 @@ CREATE TABLE Bike
 CREATE TABLE User (
   user_id VARCHAR(60) PRIMARY KEY,
   balance FLOAT,
-  Email VARCHAR (255) UNIQUE,
+  email VARCHAR (255) UNIQUE,
   simulation_user INT DEFAULT 0,
   admin INT DEFAULT 0
 );
@@ -349,7 +349,9 @@ BEGIN
     b.bike_id,
     b.status,
     b.battery_level,
-    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    ST_X(b.position) AS longitude,
+    ST_Y(b.position) AS latitude,
+    b.simulation,
     IF(z.city IS NULL, 'outside city', z.city) AS city
   FROM Bike b
   LEFT JOIN Zone z
@@ -373,7 +375,9 @@ BEGIN
     b.bike_id,
     b.status,
     b.battery_level,
-    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    ST_X(b.position) AS longitude,
+    ST_Y(b.position) AS latitude,
+    b.simulation,
     z.city
   FROM Bike b
   JOIN Zone z
@@ -395,7 +399,9 @@ BEGIN
     b.bike_id,
     b.status,
     b.battery_level,
-    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    ST_X(b.position) AS longitude,
+    ST_Y(b.position) AS latitude,
+    b.simulation,
     IF(z.city is NULL, 'outside city', z.city) as city 
   FROM Bike b
   LEFT JOIN Zone z

@@ -31,6 +31,15 @@ router.put("/:userId", async (req, res) => {
     }
 });
 
+// ge en användare admin rättigheter
+router.put("/admin/:userId", async (req, res) => {
+    const { userId } = req.params
+
+    const result = await user.giveAdmin(userId);
+
+    res.json(result.info)
+})
+
 // hämta alla trips av en användare
 router.get("/:userId/trips", async (req, res) => {
     const { userId } = req.params;
@@ -71,9 +80,5 @@ router.get("/", async (req, res) => {
     res.json(allUsers);
 });
 
-router.delete("/", async (req, res) => {
-    const delUsers = await user.deleteUsers();
-    res.json(delUsers);
-});
 
 module.exports = router;

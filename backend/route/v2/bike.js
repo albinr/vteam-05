@@ -50,6 +50,13 @@ router.get("/available", async (req, res) => {
     res.json(bikes);
 });
 
+// Hämta alla cyklar i en stad
+router.get("/city/:city", async (req, res) => {
+    const { city } = req.params;
+    const bikes = await bike.getCityBikes(city);
+    res.json(bikes);
+});
+
 // Hämta en Cykel
 router.get("/:bikeId", async (req, res) => {
     const { bikeId } = req.params;

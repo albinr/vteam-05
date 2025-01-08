@@ -30,6 +30,16 @@ async function getAvailableBikes() {
     }
 }
 
+async function getCityBikes(city) {
+    try {
+        const [rows] = await pool.query(`CALL GetAvailableBikes(?)`,[city]);
+        return rows[0];
+    } catch (error) {
+        console.error("Error vid anrop av proceduren GetAvailableBikes:", error);
+        throw error;
+    }
+}
+
 async function showBike(bikeId) {
     
     const [rows] = await pool.query(`
@@ -138,5 +148,6 @@ module.exports = {
     updateBike,
     deleteBike,
     deleteBikes,
-    getAvailableBikes
+    getAvailableBikes,
+    getCityBikes
 };

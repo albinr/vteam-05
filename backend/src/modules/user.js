@@ -1,7 +1,7 @@
 const pool = require('../db/db.js');
 
 async function getUserInfo(user_id) {
-    const sql = `SELECT user_id, Balance AS balance, Email AS email FROM User WHERE user_id = ?`;
+    const sql = `SELECT * FROM User WHERE user_id = ?`;
     const [res] = await pool.query(sql, [user_id]);
 
     if (res.length === 0) {
@@ -12,7 +12,7 @@ async function getUserInfo(user_id) {
 }
 
 async function getAllUsers() {
-    const sql = `SELECT user_id, Balance AS balance, Email AS email, simulation_user FROM User`;
+    const sql = `SELECT * FROM User`;
     const [res] = await pool.query(sql);
 
     return res;
@@ -57,6 +57,19 @@ async function updateUser(userId, updatedData) {
         return { message: "Användare uppdaterad", affectedRows: result.affectedRows };
     } catch (error) {
         console.error("Error vid uppdatering av användare:", error.message);
+        throw error;
+    }
+}
+
+async function giveAdmin(userId) {
+    const sql = `UPDATE User SET admin = 1 WHERE user_id = ?`;
+
+    try {
+        const [result] = await pool.query(sql, [userId]);
+
+        return result;
+    } catch (error) {
+        console.error('Error updating user:', error);
         throw error;
     }
 }
@@ -119,5 +132,6 @@ module.exports = {
     deleteUsers,
     getAllUsers,
     deleteUser,
-    findOrCreateUser
+    findOrCreateUser,
+    giveAdmin
 };
