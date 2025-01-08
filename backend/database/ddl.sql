@@ -8,12 +8,18 @@ DROP PROCEDURE IF EXISTS StartTrip;
 DROP PROCEDURE IF EXISTS EndTrip;
 DROP PROCEDURE IF EXISTS LogBikeMovement;
 DROP PROCEDURE IF EXISTS RemoveBikes;
+DROP PROCEDURE IF EXISTS RemoveUsers;
+DROP PROCEDURE IF EXISTS RemoveTrips;
 DROP PROCEDURE IF EXISTS TripCost;
 DROP PROCEDURE IF EXISTS UpdareStatus;
+DROP PROCEDURE IF EXISTS GetAvailableBikes;
+DROP PROCEDURE IF EXISTS GetBikesInCity;
+DROP PROCEDURE IF EXISTS GetAllBikes;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS BikeMovement;
 DROP TABLE IF EXISTS Trip;
 DROP TABLE IF EXISTS Bike;
+DROP TABLE IF EXISTS Zone;
 
 --
 -- table för att skapa elsparkcyklarna
@@ -22,8 +28,9 @@ CREATE TABLE Bike
 (
   bike_id VARCHAR(36) PRIMARY KEY,
   status ENUM('available', 'in_use', 'maintenance', 'charging') DEFAULT 'available',
-  battery_level INT NOT NULL DEFAULT 100,
+  battery_level FLOAT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
+  speed FLOAT DEFAULT 0,
   simulation INT DEFAULT 0
 );
 
@@ -51,20 +58,20 @@ CREATE TABLE Trip
   end_position POINT,
   duration_minutes INT,
   cost INT,
-  speed FLOAT,
   simulation_trip INT DEFAULT 0,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id),
   FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
 --
--- table för att uppdatera cyklarnas position.
+-- table log för cyklarnas position.
 --
 CREATE TABLE BikeMovement
 (
   movement_id INT AUTO_INCREMENT PRIMARY KEY,
   bike_id VARCHAR(36) NOT NULL,
   position POINT NOT NULL,
+  speed FLOAT,
   FOREIGN KEY (bike_id) REFERENCES Bike(bike_id)
 );
 
@@ -79,7 +86,7 @@ CREATE TABLE Zone
   type ENUM('parking', 'chargestation', 'wrongly_parked'),
   coordinates POINT NOT NULL,
   capacity INT,
-  radius INT DEFAULT 25
+  radius INT DEFAULT 75
 );
 
 
@@ -95,13 +102,19 @@ CREATE PROCEDURE StartTrip(
 BEGIN
 
   DECLARE bike_start_position POINT;
+  DECLARE is_simulation INT DEFAULT 0;
+
+  IF (SELECT simulation FROM Bike WHERE bike_id = input_bike_id) = 1 
+    AND (SELECT simulation_user FROM User WHERE user_id = input_user_id) = 1 THEN
+    SET is_simulation = 1;
+  END IF;
 
   IF (SELECT status FROM Bike WHERE bike_id = input_bike_id) = 'available' THEN
     SELECT position INTO bike_start_position
     FROM Bike
     WHERE bike_id = input_bike_id;
-    INSERT INTO Trip (bike_id, user_id, start_time, start_position)
-    VALUES (input_bike_id, input_user_id, NOW(), bike_start_position);
+    INSERT INTO Trip (bike_id, user_id, start_time, start_position, simulation_trip )
+    VALUES (input_bike_id, input_user_id, NOW(), bike_start_position, is_simulation);
 
     UPDATE Bike SET status = 'in_use'
     WHERE bike_id = input_bike_id;
@@ -167,7 +180,9 @@ BEGIN
   END IF;
 
   UPDATE Bike
-  SET status = 'available'
+  SET
+  status = 'available',
+  speed = 0
   WHERE bike_id = input_bike_id;
 
 END;;
@@ -180,19 +195,25 @@ DELIMITER ;;
 
 CREATE PROCEDURE LogBikeMovement(
   IN input_bike_id VARCHAR(36),
-  IN new_position POINT
+  IN new_position POINT,
+  IN new_speed FLOAT
 )
 BEGIN
   UPDATE Bike
-  SET position = new_position
+  SET
+  position = new_position,
+  speed = new_speed
   WHERE bike_id = input_bike_id;
 
-  INSERT INTO BikeMovement (bike_id, position)
-  VALUES (input_bike_id, new_position);
+  INSERT INTO BikeMovement (bike_id, position, speed)
+  VALUES (input_bike_id, new_position, new_speed);
 END
 ;;
 DELIMITER ;
 
+--
+-- tar bort cyklar 
+--
 DELIMITER ;;
 
 CREATE PROCEDURE RemoveBikes(
@@ -209,6 +230,9 @@ END
 
 DELIMITER ;
 
+--
+-- tar bort resor
+--
 DELIMITER ;;
 
 CREATE PROCEDURE RemoveTrips(
@@ -225,6 +249,9 @@ END
 
 DELIMITER ;
 
+--
+-- tar bort användare  
+--
 DELIMITER ;;
 
 CREATE PROCEDURE RemoveUsers(
@@ -309,21 +336,77 @@ END
 
 DELIMITER ;
 
+
+--
+-- hämtar alla cyklar som är available
+--
 DELIMITER ;;
 
 CREATE PROCEDURE GetAvailableBikes()
 BEGIN
-  SELECT
-    bike_id,
-    status,
-    battery_level,
-    CONCAT(ST_X(position), ' ', ST_Y(position)) AS position
-  FROM Bike
-  WHERE status = 'available';
+  SELECT DISTINCT
+    b.bike_id,
+    b.status,
+    b.battery_level,
+    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    IF(z.city IS NULL, 'outside city', z.city) AS city
+  FROM Bike b
+  LEFT JOIN Zone z
+    ON ST_Distance_Sphere(b.position, z.coordinates) <= 16000
+  WHERE b.status = 'available';
 END;;
 
 DELIMITER ;
 
+
+--
+-- hämtar alla cyklar i en stad
+--
+DELIMITER ;;
+
+CREATE PROCEDURE GetBikesInCity(
+  IN input_city VARCHAR(50)
+)
+BEGIN
+  SELECT DISTINCT
+    b.bike_id,
+    b.status,
+    b.battery_level,
+    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    z.city
+  FROM Bike b
+  JOIN Zone z
+  ON 
+    ST_Distance_Sphere(z.coordinates, b.position) <= 16000
+  WHERE z.city = input_city;
+END;;
+
+DELIMITER ;
+
+--
+-- hämtar all cyklar ovsätt vad
+--
+DELIMITER ;;
+
+CREATE PROCEDURE GetAllBikes()
+BEGIN
+  SELECT DISTINCT
+    b.bike_id,
+    b.status,
+    b.battery_level,
+    CONCAT(ST_X(b.position), ' ', ST_Y(b.position)) AS position,
+    IF(z.city is NULL, 'outside city', z.city) as city 
+  FROM Bike b
+  LEFT JOIN Zone z
+    ON ST_Distance_Sphere(z.coordinates, b.position) <= 16000
+  ORDER BY z.city;
+END;;
+
+DELIMITER ;
+
+--
+-- lägg till pengar till user
+--
 DELIMITER ;;
 
 CREATE PROCEDURE AddMoney(
@@ -337,4 +420,3 @@ BEGIN
 END;;
 
 DELIMITER ;
-
