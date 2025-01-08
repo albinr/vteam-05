@@ -4,8 +4,8 @@
 "use strict";
 
 const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/auth/login-success";
-const USER_WEB_URL_SUCCESS = "http://localhost:3001/";
-const USER_APP_URL_SUCCESS = "http://localhost:8081/";
+const USER_WEB_URL_SUCCESS = "http://localhost:3001/auth/login-success";
+const USER_APP_URL_SUCCESS = "http://localhost:3002/auth/login-success";
 const AUTH_URL_FAILED = "/auth/failed";
 
 const port = process.env.DBWEBB_PORT || 1337;
