@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import withAuth from "../hoc/withAuth";
 import Table from "@/components/Table";
 import Loader from "@/components/Loader";
 import { fetchBikes } from "./api";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
-
+import "./Bikes.css";
 
 // Table columns for e-bike management
 const bikeColumns = [
@@ -55,18 +55,17 @@ const Bikes = ({ session }) => {
     return (
         <div>
             <h1>Bikes</h1>
-            <p>Welcome, {session.user?.name || "User"}!</p>
             <p>Manage all bikes on the platform from this page.</p>
             {error && <p className="error">{error}</p>}
-
-            <div>
+            <div className="bike-map">
+                <Map markers={bikes} />
+            </div>
+            <input></input>
             <Table
                 columns={bikeColumns}
                 data={bikes}
                 onRowClick={handleRowClick}
             />
-            <Map markers={bikes} />
-            </div>
         </div>
     );
 };
