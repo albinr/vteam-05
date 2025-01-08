@@ -7,7 +7,7 @@ import "./Header.css";
 import Cookies from "js-cookie";
 import Button from "../Button";
 
-export default function Header({ onToggleSidebar }) {
+export default function Header({}) {
     const [session, setSession] = useState(null);
 
     useEffect(() => {
@@ -28,11 +28,7 @@ export default function Header({ onToggleSidebar }) {
     return (
         <header className="header">
             <div className="header-left">
-                {/* Hamburger Menu */}
-                <button className="hamburger-menu" onClick={onToggleSidebar}>
-                    ☰
-                </button>
-                <h1 className="header-title">Admin Panel</h1>
+                <h1 className="header-title">User webpage</h1>
             </div>
             <div className="header-right">
                 {session ? (
