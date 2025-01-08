@@ -19,7 +19,8 @@ export default function Layout({ children }) {
 
     useEffect(() => {
         const token = Cookies.get("token");
-        setIsAuthenticated(!!token);
+        const user = Cookies.get("user");
+        setIsAuthenticated(!!token && !!user);
         setIsLoading(false);
     }, []);
 

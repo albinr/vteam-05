@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
+import Loader from "@/components/Loader";
 
 export default function LoginSuccess() {
     const router = new useRouter();
@@ -40,8 +41,7 @@ export default function LoginSuccess() {
 
     return (
         <div className="login-success-container">
-            <h1>Saving information</h1>
-            <p>Redirecting...</p>
+            <Loader message="Signing in..."/>
         </div>
     );
 }
