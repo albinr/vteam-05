@@ -28,7 +28,7 @@ export default function Header({}) {
     return (
         <header className="header">
             <div className="header-left">
-                <h1 className="header-title">User webpage</h1>
+                <h1 className="header-title">User-web</h1>
             </div>
             <div className="header-right">
                 {session ? (
