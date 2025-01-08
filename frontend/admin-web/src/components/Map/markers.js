@@ -10,11 +10,11 @@ L.Icon.Default.mergeOptions({
 });
 
 const bikeIcon = L.icon({
-    iconUrl: "/icons/bike-icon-40x40.png", // Replace with your custom icon path
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png", // For high-DPI displays
-    iconSize: [28, 28], // Size of the icon [width, height]
-    iconAnchor: [16, 32], // Anchor point (center-bottom of the icon)
-    popupAnchor: [0, -32], // Anchor point for the popup (relative to icon)
+    iconUrl: "/icons/bike-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
 });
 
 

@@ -7,10 +7,10 @@ import { fetchUserById, fetchUserTripsById, fetchUserPaymentsById } from "../api
 import Loader from "@/components/Loader";
 
 const UserDetails = ({ session }) => {
-    const { id } = useParams();
+    const { id } = useParams(); // Ensure `id` is coming from the URL
     const [user, setUser] = useState(null);
-    const [trips, setTrips] = useState(null);
-    const [payments, setPayments] = useState(null);
+    const [trips, setTrips] = useState([]);
+    const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -23,18 +23,27 @@ const UserDetails = ({ session }) => {
 
         const loadUserData = async () => {
             try {
-                const user = await fetchUserById(id);
-                const trips = await fetchTripsByUserId(id);
-                const payments = await fetchPaymentsByUserId(id);
-                console.log(user)
-                console.log(trips)
-                console.log(payments)
-                setUser(...user);
-                setTrips(trips);
-                setPayments(trips);
+                console.log("Fetching user details for ID:", id);
+
+                // Fetch user details
+                const userData = await fetchUserById(id);
+                console.log("User data:", userData);
+
+                // Fetch user trips
+                const userTrips = await fetchUserTripsById(id);
+                console.log("User trips:", userTrips);
+
+                // Fetch user payments
+                const userPayments = await fetchUserPaymentsById(id);
+                console.log("User payments:", userPayments);
+
+                // Update states
+                setUser(userData);
+                setTrips(userTrips || []);
+                setPayments(userPayments || []);
             } catch (err) {
-                console.error("Error fetching data:", err.message);
-                setError("Failed to fetch user details or trips or payments.");
+                console.error(`Error fetching data: ${err.message}`);
+                setError(`Failed to fetch user details, trips, or payments. API error: ${err.message}`);
             } finally {
                 setLoading(false);
             }
@@ -44,7 +53,7 @@ const UserDetails = ({ session }) => {
     }, [id]);
 
     if (loading) {
-        return <Loader/>;
+        return <Loader />;
     }
 
     if (error) {
@@ -64,7 +73,9 @@ const UserDetails = ({ session }) => {
         <div>
             <h1>User Details</h1>
             <p><strong>User ID:</strong> {user.user_id}</p>
-            {trips && (
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Balance:</strong> {user.balance}</p>
+            {trips.length > 0 && (
                 <div>
                     <h2>Trips</h2>
                     <ul>
@@ -74,7 +85,7 @@ const UserDetails = ({ session }) => {
                     </ul>
                 </div>
             )}
-            {payments && (
+            {payments.length > 0 && (
                 <div>
                     <h2>Payments</h2>
                     <ul>

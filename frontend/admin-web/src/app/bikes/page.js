@@ -5,9 +5,12 @@ import withAuth from "../hoc/withAuth";
 import Table from "@/components/Table";
 import Loader from "@/components/Loader";
 import { fetchBikes } from "./api";
+import { useRouter } from "next/navigation";
+import Map from "@/components/Map";
+
 
 // Table columns for e-bike management
-const ebikeColumns = [
+const bikeColumns = [
     { header: "ID", accessor: "bike_id" },
     { header: "Status", accessor: "status" },
     { header: "Longitude", accessor: "longitude" },
@@ -20,6 +23,8 @@ const Bikes = ({ session }) => {
     const [bikes, setBikes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const router = useRouter();
+
 
     useEffect(() => {
         const loadBikes = async () => {
@@ -40,6 +45,7 @@ const Bikes = ({ session }) => {
 
     const handleRowClick = (row) => {
         console.log("Selected E-Bike:", row);
+        router.push(`/bikes/${row.bike_id}`);
     };
 
     if (loading) {
@@ -53,11 +59,14 @@ const Bikes = ({ session }) => {
             <p>Manage all bikes on the platform from this page.</p>
             {error && <p className="error">{error}</p>}
 
+            <div>
             <Table
-                columns={ebikeColumns}
+                columns={bikeColumns}
                 data={bikes}
                 onRowClick={handleRowClick}
             />
+            <Map markers={bikes} />
+            </div>
         </div>
     );
 };
