@@ -41,7 +41,8 @@ CREATE TABLE User (
   user_id VARCHAR(60) PRIMARY KEY,
   balance FLOAT,
   Email VARCHAR (255) UNIQUE,
-  simulation_user INT DEFAULT 0
+  simulation_user INT DEFAULT 0,
+  admin INT DEFAULT 0
 );
 
 --
