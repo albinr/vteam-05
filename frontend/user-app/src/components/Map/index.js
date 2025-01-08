@@ -2,7 +2,7 @@
 
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { MapContainer, TileLayer } from "react-leaflet";
-import { addBikeMarker,addStationMarker,addZoneMarker } from "./markers.js";
+import { addBikeMarker, addChargingStationMarker, addZoneMarker } from "./markers.js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
@@ -33,17 +33,16 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
                 chunkedLoading
             >
                 {markers.map((marker) => {
-                    // switch (marker.type) {
-                        //     case "bike":
-                        //         return addBikeMarker(marker);
-                        //     case "station":
-                        //         return addStationMarker(marker);
-                        //     case "zone":
-                        //         return addZoneMarker(marker);
-                        //     default:
-                        //         return null;
-                        // }
-                        return addBikeMarker(marker);
+                    switch (marker.type) {
+                            case "bike":
+                                return addBikeMarker(marker);
+                            case "parking":
+                                return addChargingStationMarker(marker);
+                            case "chargestation":
+                                return addChargingStationMarker(marker);
+                            default:
+                                return null;
+                        }
                     })}
             </MarkerClusterGroup>
         </MapContainer>

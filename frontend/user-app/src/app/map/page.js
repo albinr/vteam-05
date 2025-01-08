@@ -8,19 +8,35 @@ import { apiClient } from "@/services/apiClient";
 export default function MapPage() {
 
     const [bikes, setBikes] = useState([]);
+    const [zones, setZones] = useState([]);
 
     useEffect(() => {
         const fetchBikes = async () => {
             try {
                 const response = await apiClient.get("/bikes");
+
+                for (let bike of response) {
+                    bike.type = "bike";
+                }
+
                 setBikes(response);
-                console.log(response);
             } catch (error) {
                 console.error("Error fetching bikes:", error);
             }
         };
 
+        const fetchZones = async () => {
+            try {
+                const response = await apiClient.get("/zones");
+                setZones(response);
+                console.log("Zones: ", response);
+            } catch (error) {
+                console.error("Error fetching zones:", error);
+            }
+        };
+
         fetchBikes();
+        fetchZones();
     }, []);
 
     // const ebikeMarkers = [
@@ -43,7 +59,7 @@ export default function MapPage() {
 
     return (
         <div id="map-page-container">
-            {bikes.length > 0 ? <Map markers={bikes} /> : <Map markers={[]} />}
+            {bikes.length > 0 ? <Map markers={[...zones, ...bikes]} /> : <Map markers={[]} />}
         </div>
     );
 }

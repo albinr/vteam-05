@@ -1,4 +1,4 @@
-import { Marker, Popup} from "react-leaflet";
+import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
 import { apiClient } from "@/services/apiClient";
 import Cookies from "js-cookie";
@@ -9,6 +9,30 @@ L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+});
+
+const bikeIcon = L.icon({
+    iconUrl: "/icons/bike-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+});
+
+const parkingIcon = L.icon({
+    iconUrl: "/icons/parking-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+});
+
+const chargeIcon = L.icon({
+    iconUrl: "/icons/charge-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
 });
 
 export const addBikeMarker = (bikeData) => {
@@ -46,6 +70,7 @@ export const addBikeMarker = (bikeData) => {
         <Marker
             key={bike_id}
             position={[longitude, latitude]}
+            icon={bikeIcon}
         >
             <Popup
                 style={{
@@ -73,19 +98,21 @@ export const addBikeMarker = (bikeData) => {
 };
 
 // Fix the marker
-export const addStationMarker = (stationData) => {
-    const { id, position, battery, status } = stationData;
+export const addChargingStationMarker = (stationData) => {
+    const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
+        <>
         <Marker
-            key={id}
-            position={position}
-        >
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={chargeIcon}
+            >
             <Popup>
-                <strong>Bike {id}</strong><br />
-                Battery: {battery}%<br />
-                Status: {status}
+                <strong>{name}</strong><br />
             </Popup>
         </Marker>
+        <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
+        </>
     );
 };
 

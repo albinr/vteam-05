@@ -30,7 +30,7 @@ export default function Header() {
     return (
         <header>
             <div>
-                <p>{user.id || ""}</p>
+                {/* <p>{user.id || ""}</p> */}
             </div>
         </header>
     );
