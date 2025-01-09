@@ -427,3 +427,20 @@ BEGIN
 END;;
 
 DELIMITER ;
+
+--
+-- Hämta en resa för en användare som inte är avslutad
+--
+DELIMITER ;;
+
+CREATE PROCEDURE GetOngoingTrip(
+  IN input_user_id VARCHAR(60)
+)
+BEGIN
+  SELECT *
+  FROM Trip
+  WHERE user_id = input_user_id
+    AND end_time IS NULL;
+END;;
+
+DELIMITER ;

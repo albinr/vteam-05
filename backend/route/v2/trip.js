@@ -60,13 +60,23 @@ router.delete("/:isSimulated", async (req, res) => {
     }
 });
 
-// Radera utifrån tripId
-router.delete("/one/:tripId", async (req, res) => {
+// Hämta aktiv resa från användare
+router.get("/active/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    const trips = await trip.deleteTripById(userId)
+    const trips = await trip.OngoingTripByUser(userId)
 
     res.json(trips)
 })
+
+// Radera utifrån tripId
+router.delete("/one/:tripId", async (req, res) => {
+    const { tripId } = req.params;
+
+    const trips = await trip.deleteTripById(tripId)
+
+    res.json(trips)
+})
+
 
 module.exports = router;

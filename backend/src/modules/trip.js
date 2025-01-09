@@ -107,6 +107,12 @@ async function deleteTripById(tripId) {
     }
 }
 
+// Funktion för att hämta en aktiv resa från en specifik användare
+async function OngoingTripByUser(userId) {
+    const [result] = await pool.query('Call GetOngoingTrip(?)', [userId]);
+    return result[0];
+}
+
 module.exports = {
     showAllTrips,
     startTrip,
@@ -114,5 +120,6 @@ module.exports = {
     deleteTrips,
     showTripsByUser,
     showTripsByBikeId,
-    deleteTripById
+    deleteTripById,
+    OngoingTripByUser
 };
