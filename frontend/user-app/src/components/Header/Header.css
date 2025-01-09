@@ -1,0 +1,17 @@
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+
+    position: absolute;
+    top: 0;
+    z-index: 99000;
+    padding: 0.4rem;
+}
+
+#header-user-img {
+    border-radius: 50%;
+    width: 60px;
+}

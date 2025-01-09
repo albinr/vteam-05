@@ -1,7 +1,7 @@
 "use client";
 
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
 import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
 // import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -29,6 +29,7 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
             zoom={zoom}
             scrollWheelZoom={true}
             dragging={true}
+            zoomControl={false}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -43,6 +44,7 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
             <MarkerClusterGroup chunkedLoading>
                 {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
             </MarkerClusterGroup>
+            <ZoomControl position="bottomright" />
         </MapContainer>
     );
 };
