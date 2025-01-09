@@ -24,7 +24,7 @@ const parkingIcon = L.icon({
     iconUrl: "/icons/parking-icon-40x40.png",
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
-    iconAnchor: [14, 28],
+    iconAnchor: [14, 14],
     popupAnchor: [0, -28],
 });
 
@@ -74,7 +74,6 @@ export const addBikeMarker = (bikeData) => {
 export const addChargingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-        <>
             <Marker
                 key={zone_id}
                 position={[longitude, latitude]}
@@ -82,17 +81,15 @@ export const addChargingStationMarker = (stationData) => {
             >
                 <Popup>
                     <strong>{name}</strong><br />
-                    {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
                 </Popup>
+                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
             </Marker>
-        </>
     );
 };
 
 export const addParkingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-        <>
             <Marker
                 key={zone_id}
                 position={[longitude, latitude]}
@@ -100,27 +97,8 @@ export const addParkingStationMarker = (stationData) => {
             >
                 <Popup>
                     <strong>{name}</strong><br />
-                    {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
                 </Popup>
+                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
             </Marker>
-        </>
-    );
-};
-
-
-// Fix the marker
-export const addZoneMarker = (zoneData) => {
-    const { id, position, battery, status } = zoneData;
-    return (
-        <Marker
-            key={id}
-            position={position}
-        >
-            <Popup>
-                <strong>Bike {id}</strong><br />
-                Battery: {battery}%<br />
-                Status: {status}
-            </Popup>
-        </Marker>
     );
 };

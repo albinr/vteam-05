@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import withAuth from "../hoc/withAuth";
 import Table from "@/components/Table";
-import Loader from "@/components/Loader";
-import { fetchBikes } from "./api";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
 import { apiClient } from "@/services/apiClient";
@@ -29,7 +27,6 @@ const Bikes = ({ session }) => {
         const fetchBikes = async () => {
             try {
                 const response = await apiClient.get("/bikes");
-
                 for (let bike of response) {
                     bike.type = "bike";
                 }
@@ -43,8 +40,8 @@ const Bikes = ({ session }) => {
         const fetchZones = async () => {
             try {
                 const response = await apiClient.get("/zones");
-                setZones(response);
                 console.log("Zones: ", response);
+                setZones(response);
             } catch (error) {
                 console.error("Error fetching zones:", error);
             }

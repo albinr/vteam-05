@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 const userColumns = [
     { header: "ID", accessor: "user_id" },
-    { header: "Email", accessor: "email" },
+    { header: "Email", accessor: "Email" },
     { header: "Balance", accessor: "balance" },
     { header: "Simulated", accessor: "simulation_user" },
 
