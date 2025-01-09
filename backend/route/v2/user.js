@@ -47,6 +47,13 @@ router.get("/:userId/trips", async (req, res) => {
     res.json(userTrips);
 });
 
+// hämta info från en användare
+router.get("/one/:userId", async (req, res) => {
+    const { userId } = req.params
+    const userInfo = await user.getUserInfo(userId);
+    res.json(userInfo);
+});
+
 // Radera alla simulerade eller alla användare
 router.delete("/:isSimulated", async (req, res) => {
     const simulatedOnly = req.params.isSimulated === "1";
@@ -79,6 +86,7 @@ router.get("/", async (req, res) => {
     const allUsers = await user.getAllUsers();
     res.json(allUsers);
 });
+
 
 
 module.exports = router;
