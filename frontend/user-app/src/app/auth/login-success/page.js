@@ -15,7 +15,6 @@ export default function LoginSuccess() {
         // Get token from query and clean it up afterwards
         if (token) {
             // router.replace(router.pathname, undefined, { shallow: true });
-            console.log("Setting token in local storage: ", token);
             localStorage.setItem("token", token);
             Cookies.set("token", token, { expires: 30 });
 

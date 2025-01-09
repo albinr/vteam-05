@@ -48,12 +48,12 @@ describe('User Module Tests', () => {
         await deleteUsers(0);
         const userId1 = 3;
         const userId2 = 4;
-    
+
         await addUser(userId1, "user1@hotmail.com", 100, 1);
         await addUser(userId2, "user2@hotmail.com", 200, 1);
-    
+
         const all = await getAllUsers();
-    
+
         expect(all).toEqual(expect.arrayContaining([
             expect.objectContaining({ 
                 email: "user1@hotmail.com", 

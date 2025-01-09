@@ -6,12 +6,14 @@ async function showAllTrips() {
             SELECT
                 trip_id,
                 bike_id,
+                user_id,
                 start_time,
                 end_time,
                 CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
                 CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                duration_minutes,
                 CONCAT(cost, 'kr') AS price,
-                speed
+                simulation_trip
             FROM Trip
         `);
         return rows;
@@ -27,12 +29,14 @@ async function showTripsByUser(userId) {
             SELECT
                 trip_id,
                 bike_id,
+                user_id,
                 start_time,
                 end_time,
                 CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
                 CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                duration_minutes,
                 CONCAT(cost, 'kr') AS price,
-                speed
+                simulation_trip
             FROM Trip
             WHERE user_id = ?
         `, [userId]);
@@ -49,12 +53,14 @@ async function showTripsByBikeId(bikeId) {
             SELECT
                 trip_id,
                 bike_id,
+                user_id,
                 start_time,
                 end_time,
                 CONCAT(ST_X(start_position), ' ', ST_Y(start_position)) AS start_position,
                 CONCAT(ST_X(end_position), ' ', ST_Y(end_position)) AS end_position,
+                duration_minutes,
                 CONCAT(cost, 'kr') AS price,
-                speed
+                simulation_trip
             FROM Trip
             WHERE bike_id = ?
         `, [bikeId]);
