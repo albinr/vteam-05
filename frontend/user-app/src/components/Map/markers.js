@@ -109,9 +109,27 @@ export const addChargingStationMarker = (stationData) => {
             >
             <Popup>
                 <strong>{name}</strong><br />
+                {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
             </Popup>
         </Marker>
-        <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
+        </>
+    );
+};
+
+export const addParkingStationMarker = (stationData) => {
+    const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
+    return (
+        <>
+        <Marker
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={parkingIcon}
+            >
+            <Popup>
+                <strong>{name}</strong><br />
+                {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
+            </Popup>
+        </Marker>
         </>
     );
 };
