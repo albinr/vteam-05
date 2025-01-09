@@ -1,5 +1,8 @@
-import { Marker, Popup} from "react-leaflet";
+import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
+import { apiClient } from "@/services/apiClient";
+import Cookies from "js-cookie";
+import Button from "../Button";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,13 +20,33 @@ const bikeIcon = L.icon({
     popupAnchor: [0, -28],
 });
 
+const parkingIcon = L.icon({
+    iconUrl: "/icons/parking-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+});
+
+const chargeIcon = L.icon({
+    iconUrl: "/icons/charge-icon-40x40.png",
+    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+});
 
 export const addBikeMarker = (bikeData) => {
     // const { id, position, battery, status } = bikeData;
     const { bike_id, battery_level, latitude, longitude, status } = bikeData;
 
-    const handleButtonClick = () => {
-        console.log("Clicked bike: ", bike_id);
+    const handleButtonClick = async () => {
+        try {
+            window.location.href = `/bikes/${bike_id}`;
+        } catch (error) {
+            console.error("Error selecting bike:", error);
+            return error;
+        }
     };
 
     return (
@@ -36,42 +59,57 @@ export const addBikeMarker = (bikeData) => {
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
-                    : status === "rented" ?? status === "charging" ? "orange"
-                    : status === "maintance" ? "red"
-                    : "red"
+                        : status === "rented" ?? status === "charging" ? "orange"
+                            : status === "maintance" ? "red"
+                                : "red"
                 }}>{status}</span><br />
                 Battery: {battery_level}%<br />
-                {
-                    status === "available" ?
-                        <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
-                        :
-                        <button id={bike_id} className="rent-button" disabled>Not Available</button>
-                }
+                <Button id="bike_id" className="rent-button" onClick={handleButtonClick}>Bike Edit</Button>
             </Popup>
         </Marker>
     );
 };
 
 // Fix the marker
-export const addStationMarker = (stationData) => {
-    const { id, position, battery, status } = stationData;
+export const addChargingStationMarker = (stationData) => {
+    const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-        <Marker
-            key={id}
-            position={position}
-        >
-            <Popup>
-                <strong>Bike {id}</strong><br />
-                Battery: {battery}%<br />
-                Status: {status}
-            </Popup>
-        </Marker>
+        <>
+            <Marker
+                key={zone_id}
+                position={[longitude, latitude]}
+                icon={chargeIcon}
+            >
+                <Popup>
+                    <strong>{name}</strong><br />
+                    {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
+                </Popup>
+            </Marker>
+        </>
+    );
+};
+
+export const addParkingStationMarker = (stationData) => {
+    const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
+    return (
+        <>
+            <Marker
+                key={zone_id}
+                position={[longitude, latitude]}
+                icon={parkingIcon}
+            >
+                <Popup>
+                    <strong>{name}</strong><br />
+                    {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
+                </Popup>
+            </Marker>
+        </>
     );
 };
 
 
 // Fix the marker
-export const addZoneMarker = (zoneData) => { 
+export const addZoneMarker = (zoneData) => {
     const { id, position, battery, status } = zoneData;
     return (
         <Marker

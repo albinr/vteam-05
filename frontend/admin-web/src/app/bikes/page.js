@@ -7,6 +7,7 @@ import Loader from "@/components/Loader";
 import { fetchBikes } from "./api";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
+import { apiClient } from "@/services/apiClient";
 import "./Bikes.css";
 
 // Table columns for e-bike management
@@ -21,26 +22,36 @@ const bikeColumns = [
 
 const Bikes = ({ session }) => {
     const [bikes, setBikes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [zones, setZones] = useState([]);
     const router = useRouter();
 
-
     useEffect(() => {
-        const loadBikes = async () => {
+        const fetchBikes = async () => {
             try {
-                const data = await fetchBikes();
-                console.log(data)
-                setBikes(data);
-            } catch (err) {
-                console.error("Failed to fetch bikes:", err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
+                const response = await apiClient.get("/bikes");
+
+                for (let bike of response) {
+                    bike.type = "bike";
+                }
+
+                setBikes(response);
+            } catch (error) {
+                console.error("Error fetching bikes:", error);
             }
         };
 
-        loadBikes();
+        const fetchZones = async () => {
+            try {
+                const response = await apiClient.get("/zones");
+                setZones(response);
+                console.log("Zones: ", response);
+            } catch (error) {
+                console.error("Error fetching zones:", error);
+            }
+        };
+
+        fetchBikes();
+        fetchZones();
     }, []);
 
     const handleRowClick = (row) => {
@@ -48,17 +59,12 @@ const Bikes = ({ session }) => {
         router.push(`/bikes/${row.bike_id}`);
     };
 
-    if (loading) {
-        return <Loader />;
-    }
-
     return (
         <div>
             <h1>Bikes</h1>
             <p>Manage all bikes on the platform from this page.</p>
-            {error && <p className="error">{error}</p>}
             <div className="bike-map">
-                <Map markers={bikes} />
+                <Map markers={[...zones,...bikes]} />
             </div>
             <input></input>
             <Table
