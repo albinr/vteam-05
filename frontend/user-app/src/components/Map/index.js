@@ -1,9 +1,9 @@
 "use client";
 
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { MapContainer, TileLayer } from "react-leaflet";
-import { addBikeMarker,addStationMarker,addZoneMarker } from "./markers.js";
-import L from "leaflet";
+import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
+import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
+// import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
@@ -16,6 +16,11 @@ import "./Map.css";
 // });
 
 const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
+
+    const bikeMarkers = markers.filter(marker => marker.type === "bike");
+    const parkingMarkers = markers.filter(marker => marker.type === "parking");
+    const chargingStationMarkers = markers.filter(marker => marker.type === "chargestation");
+
     return (
         <MapContainer
             key={`${posix[0]}-${posix[1]}-${zoom}`}
@@ -24,28 +29,22 @@ const Map = ({ posix = [62.0, 13.0], zoom = 6, markers = [] }) => {
             zoom={zoom}
             scrollWheelZoom={true}
             dragging={true}
+            zoomControl={false}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <MarkerClusterGroup
-                chunkedLoading
-            >
-                {markers.map((marker) => {
-                    // switch (marker.type) {
-                        //     case "bike":
-                        //         return addBikeMarker(marker);
-                        //     case "station":
-                        //         return addStationMarker(marker);
-                        //     case "zone":
-                        //         return addZoneMarker(marker);
-                        //     default:
-                        //         return null;
-                        // }
-                        return addBikeMarker(marker);
-                    })}
+            <MarkerClusterGroup chunkedLoading>
+                {bikeMarkers.map((marker) => addBikeMarker(marker))}
             </MarkerClusterGroup>
+            <MarkerClusterGroup chunkedLoading>
+                {parkingMarkers.map((marker) => addParkingStationMarker(marker))}
+            </MarkerClusterGroup>
+            <MarkerClusterGroup chunkedLoading>
+                {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
+            </MarkerClusterGroup>
+            <ZoomControl position="bottomright" />
         </MapContainer>
     );
 };
