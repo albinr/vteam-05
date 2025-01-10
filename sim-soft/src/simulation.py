@@ -10,6 +10,7 @@ import atexit
 import requests
 import signal
 import sys
+import random
 from bike import Bike
 from user import User
 
@@ -22,20 +23,70 @@ class Simulation:
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=True):
-        self.bikes = [
-                        Bike(bike_id=f"{uuid.uuid4()}",
-                        location=(56.176, 15.590), simulated=simulated)
-                        for _ in range(1, num_bikes + 1)
-        ]
+        on_exit()
+
+        # self.bikes = [
+        #                 Bike(bike_id=f"{uuid.uuid4()}",
+        #                 location=(56.176, 15.590), simulated=simulated)
+        #                 for _ in range(1, num_bikes + 1)
+        # ]
+
+        self.state = "initialized"
+        self.zones = []
+        self.cities = []
+        self.bikes = []
+
+        self.fetch_zones()
+
+        self.add_start_bike(num_bikes=num_bikes, simulated = simulated)
 
         self.users = [
             User(user_id=f"{i}", username=f"user{i}", email=f"user{i}@gmail.com")
             for i in range(1, num_bikes + 1)
         ]
 
-        self.state = "initialized"
+        self.distribute_bikes()
 
-        self.distrubute_bikes()
+    def add_start_bike(self, num_bikes=1, simulated=False):
+        """
+        Add a bike to the simulation.
+        """
+        for _ in range(1, num_bikes + 1):
+            # Get random city to start bike in
+            random_city = self.cities[random.randint(0, len(self.cities) - 1)]
+
+            # Get random zone in city
+            random_zone_int = random.randint(0, len(self.zones[random_city]) - 1)
+            bike_latitude = self.zones[random_city][random_zone_int]["latitude"]
+            bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
+
+            # Add bike to simulation
+            self.bikes.append(Bike(bike_id=f"{uuid.uuid4()}",
+                location=(bike_longitude, bike_latitude), simulated=simulated))
+
+
+
+    def fetch_zones(self):
+        """
+        Fetch all zones
+        """
+        try:
+            zones = requests.get(f"{API_URL}/v2/zones", timeout=30).json()
+
+            zone_cities = {}
+
+            for zone in zones:
+                if zone["city"] not in zone_cities:
+                    zone_cities[zone["city"]] = []
+                    self.cities.append(zone["city"])
+
+                zone_cities[zone["city"]].append(zone)
+
+            self.zones = zone_cities
+            return zones
+        except requests.exceptions.RequestException as e:
+            print(f"Error getting zones: {e}")
+            return e
 
     def list_bikes(self):
         """List all bikes and their data."""
@@ -77,7 +128,7 @@ class Simulation:
 
             await asyncio.sleep(FETCH_INTERVAL)
 
-    def distrubute_bikes(self):
+    def distribute_bikes(self):
         """
         Distrubute bikes to users.
         """
@@ -109,7 +160,7 @@ def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
         # Remove simulated trips
-        requests.delete(f"{API_URL}/v2/trips/0", timeout=30) # TODO: Change from 0 to 1 when fixed in db
+        requests.delete(f"{API_URL}/v2/trips/1", timeout=30) # TODO: Change from 0 to 1 when fixed in db
     except requests.exceptions.RequestException as e:
         print(f"Error deleting trip data: {e}")
 
@@ -139,7 +190,7 @@ signal.signal(signal.SIGTERM, handle_signal)
 
 if __name__ == "__main__":
     # Create a simulation with X bikes
-    simulation = Simulation(num_bikes=100)
+    simulation = Simulation(num_bikes=3000)
 
     async def main():
         """
@@ -147,6 +198,7 @@ if __name__ == "__main__":
         """
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
+        # simulation.fetchZones()
 
 
         # Update bike 2's battery level

@@ -1,6 +1,6 @@
--- 
+--
 -- lägger till saker i table
--- 
+--
 
 USE vteam;
 DROP TABLE IF EXISTS TempZone;
@@ -35,6 +35,6 @@ SELECT
     city,
     type,
     ST_PointFromText(CONCAT('POINT(', latitude , ' ', longitude, ')')),
-    radius,
-    capacity
+    capacity,
+    radius
 FROM TempZone;

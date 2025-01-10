@@ -1,7 +1,7 @@
 """
 user.py
 
-This module defines a User class to simulate the behavior and state of a user 
+This module defines a User class to simulate the behavior and state of a user
 in a system for renting bikes.
 """
 

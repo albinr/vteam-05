@@ -1,7 +1,7 @@
 """
 bike.py
 
-This module defines a Bike class to simulate the behavior and state of an electric bike 
+This module defines a Bike class to simulate the behavior and state of an electric bike
 in a system for renting bikes.
 """
 
