@@ -14,7 +14,7 @@ const express = require("express");
 const app = express();
 const middleware = require("./middleware/index.js");
 const jwt = require('jsonwebtoken');
-const { findOrCreateUser } = require('./src/modules/user.js');
+const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -125,27 +125,43 @@ app.get('/auth/user-app/google', (req, res, next) => {
 
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: AUTH_URL_FAILED }),
-    (req, res) => {
+    async (req, res) => {
         const state = JSON.parse(req.query.state || "{}");
-
         const successRedirect = state.successRedirect || "/";
-
+        
         const user = req.user;
+        const user_id = user.id;
 
+        const isAdmin = await isUserAdmin(user_id);
+        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : USER_WEB_URL_SUCCESS;
+
+        // Skapa en JWT-token för användaren
         const token = jwt.sign({
             id: user.id,
             email: user.emails[0].value,
             name: user.displayName,
             image: user.photos[0].value
-        }, process.env.JWT_SECRET, {
-            expiresIn: '1h'
-        });
+        }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         console.log(token);
 
-        res.redirect(successRedirect + "?token=" + token);
+        // Omdirigera till rätt URL baserat på admin-status
+        res.redirect(`${redirectUrl}?token=${token}`);
     }
 );
+
+// Använd authenticateJWT för att skydda rutten
+app.get('/user/data', middleware.authenticateJWT, async (req, res) => {
+    const userId = req.user.id;
+    const userInfo = await getUserInfo(userId);
+    res.json({
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        image: req.user.image,
+        userInfo
+    });
+});
 
 // app.get(
 //     (req, res, next) => {
