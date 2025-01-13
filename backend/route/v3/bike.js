@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const bike = require("../../src/modules/bike.js");
-const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");  // Assuming middleware is in this file
+const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");
 
 // Lägg till en ny cykel (Bara Admin)
 router.post("/add", authenticateJWT, authorizeAdmin, async (req, res) => {

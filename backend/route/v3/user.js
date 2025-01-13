@@ -79,4 +79,10 @@ router.get("/", authenticateJWT, authorizeAdmin, async (req, res) => {
     res.json(allUsers);
 });
 
+// hämta info från en användare
+router.get("/one/:userId", authenticateJWT, authUserOrAdmin, async (req, res) => {
+    const { userId } = req.params
+    const userInfo = await user.getUserInfo(userId);
+    res.json(userInfo);
+});
 module.exports = router;

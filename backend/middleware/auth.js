@@ -29,7 +29,7 @@ const authUserOrAdmin = (req, res, next) => {
         return next();
     }
 
-    return res.json({ message: "Access denied: You are not authorized to update this user" });
+    return res.json({ message: "Du har ingen behörighet till denna användare" });
 };
 
 module.exports = {

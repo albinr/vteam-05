@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const trip = require("../../src/modules/trip.js");
-const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");  // Assuming middleware is in this file
+const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");
 
 // Visa alla resor
 router.get("/", async (req, res) => {

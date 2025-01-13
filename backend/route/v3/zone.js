@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const zone = require("../../src/modules/zone.js");
-const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");  // Assuming middleware is in this file
+const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");
 
 // Lägg till en ny zon (Admin Only)
 router.post("/add", authenticateJWT, authorizeAdmin, async (req, res) => {
