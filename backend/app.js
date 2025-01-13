@@ -1,6 +1,3 @@
-/**
- * A sample Express server with static resources.
- */
 "use strict";
 
 const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/auth/login-success";
@@ -12,16 +9,16 @@ const port = process.env.DBWEBB_PORT || 1337;
 const path = require("path");
 const express = require("express");
 const app = express();
-const middleware = require("./middleware/index.js");
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
+const { authenticateJWT, authorizeAdmin } = require("./middleware/auth.js");
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
+const cors = require("cors");
+const middleware = require("./middleware/index.js");
 const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
-
-const cors = require("cors");
+const v3Router = require("./route/v3/api.js");
 
 // Options for cors
 const corsOptions = {
@@ -34,7 +31,6 @@ const corsOptions = {
         "http://localhost:3000",
         "http://localhost:3001",
         "http://localhost:3002"
-        // "*"
     ],
     credentials: true,
     optionsSuccessStatus: 200,
@@ -54,6 +50,7 @@ app.use("/docs", express.static(path.join(__dirname, "docs")));
 
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
+app.use("/v3", v3Router);
 
 app.use(require('express-session')({
     secret: 'your-session-secret',
@@ -86,20 +83,30 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj); // Deserialize user data from the session
 });
 
-// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+const ensureAdmin = async (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        return passport.authenticate('google', {
+            scope: ['profile', 'email'],
+            state: JSON.stringify({
+                successRedirect: ADMIN_WEB_URL_SUCCESS,
+            })
+        })(req, res, next);
+    }
 
-app.get(AUTH_URL_FAILED, (req, res, next) => {
-    res.send("Login failed, please go back to the original page and try again.");
-});
+    const isAdmin = await isUserAdmin(req.user.id);
+    if (!isAdmin) {
+        return res.redirect('/auth/failed');
+    }
 
-// TODO: Check if user is admin!
-app.get('/auth/admin-web/google', (req, res, next) => {
-    const state = JSON.stringify({
-        successRedirect: ADMIN_WEB_URL_SUCCESS,
-    });
+    next();
+};
+
+app.get('/auth/admin-web/google', ensureAdmin, (req, res, next) => {
     passport.authenticate('google', {
         scope: ['profile', 'email'],
-        state: state
+        state: JSON.stringify({
+            successRedirect: ADMIN_WEB_URL_SUCCESS,
+        })
     })(req, res, next);
 });
 
@@ -128,30 +135,31 @@ app.get('/auth/google/callback',
     async (req, res) => {
         const state = JSON.parse(req.query.state || "{}");
         const successRedirect = state.successRedirect || "/";
-        
+
         const user = req.user;
         const user_id = user.id;
 
         const isAdmin = await isUserAdmin(user_id);
-        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : USER_WEB_URL_SUCCESS;
+        const role = isAdmin ? 'admin' : 'user';
 
-        // Skapa en JWT-token för användaren
-        const token = jwt.sign({
+        const tokenPayload = {
             id: user.id,
             email: user.emails[0].value,
             name: user.displayName,
-            image: user.photos[0].value
-        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            image: user.photos[0].value,
+            role: role
+        };
+
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         console.log(token);
 
-        // Omdirigera till rätt URL baserat på admin-status
+        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : USER_WEB_URL_SUCCESS;
         res.redirect(`${redirectUrl}?token=${token}`);
     }
 );
 
-// Använd authenticateJWT för att skydda rutten
-app.get('/user/data', middleware.authenticateJWT, async (req, res) => {
+app.get('/user/data', authenticateJWT, async (req, res) => {
     const userId = req.user.id;
     const userInfo = await getUserInfo(userId);
     res.json({
@@ -163,48 +171,19 @@ app.get('/user/data', middleware.authenticateJWT, async (req, res) => {
     });
 });
 
-// app.get(
-//     (req, res, next) => {
-//         const state = JSON.parse(req.query.state || "{}");
+app.get('/admin/data', [authenticateJWT, authorizeAdmin], (req, res) => {
+    res.json({ message: "This is protected admin data." });
+});
 
-//         const failureRedirect = state.failureRedirect || "/failed";
-
-//         passport.authenticate('google', {
-//             failureRedirect: failureRedirect,
-//         })(req, res, next);
-//     },
-//     (req, res) => {
-//         const state = JSON.parse(req.query.state || "{}");
-
-//         const successRedirect = state.successRedirect || "/";
-//         res.redirect(successRedirect);
-//     }
-// );
-
-
-// cors(corsOptions)
-
-// Read from commandline
-
-/**
- * Log app details to console when starting up.
- *
- * @return {void}
- */
 function logStartUpDetailsToConsole() {
     let routes = [];
 
-    // Find what routes are supported
     app._router.stack.forEach((middleware) => {
         if (middleware.route) {
-            // Routes registered directly on the app
             routes.push(middleware.route);
         } else if (middleware.name === "router") {
-            // Routes added as router middleware
             middleware.handle.stack.forEach((handler) => {
-                let route;
-
-                route = handler.route;
+                let route = handler.route;
                 route && routes.push(route);
             });
         }
