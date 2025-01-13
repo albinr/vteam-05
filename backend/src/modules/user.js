@@ -125,6 +125,23 @@ async function findOrCreateUser(oauthUser) {
     }
 }
 
+// Funktion för att kontrollera om användaren är admin
+async function isUserAdmin(user_id) {
+    try {
+        const sqlCheckAdmin = `SELECT admin FROM User WHERE user_id = ?`;
+        const [result] = await pool.query(sqlCheckAdmin, [user_id]);
+
+        if (result[0].admin === 0) {
+            return false;
+        }
+
+        return result[0].admin === 1;
+    } catch (error) {
+        console.error("Error vid kontroll av admin-status:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     getUserInfo,
     addUser,
@@ -133,5 +150,6 @@ module.exports = {
     getAllUsers,
     deleteUser,
     findOrCreateUser,
-    giveAdmin
+    giveAdmin,
+    isUserAdmin
 };

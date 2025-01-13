@@ -9,6 +9,7 @@ export default function MapPage() {
 
     const [bikes, setBikes] = useState([]);
     const [zones, setZones] = useState([]);
+    const [startPosition, setStartPosition] = useState(null);
 
     useEffect(() => {
         const fetchBikes = async () => {
@@ -35,8 +36,28 @@ export default function MapPage() {
             }
         };
 
+        const fetchUserPosition = async () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                console.log("Geolocation not supported");
+            }
+
+            function success(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                setStartPosition([latitude, longitude]);
+            }
+
+            function error() {
+                console.log("Unable to retrieve your location");
+            }
+        };
+
         fetchBikes();
         fetchZones();
+        fetchUserPosition();
     }, []);
 
     // const ebikeMarkers = [
@@ -59,7 +80,11 @@ export default function MapPage() {
 
     return (
         <div id="map-page-container">
-            {bikes.length > 0 ? <Map markers={[...zones, ...bikes]} /> : <Map markers={[]} />}
+            <Map
+                markers={[...zones, ...bikes]}
+                userPosition={startPosition}
+                zoom={startPosition ? 16 : 7}
+            />
         </div>
     );
 }
