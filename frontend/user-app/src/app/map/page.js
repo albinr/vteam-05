@@ -20,6 +20,8 @@ export default function MapPage() {
                     bike.type = "bike";
                 }
 
+                console.log(response);
+
                 setBikes(response);
             } catch (error) {
                 console.error("Error fetching bikes:", error);
