@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "@/services/apiClient";
 import Cookies from "js-cookie";
+import Loader from "@/components/Loader";
 
 import "./TripPage.css";
 
@@ -82,13 +83,15 @@ const TripPage = () => {
 
     if (loading) {
         return <div id="trip-page">
-            <h1>Loading...</h1>
+            <h1>Active Trip</h1>
+            <Loader />
         </div>
     }
 
     if (!loading && !activeTrip) {
         return <div id="trip-page">
-            <h1>No active trip</h1>
+            <h1>Active trip</h1>
+            <p className="trip-no-trip-text">No active trip</p>
         </div>
     }
 

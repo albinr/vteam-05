@@ -2,3 +2,16 @@
     margin-top: 70px;
     padding: 1rem 1rem 1rem 1rem;
 }
+
+#trip-page h1 {
+    color: #333;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.trip-no-trip-text {
+    text-align: center;
+    font-size: 1.5rem;
+    color: red;
+    margin-top: 20px;
+}
