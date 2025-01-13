@@ -18,8 +18,29 @@ function logIncomingToConsole(req, res, next) {
     next();
 }
 
+const jwt = require('jsonwebtoken');
+
+function authenticateJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        const token = authHeader.split(' ')[1]; // Antag "Bearer <token>"
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) {
+                return res.sendStatus(403); // Förbjuden om token är ogiltig
+            }
+
+            req.user = user;
+            next();
+        });
+    } else {
+        res.sendStatus(401); // Obehörig om ingen token finns
+    }
+}
 
 
 module.exports = {
-    logIncomingToConsole: logIncomingToConsole
+    logIncomingToConsole: logIncomingToConsole,
+    authenticateJWT
 };
