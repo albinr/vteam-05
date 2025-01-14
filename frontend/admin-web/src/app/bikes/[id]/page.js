@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import withAuth from "../../hoc/withAuth";
+import withAuth from "../../auth/hoc/withAuth";
 import { fetchBikeById, fetchTripsByBikeId } from "../api";
 import Loader from "@/components/Loader";
 
