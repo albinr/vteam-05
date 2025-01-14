@@ -38,6 +38,9 @@ const HistoryPage = () => {
                 return;
             }
 
+            // Order trips based on start date
+            trips.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+
             setTrips(trips);
 
             console.log("Trips: ", trips);

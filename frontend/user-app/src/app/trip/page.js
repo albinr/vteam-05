@@ -72,7 +72,7 @@ const TripPage = () => {
             console.log(data);
 
             // Redirect to "/trip"
-            window.location.href = "/trip";
+            window.location.href = "/history";
 
         } catch (error) {
             console.error("Error ending trip:", error);
@@ -98,8 +98,9 @@ const TripPage = () => {
     if (!loading && activeTrip) {
         return <div id="trip-page">
             <h1>Active Trip</h1>
-            <p>{new Date(activeTrip.start_time).toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit', hour12: false })}</p>
+            <p id="trip-start-date">{new Date(activeTrip.start_time).toLocaleString("en-US", { weekday: 'long', hour: '2-digit', minute: '2-digit', hour12: false })}</p>
             <button id="trip-stop-btn" onClick={handleTripStop}>STOP</button>
+            <p id="trip-trip-id">ID_{activeTrip.trip_id}</p>
         </div>
     }
 };
