@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import withAuth from "../hoc/withAuth";
+import withAuth from "../auth/hoc/withAuth";
 import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
@@ -57,19 +57,18 @@ const Bikes = ({ session }) => {
     };
 
     return (
-        <div>
+        <>
             <h1>Bikes</h1>
-            <p>Manage all bikes on the platform from this page.</p>
+            <p>View and controll all bikes on the platform from this page.</p>
             <div className="bike-map">
                 <Map markers={[...zones,...bikes]} />
             </div>
-            <input></input>
-            <Table
+            {/* <Table
                 columns={bikeColumns}
                 data={bikes}
                 onRowClick={handleRowClick}
-            />
-        </div>
+            /> */}
+        </>
     );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import withAuth from "../app/hoc/withAuth";
+import withAuth from "../app/auth/hoc/withAuth";
 import Link from "next/link";
 import Loader from "@/components/Loader";
 // import Loader from "@/components/Loader";
