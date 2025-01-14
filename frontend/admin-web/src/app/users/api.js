@@ -9,7 +9,7 @@ export const fetchUsers = async () => {
 
 // Fetch a user by id
 export const fetchUserById = async (id) => {
-    return apiClient.get(`/users/${id}`);
+    return apiClient.get(`/users/one/${id}`);
 };
 
 // Fetch user trips by id

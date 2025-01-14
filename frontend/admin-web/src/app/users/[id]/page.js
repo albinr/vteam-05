@@ -30,11 +30,11 @@ const UserDetails = ({ session }) => {
                 console.log("User data:", userData);
 
                 // Fetch user trips
-                const userTrips = await fetchUserTripsById(id);
+                // const userTrips = await fetchUserTripsById(id);
                 console.log("User trips:", userTrips);
 
                 // Fetch user payments
-                const userPayments = await fetchUserPaymentsById(id);
+                // const userPayments = await fetchUserPaymentsById(id);
                 console.log("User payments:", userPayments);
 
                 // Update states
@@ -43,7 +43,7 @@ const UserDetails = ({ session }) => {
                 setPayments(userPayments || []);
             } catch (err) {
                 console.error(`Error fetching data: ${err.message}`);
-                setError(`Failed to fetch user details, trips, or payments. API error: ${err.message}`);
+                // setError(`Failed to fetch user details, trips, or payments. API error: ${err.message}`);
             } finally {
                 setLoading(false);
             }
