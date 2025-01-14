@@ -16,7 +16,7 @@ const bikeIcon = L.icon({
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
-    popupAnchor: [0, -28],
+    popupAnchor: [0, -14],
 });
 
 const parkingIcon = L.icon({
@@ -97,10 +97,10 @@ export const addBikeMarker = (bikeData) => {
             icon={bikeIcon}
         >
             <Popup
-                style={{
-                    window: "90vw",
-                    heigh: "90vh"
-                }}
+                // style={{
+                //     window: "90vw",
+                //     heigh: "90vh",
+                // }}
             >
                 <strong>{bike_id}</strong><br />
                 <span style={{

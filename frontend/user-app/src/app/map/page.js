@@ -14,7 +14,7 @@ export default function MapPage() {
     useEffect(() => {
         const fetchBikes = async () => {
             try {
-                const response = await apiClient.get("/bikes");
+                const response = await apiClient.get("/bikes/available");
 
                 for (let bike of response) {
                     bike.type = "bike";

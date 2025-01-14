@@ -4,7 +4,7 @@
 }
 
 #history-page h1 {
-    color: #333;
+    /* color: #333; */
     text-align: center;
     padding-bottom: 10px;
 }
@@ -17,7 +17,7 @@
 }
 
 .trip {
-    background: white;
+    /* background: white; */
     margin: 20px 0;
     padding: 20px;
     border-radius: 8px;
@@ -32,15 +32,17 @@
 
 .trip h2 {
     margin-bottom: 10px;
+    /* color: var(--hl-1); */
 }
 
 
 .trip p {
     margin: 5px 0;
+    /* color: var(--hl-2); */
 }
 
 .history-trip-price {
-    color: green;
+    color: var(--hl-1) !important;
     font-size: 1.5rem;
 }
 
