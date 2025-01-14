@@ -15,12 +15,14 @@ import requests
 SLEEP_TIME = 1  # Seconds for simulation update loop
 API_UPDATE_INTERVAL = 5  # Seconds for sending updates to API
 
+MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
+MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
+
 MIN_BATTERY = 30
 
 API_URL="http://backend:1337"
 
-# BIKE_ID = uuid.uuid4()
-BIKE_ID = "48eee283-ed08-41db-ba0f-50a7c1a9d3d4"
+BIKE_ID = uuid.uuid4()
 
 class Bike: # pylint: disable=too-many-instance-attributes
     """
@@ -36,6 +38,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             speed=0,
             speed_limit=20,
             simulated=False,
+            zones = {},
             # red_led=False
             ):
 
@@ -50,6 +53,20 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.simulated = simulated  # To mark if the bike is simulated
         self.added_to_db = False
         self.add_to_db_tries = 0
+        self.user_owner = None
+        self.zones = zones
+        self.target_zone = None
+
+        # [{
+        # 'zone_id': 1,
+        # 'name': 'Vallhallavägen',
+        # 'city': 'Stockholm',
+        # 'type': 'parking',
+        # 'longitude': 59.33,
+        # 'latitude': 18.1,
+        # 'capacity': 1000,
+        # 'radius': 50
+        # }, {'zone_id': 2, 'name': 'Kungsträgården', 'city': 'Stockholm', 'type': 'chargestation', 'longitude': 59.33, 'latitude': 18.07, 'capacity': 10, 'radius': 10}]
 
         while not self.added_to_db and self.add_to_db_tries < 3:
             self.add_bike_to_system()
@@ -96,7 +113,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             # except requests.exceptions.RequestException as e:
             #     print(f"Error getting data from API: {e}")
 
-            print(f"[Bike {self.bike_id}] Sending data to API...")
+            print(f"[Bike {self.bike_id:2}] Sending data to API...")
             try:
                 requests.put(f"{API_URL}/v2/bikes/{self.bike_id}",
                             timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
@@ -113,7 +130,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
     def get_data(self):
         """Return the current data of the bike."""
         return {
-            "bike_id": f"{self.bike_id}",
+            "bike_id": f"{self.bike_id:2}",
             "battery": f"{self.battery:6.2f}",
             "location": self.location,
             "status": f"{self.status:10}",
@@ -133,11 +150,89 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
         # Run all tasks in the background
+        if self.simulated:
+            battery_task = asyncio.create_task(self.sim_battery())
+            travel_task = asyncio.create_task(self.sim_travel())
+            # status_task = asyncio.create_task(self.sim_random_bike_status())
+            update_task = asyncio.create_task(self.send_update_to_api())
 
-        update_task = asyncio.create_task(self.send_update_to_api())
-        await asyncio.gather(update_task)
+            # await asyncio.gather(update_task, battery_task, status_task, travel_task)
+            await asyncio.gather(update_task, battery_task, travel_task)
+        else:
+            update_task = asyncio.create_task(self.send_update_to_api())
+            await asyncio.gather(update_task)
+
+        # Wait for all tasks to finish (running in background)
+
+    async def sim_battery(self):
+        """Simulate battery drain when bike is unlocked."""
+        while self.status != "shutdown":
+            if self.status == "in_use":
+                # Simulate battery drain
+                self.battery -= random.uniform(0.01, 0.05)
+            if self.status == "charging" and self.battery < 100:
+                # Simulate battery charging
+                self.battery += random.uniform(0.01, 0.05)
+
+                # Make sure that the battery doesn't go over 100
+                if self.battery > 100: # pylint: disable=consider-using-min-builtin
+                    self.battery = 100
+
+            await asyncio.sleep(SLEEP_TIME)
+
+    async def sim_travel(self):
+        """Simulate bike travel."""
+        while self.status != "shutdown":
+            if self.status == "available" and self.battery > MIN_BATTERY:
+                # Travel to random parking zone
+                # Only chose parking zones
+                self.status = "in_use"
+                parking_zones = [zone for zone in self.zones if zone["type"] == "parking"]
+                self.target_zone = random.choice(parking_zones)
+
+
+
+
+            # if self.status == "in_use" and self.battery > 0:
+
+            #     # Simulate travel
+            #     random_x = random.uniform(-0.005, 0.005)
+            #     random_y = random.uniform(-0.005, 0.005)
+
+            #     self.location = (self.location[0] + random_x,
+            #                     self.location[1] + random_y)
+
+            #     # Simulate speed (km/h), calculate from random_X and random_Y
+            #     self.speed = (random_x ** 2 + random_y ** 2) ** 0.5 / SLEEP_TIME * 60 * 60
+            #     if self.speed > self.speed_limit:
+            #         self.speed = self.speed_limit
+
+            #     print(f"[Bike {self.bike_id}] Traveling to: {self.location} with speed {self.speed:.2f} km/h")
+            await asyncio.sleep(SLEEP_TIME)
+
+
+    async def sim_random_bike_status(self):
+        """ Randomly change the bike status."""
+        while self.status != "shutdown":
+            self.status = random.choice(['available',
+                                        'available',
+                                        'available',
+                                        'charging',
+                                        'charging',
+                                        'maintenance'])
+            # self.status = random.choice(['in_use',
+            #                 'in_use',
+            #                 'available',
+            #                 'charging',
+            #                 'charging',
+            #                 'maintenance'])
+            print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
+
+            # Change status every X-Y minutes
+            await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
+
 
 if __name__ == "__main__":
     # Create a bike object
-    bike = Bike(BIKE_ID, location=(59.3293, 18.0686))
+    bike = Bike(BIKE_ID)
     asyncio.run(bike.run_bike_interval())

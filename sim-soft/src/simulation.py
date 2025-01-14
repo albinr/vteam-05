@@ -62,7 +62,7 @@ class Simulation:
 
             # Add bike to simulation
             self.bikes.append(Bike(bike_id=f"{uuid.uuid4()}",
-                location=(bike_longitude, bike_latitude), simulated=simulated))
+                location=(bike_longitude, bike_latitude), simulated=simulated, zones=self.zones[random_city]))
 
 
 
