@@ -8,6 +8,7 @@ router.post("/add", async (req, res) => {
     const { batteryLevel, longitude, latitude, isSimulated = 0, bikeId } = req.body;
     try {
         const newBike = await bike.addBike(bikeId, batteryLevel, longitude, latitude, isSimulated);
+        req.io.emit('new-bike', { bikeId: newBike, batteryLevel, longitude, latitude, isSimulated });
         res.json({ message: "Cykel tillagd med ID", bikeId: newBike });
     } catch (error) {
         res.json({ error: error.message || "Något gick fel vid tillägg av cykel." });
@@ -75,6 +76,7 @@ router.put("/:bikeId", async (req, res) => {
     const updatedData = req.body;
     try {
         const result = await bike.updateBike(bikeId, updatedData);
+        req.io.emit('bike-updated', { bikeId, updatedData });
         res.json(result);
     } catch (error) {
         res.json({ error: error.message || "Något gick fel vid uppdatering av cykeln." });

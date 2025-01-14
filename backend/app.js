@@ -8,7 +8,11 @@ const AUTH_URL_FAILED = "/auth/failed";
 const port = process.env.DBWEBB_PORT || 1337;
 const path = require("path");
 const express = require("express");
+const http = require('http'); // Importera http-modulen
 const app = express();
+const server = http.createServer(app); // Skapa en HTTP-server med Express
+const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
+const io = new Server(server); // Skapa en Socket.IO-server kopplad till HTTP-servern
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
 const { authenticateJWT, authorizeAdmin } = require("./middleware/auth.js");
@@ -19,6 +23,7 @@ const middleware = require("./middleware/index.js");
 const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
 const v3Router = require("./route/v3/api.js");
+
 
 // Options for cors
 const corsOptions = {
@@ -36,6 +41,26 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
+// Hantera Socket.IO-anslutningar
+io.on('connection', (socket) => {
+    console.log('a user connected:', socket.id);
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected:', socket.id);
+    });
+
+    // Exempel på en anpassad händelse
+    socket.on('message', (msg) => {
+        console.log('message:', msg);
+        io.emit('message', msg); // Skicka tillbaka meddelandet till alla anslutna klienter
+    });
+});
+
+app.use((req, res, next) => {
+    req.io = io; // Skicka io till varje request
+    next();
+});
+
 app.use(cors(corsOptions));
 
 require('dotenv').config({ path: '.env.local' });
@@ -44,7 +69,7 @@ app.set("view engine", "ejs");
 
 app.use(middleware.logIncomingToConsole);
 app.use(express.static(path.join(__dirname, "public")));
-app.listen(port, logStartUpDetailsToConsole);
+server.listen(port, logStartUpDetailsToConsole); // Ändra till server.listen istället för app.listen
 app.use(express.urlencoded({ extended: true }));
 app.use("/docs", express.static(path.join(__dirname, "docs")));
 
