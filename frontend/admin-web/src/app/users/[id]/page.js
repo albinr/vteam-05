@@ -5,9 +5,10 @@ import { useParams } from "next/navigation";
 import withAuth from "../../auth/hoc/withAuth";
 import { fetchUserById, fetchUserTripsById, fetchUserPaymentsById } from "../api";
 import Loader from "@/components/Loader";
+import Button from "@/components/Button";
 
 const UserDetails = ({ session }) => {
-    const { id } = useParams(); // Ensure `id` is coming from the URL
+    const { id } = useParams();
     const [user, setUser] = useState(null);
     const [trips, setTrips] = useState([]);
     const [payments, setPayments] = useState([]);
@@ -28,19 +29,17 @@ const UserDetails = ({ session }) => {
                 // Fetch user details
                 const userData = await fetchUserById(id);
                 console.log("User data:", userData);
-
+                setUser(userData);
                 // Fetch user trips
-                // const userTrips = await fetchUserTripsById(id);
+                const userTrips = await fetchUserTripsById(id);
                 console.log("User trips:", userTrips);
-
+                setTrips(userTrips || []);
                 // Fetch user payments
                 // const userPayments = await fetchUserPaymentsById(id);
-                console.log("User payments:", userPayments);
+                // console.log("User payments:", userPayments);
 
                 // Update states
-                setUser(userData);
-                setTrips(userTrips || []);
-                setPayments(userPayments || []);
+                // setPayments(userPayments || []);
             } catch (err) {
                 console.error(`Error fetching data: ${err.message}`);
                 // setError(`Failed to fetch user details, trips, or payments. API error: ${err.message}`);
@@ -56,15 +55,6 @@ const UserDetails = ({ session }) => {
         return <Loader />;
     }
 
-    if (error) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <p className="error">{error}</p>
-            </div>
-        );
-    }
-
     if (!user) {
         return <p>No User details available.</p>;
     }
@@ -75,6 +65,12 @@ const UserDetails = ({ session }) => {
             <p><strong>User ID:</strong> {user.user_id}</p>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Balance:</strong> {user.balance}</p>
+            <Button
+            label={"Update User"}
+            />
+            <Button
+            label={"Delete User"}
+            />
             {trips.length > 0 && (
                 <div>
                     <h2>Trips</h2>

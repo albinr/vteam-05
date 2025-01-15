@@ -98,7 +98,7 @@ const Users = () => {
                 <span>
                     Page {currentPage} of {totalPages}
                 </span>
-                <Button label={"New User"}/>
+                <Button label={"New User"} href="users/create"/>
             </div>
             <Table
                 columns={userColumns}

@@ -14,7 +14,7 @@ export const fetchUserById = async (id) => {
 
 // Fetch user trips by id
 export const fetchUserTripsById = async (id) => {
-    return apiClient.get(`/users/${id}/trips`);
+    return apiClient.get(`/trips/from/${id}`);
 };
 
 // Fetch user payments by id
@@ -24,7 +24,7 @@ export const fetchUserPaymentsById = async (id) => {
 
 // Delete user by id
 export const deleteUserById = async (id) => {
-    return apiClient.delete(`/users/${id}`);
+    return apiClient.delete(`/users/one/${id}`);
 };
 
 // Create user
