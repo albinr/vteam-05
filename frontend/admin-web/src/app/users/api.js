@@ -33,7 +33,7 @@ export const createUser = async (userData) => {
 };
 
 // Update user by id
-export const updateUser = async (bikeData) => {
-    return apiClient.put("/users", bikeData)
+export const updateUser = async (id, newData) => {
+    return apiClient.put(`/users/${id}`, newData)
 }
 

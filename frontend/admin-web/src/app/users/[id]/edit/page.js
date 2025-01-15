@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import withAuth from "../../auth/hoc/withAuth";
-import { fetchUserById, updateUserById } from "../api";
+import withAuth from "@/app/auth/hoc/withAuth";
+import { fetchUserById, updateUser } from "../../api";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
+import { useRouter } from "next/navigation";
 
 const UpdateUser = ({ session }) => {
     const { id } = useParams();
@@ -18,6 +19,8 @@ const UpdateUser = ({ session }) => {
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         if (!id) {
@@ -59,8 +62,9 @@ const UpdateUser = ({ session }) => {
         setSuccess(null);
 
         try {
-            await updateUserById(id, formData);
-            setSuccess("User updated successfully!");
+            await updateUser(id, formData);
+            console.log("User updated successfully!");
+            router.push(`/users/${id}`)
         } catch (err) {
             setError(`Failed to update user: ${err.message}`);
         } finally {
@@ -108,9 +112,7 @@ const UpdateUser = ({ session }) => {
                         onChange={handleInputChange}
                     />
                 </div>
-                <button type="submit" disabled={updating}>
-                    {updating ? "Updating..." : "Update User"}
-                </button>
+                <Button type="submit" disabled={updating} label={updating ? "Updating..." : "Update User"} />
             </form>
         </div>
     );
