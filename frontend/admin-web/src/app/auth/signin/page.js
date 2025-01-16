@@ -24,7 +24,7 @@ export default function SignInPage() {
             <h1>Sign In</h1>
             <p>Choose a provider to sign in:</p>
             <LoginButton provider="google" label="Sign in with Google" />
-            <LoginButton provider="github" label="Sign in with GitHub" />
+            {/* <LoginButton provider="github" label="Sign in with GitHub" /> */}
         </div>
     );
 }

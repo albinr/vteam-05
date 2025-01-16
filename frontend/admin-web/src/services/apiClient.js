@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 const getHeaders = (options) => {
     const token = Cookies.get("token");
     if (!token) {
-        console.warn("Ingen token hittades i cookies.");
+        console.warn("No token found in cookies.");
     }
     return {
         "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export const apiClient = {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "GET",
             headers: getHeaders(options),
-            credentials: "include", // Skicka cookies vid behov
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
@@ -28,7 +28,7 @@ export const apiClient = {
             method: "POST",
             headers: getHeaders(options),
             body: JSON.stringify(body),
-            credentials: "include", // Skicka cookies vid behov
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
@@ -39,22 +39,43 @@ export const apiClient = {
             method: "DELETE",
             headers: getHeaders(options),
             ...(body ? { body: JSON.stringify(body) } : {}),
-            credentials: "include", // Skicka cookies vid behov
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
     },
 
+    // async put(url, body, options = {}) {
+    //     console.log("put body",body)
+    //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
+    //         method: "PUT",
+    //         headers: getHeaders(options),
+    //         body: JSON.stringify(body),
+    //         credentials: "include",
+    //         ...options,
+    //     });
+    //     return handleResponse(response);
+    // },
+
     async put(url, body, options = {}) {
+        const formBody = new URLSearchParams();
+        for (const key in body) {
+            formBody.append(key, body[key]);
+        }
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "PUT",
-            headers: getHeaders(options),
-            body: JSON.stringify(body),
-            credentials: "include", // Skicka cookies vid behov
+            headers: {
+                ...getHeaders(options),
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formBody.toString(),
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
-    },
+    }
+
 };
 
 async function handleResponse(response) {

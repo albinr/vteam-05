@@ -29,6 +29,7 @@ const Users = () => {
     useEffect(() => {
         const loadUsers = async () => {
             const response = await fetchUsers();
+            console.log(response)
             setUsers(response);
             setFilteredUsers(response)
         };
@@ -89,16 +90,14 @@ const Users = () => {
                     onClick={() => handlePageChange("prev")}
                     disabled={currentPage === 1}
                 />
-
+                <span>
+                    Page {currentPage} of {totalPages}
+                </span>
                 <Button
                     label=">"
                     onClick={() => handlePageChange("next")}
                     disabled={currentPage === totalPages}
                 />
-                <span>
-                    Page {currentPage} of {totalPages}
-                </span>
-                <Button label={"New User"} href="users/create"/>
             </div>
             <Table
                 columns={userColumns}
