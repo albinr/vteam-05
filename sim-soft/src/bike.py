@@ -10,6 +10,8 @@ import random
 import uuid
 from datetime import datetime
 import requests
+# import websockets
+from socketio import AsyncClient
 
 # Constants
 SLEEP_TIME = 1  # Seconds for simulation update loop
@@ -19,6 +21,7 @@ MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
 API_URL="http://backend:1337"
+WEBSOCKET_URL="http://backend:1337"
 
 BIKE_ID = uuid.uuid4()
 
@@ -51,9 +54,14 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.added_to_db = False
         self.add_to_db_tries = 0
         self.user_owner = None
+        self.sio = AsyncClient()
 
         while not self.added_to_db and self.add_to_db_tries < 3:
             self.add_bike_to_system()
+
+        self.sio.on('connect', self.on_connect)
+        self.sio.on('disconnect', self.on_disconnect)
+        self.sio.on('message', self.on_server_event)
 
     def add_bike_to_system(self):
         """Add the bike to the system."""
@@ -97,24 +105,24 @@ class Bike: # pylint: disable=too-many-instance-attributes
             # except requests.exceptions.RequestException as e:
             #     print(f"Error getting data from API: {e}")
 
-            print(f"[Bike {self.bike_id:2}] Sending data to API...")
-            try:
-                requests.put(f"{API_URL}/v2/bikes/{self.bike_id}",
-                            timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
-                    "battery_level": self.battery,
-                    "status": self.status,
-                    "longitude": self.location[0],
-                    "latitude": self.location[1],
-                    # "battery_danger": self.battery < self.min_battery
-                })
-            except requests.exceptions.RequestException as e:
-                print(f"Error sending data to API: {e}")
+            print(f"[Bike {self.bike_id}] Sending data to API...")
+            # try:
+            #     requests.put(f"{API_URL}/v2/bikes/{self.bike_id}",
+            #                 timeout=API_UPDATE_INTERVAL - API_UPDATE_INTERVAL * 0.9, data={
+            #         "battery_level": self.battery,
+            #         "status": self.status,
+            #         "longitude": self.location[0],
+            #         "latitude": self.location[1],
+            #         # "battery_danger": self.battery < self.min_battery
+            #     })
+            # except requests.exceptions.RequestException as e:
+            #     print(f"Error sending data to API: {e}")
             await asyncio.sleep(API_UPDATE_INTERVAL)
 
     def get_data(self):
         """Return the current data of the bike."""
         return {
-            "bike_id": f"{self.bike_id:2}",
+            "bike_id": f"{self.bike_id}",
             "battery": f"{self.battery:6.2f}",
             "location": self.location,
             "status": f"{self.status:10}",
@@ -134,16 +142,28 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
         # Run all tasks in the background
-        if self.simulated:
-            battery_task = asyncio.create_task(self.sim_battery())
-            travel_task = asyncio.create_task(self.sim_travel())
-            status_task = asyncio.create_task(self.sim_random_bike_status())
-            update_task = asyncio.create_task(self.send_update_to_api())
 
-            await asyncio.gather(update_task, battery_task, status_task, travel_task)
-        else:
-            update_task = asyncio.create_task(self.send_update_to_api())
-            await asyncio.gather(update_task)
+        try:
+            await self.sio.connect(WEBSOCKET_URL)
+            print(f"Connected to Socket.IO at {WEBSOCKET_URL}")
+
+            if self.simulated:
+                battery_task = asyncio.create_task(self.sim_battery())
+                travel_task = asyncio.create_task(self.sim_travel())
+                status_task = asyncio.create_task(self.sim_random_bike_status())
+                # update_task = asyncio.create_task(self.send_update_to_socketio())
+
+                await asyncio.gather(battery_task, travel_task, status_task)
+            # else:
+                # update_task = asyncio.create_task(self.send_update_to_socketio())
+                # await update_task
+
+        finally:
+            await self.sio.disconnect()
+
+    async def send_update_to_socketio(self):
+            data = self.get_data()
+            await self.sio.emit('bike-update', data)
 
         # Wait for all tasks to finish (running in background)
 
@@ -153,6 +173,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             if self.status == "in_use":
                 # Simulate battery drain
                 self.battery -= random.uniform(0.01, 0.05)
+                await self.send_update_to_socketio()
             if self.status == "charging" and self.battery < 100:
                 # Simulate battery charging
                 self.battery += random.uniform(0.01, 0.05)
@@ -186,25 +207,38 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
         while self.status != "shutdown":
-            self.status = random.choice(['available',
-                                        'available',
-                                        'available',
-                                        'charging',
-                                        'charging',
-                                        'maintenance'])
+            # self.status = random.choice(['available',
+            #                             'available',
+            #                             'available',
+            #                             'charging',
+            #                             'charging',
+            #                             'maintenance'])
             # self.status = random.choice(['in_use',
             #                 'in_use',
             #                 'available',
             #                 'charging',
             #                 'charging',
             #                 'maintenance'])
+            self.status = "in_use"
             print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
 
             # Change status every X-Y minutes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
+    async def on_connect(self):
+        print(f"Bike {self.bike_id} connected to Socket.IO server.")
+
+    async def on_disconnect(self):
+        print(f"Bike {self.bike_id} disconnected from Socket.IO server.")
+
+    async def on_server_event(self, data):
+        print(f"Bike {self.bike_id} received server event: {data}")
+
+
+
+
 
 if __name__ == "__main__":
     # Create a bike object
-    bike = Bike(BIKE_ID)
+    bike = Bike(BIKE_ID, simulated=True)
     asyncio.run(bike.run_bike_interval())

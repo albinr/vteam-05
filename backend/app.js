@@ -43,7 +43,7 @@ const corsOptions = {
 
 // Hantera Socket.IO-anslutningar
 io.on('connection', (socket) => {
-    console.log('a user connected:', socket.id);
+    console.log('A user connected:', socket.id);
 
     socket.on('disconnect', () => {
         console.log('user disconnected:', socket.id);
@@ -52,12 +52,17 @@ io.on('connection', (socket) => {
     // Exempel på en anpassad händelse
     socket.on('message', (msg) => {
         console.log('message:', msg);
-        io.emit('message', msg); // Skicka tillbaka meddelandet till alla anslutna klienter
+        // io.emit('message', msg);
+    });
+
+    socket.on('bike-update', (msg) => {
+        console.log('bike-update:', msg);
+        io.emit('message', msg);
     });
 });
 
 app.use((req, res, next) => {
-    req.io = io; // Skicka io till varje request
+    req.io = io;
     next();
 });
 
@@ -179,7 +184,7 @@ app.get('/auth/google/callback',
 
         console.log(token);
 
-        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : USER_WEB_URL_SUCCESS;
+        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : successRedirect;
         res.redirect(`${redirectUrl}?token=${token}`);
     }
 );
