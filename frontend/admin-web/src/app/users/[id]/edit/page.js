@@ -62,8 +62,8 @@ const UpdateUser = ({ session }) => {
         setSuccess(null);
 
         try {
-            await updateUser(id, formData);
-            console.log("User updated successfully!");
+            const response = await updateUser(id, formData);
+            console.log("User updated successfully!:", response);
             router.push(`/users/${id}`)
         } catch (err) {
             setError(`Failed to update user: ${err.message}`);
