@@ -21,8 +21,10 @@ API_UPDATE_INTERVAL = 5  # Seconds for sending updates to API
 MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
 
-API_URL="http://backend:1337"
-WEBSOCKET_URL="http://backend:1337"
+# API_URL="http://backend:1337"
+# WEBSOCKET_URL="http://backend:1337"
+API_URL="http://localhost:1337"
+WEBSOCKET_URL="http://localhost:1337"
 
 BIKE_ID = uuid.uuid4()
 
@@ -60,13 +62,35 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
         self.sio.on('connect', self.on_connect)
         self.sio.on('disconnect', self.on_disconnect)
-        self.sio.on('bike-stop', self.on_server_event)
+        # self.sio.on('bike-stop', self.on_server_event)
+        self.sio.on('command', self.on_command)
+        # self.sio.on(self.bike_id, self.on_command)
+
+
+
+    # async def initialize(self):
+    #     """Initialize the bike asynchronously."""
+    #     while not self.added_to_db and self.add_to_db_tries < 3:
+    #         await self.add_to_websocket()
+    #         self.add_bike_to_system()
 
     async def initialize(self):
         """Initialize the bike asynchronously."""
+        try:
+            # Connect to the WebSocket server
+            await self.sio.connect(WEBSOCKET_URL)
+            print(f"Bike {self.bike_id} connected to WebSocket server.")
+        except Exception as e:
+            print(f"Error connecting to WebSocket server: {e}")
+            return
+
         while not self.added_to_db and self.add_to_db_tries < 3:
-            await self.add_to_websocket()
-            self.add_bike_to_system()
+            try:
+                await self.add_to_websocket()  # Emit after connection
+                self.add_bike_to_system()
+            except Exception as e:
+                print(f"Error during initialization: {e}")
+
 
     def add_bike_to_system(self):
         """Add the bike to the system."""
@@ -155,8 +179,10 @@ class Bike: # pylint: disable=too-many-instance-attributes
         # Run all tasks in the background
 
         try:
-            await self.sio.connect(WEBSOCKET_URL)
+            if not self.sio.connected:  # Connect only if not already connected
+                await self.sio.connect(WEBSOCKET_URL)
             print(f"Connected to Socket.IO at {WEBSOCKET_URL}")
+            # await self.sio.connect(WEBSOCKET_URL)
 
             if self.simulated:
                 battery_task = asyncio.create_task(self.sim_battery())
@@ -172,11 +198,25 @@ class Bike: # pylint: disable=too-many-instance-attributes
         finally:
             await self.sio.disconnect()
 
+    # async def send_update_to_socketio(self):
+    #     data = self.get_data()
+    #     await self.sio.emit('bike-update', data)
+
+    #     # Wait for all tasks to finish (running in background)
+
     async def send_update_to_socketio(self):
+        if not self.sio.connected:
+            print("Reconnecting to Socket.IO server...")
+            try:
+                await self.sio.connect(WEBSOCKET_URL)
+            except Exception as e:
+                print(f"Failed to reconnect: {e}")
+                return  # Exit if reconnection fails
+
         data = self.get_data()
+        # print(f"Sending bike-update: {data}")  # Debugging log
         await self.sio.emit('bike-update', data)
 
-        # Wait for all tasks to finish (running in background)
 
     async def sim_battery(self):
         """Simulate battery drain when bike is unlocked."""
@@ -232,7 +272,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             #                 'charging',
             #                 'charging',
             #                 'maintenance'])
-            self.status = "in_use"
+            # self.status = "in_use"
             # print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
 
             # Change status every X-Y minutes
@@ -244,24 +284,41 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def on_disconnect(self):
         print(f"Bike {self.bike_id} disconnected from Socket.IO server.")
 
-    async def on_server_event(self, data):
-        print(f"Bike {self.bike_id} received server event: {data}")
+    async def on_command(self, data):
+        print(data, type(data))
+        try:
+            # data = json.loads(data)
+            
+            if data.get("bike_id").strip() != str(self.bike_id).strip():
+                print(f"{data.get('bike_id')} != {self.bike_id}")
+                print("Command not for this bike. Skipping.")
+                return
 
-        # Ignore commands not meant for this bike
+            print(f"Received command: {data}")
 
-        if data.get("bike_id") != str(self.bike_id):
-            print("skipping")
-            return
-        # data = json.loads(data)
+            command = data.get("command")
+            if command == "stop":
+                await self.update_bike_data(status="maintenance") # kanske kan lägga till "disabled" som status?
+                print(f"Bike {self.bike_id} status set to 'maintenance'")
+            elif command == "unlock":
+                await self.update_bike_data(status="available")
+                print(f"Bike {self.bike_id} status set to 'available'")
+            elif command == "charge":
+                await self.update_bike_data(status="charging") # nu när vi inte hämtar status från db, hur ladda i chargestation?
+                print(f"Bike {self.bike_id} status set to 'charging'")
+            elif command == "kill": # Stänger av cykeln helt!?!?
+                await self.update_bike_data(status="shutdown")
+                print(f"Bike {self.bike_id} status set to 'shutdown'")
+            else:
+                print(f"Unknown command: {command}")
 
-        # print(data["bike_id"])
+            await self.send_update_to_socketio()
 
-        # if data["bike_id"] == self.bike_id:
-        self.status = 'maintenance'
-        await self.send_update_to_socketio()
-        print(f"Bike {self.bike_id} stopped!-----------------------------------------------------------------------------------------")
-        print(f"Bike {self.bike_id} stopped!-----------------------------------------------------------------------------------------")
-        print(f"Bike {self.bike_id} stopped!-----------------------------------------------------------------------------------------")
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse command data: {e}")
+        except Exception as e:
+            print(f"Error handling command: {e}")
+
 
 
 
@@ -272,11 +329,20 @@ if __name__ == "__main__":
     # tasks = [bike1.run_bike_interval(), bike2.run_bike_interval()]
     # asyncio.run(asyncio.gather(*tasks))
     bike1 = Bike(BIKE_ID, simulated=True)
+    # bike2 = Bike(uuid.uuid4(), simulated=True)
+    # bike3 = Bike(uuid.uuid4(), simulated=True)
+    # bike4 = Bike(uuid.uuid4(), simulated=True)
+    # bike5 = Bike(uuid.uuid4(), simulated=True)
+
 
     async def main():
         await bike1.initialize()  # Initialize bike asynchronously
         await asyncio.gather(
             bike1.run_bike_interval(),
+            # bike2.run_bike_interval(),
+            # bike3.run_bike_interval(),
+            # bike4.run_bike_interval(),
+            # bike5.run_bike_interval(),
             # Add other bikes here if needed
         )
 
