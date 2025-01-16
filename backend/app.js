@@ -159,7 +159,7 @@ app.get('/auth/google/callback',
     }
 );
 
-app.get('/user/data', authenticateJWT, async (req, res) => {
+app.get('v3/user/data', authenticateJWT, async (req, res) => {
     const userId = req.user.id;
     const userInfo = await getUserInfo(userId);
     res.json({

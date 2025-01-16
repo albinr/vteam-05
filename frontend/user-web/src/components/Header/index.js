@@ -31,6 +31,14 @@ export default function Header({}) {
                 <h1 className="header-title">User-web</h1>
             </div>
             <div className="header-right">
+                <Button
+                    href="/account"
+                    label={"Account"}
+                />
+                <Button
+                    href="/history"
+                    label={"History"}
+                />
                 {session ? (
                     <div className="user-info">
                         <p>{session.user?.name || "User"}</p>

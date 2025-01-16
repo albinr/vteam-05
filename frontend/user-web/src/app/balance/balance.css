@@ -1,0 +1,97 @@
+.outer-box {
+    height: 70%;
+    margin: 0 auto;
+    background-color: gray;
+    padding: 2.5%;
+    margin-top: 35px;
+    border-radius: 5px;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+}
+
+.inner-box {
+    display: flex;
+    height: 90%;
+    gap: 10%;
+}
+
+.left-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 47.5%;
+    height: 95%;
+    background-color: gray;
+    gap: 10px;
+}
+
+.right-box {
+    display: flex;
+    flex-direction: column;
+    width: 47.5%;
+    height: 95%;
+    background-color: gray;
+    gap: 10px;
+}
+
+.email-box {
+    width: 90%;
+    height: 60px;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    border-radius: 5px;
+    word-wrap: break-word;
+}
+
+.money-box {
+    width: 90%;
+    height: 60px;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    border-radius: 5px;
+}
+
+.balance-box {
+    width: 200px;
+    height: 60px;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    border-radius: 5px;
+    margin: 0 0 10px 0;
+}
+
+.big-button{
+    width: 45%;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.input {
+    width: 150px;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    border-radius: 5px;
+    outline: none;
+    border: 2px solid transparent;
+}
+
+.submit {
+    width: 75px;
+    height: 32.5px;
+    font-size: 20px;
+    border-radius: 5px;
+    outline: none;
+    border: 2px solid transparent;
+}
