@@ -43,22 +43,36 @@ const corsOptions = {
 
 // Hantera Socket.IO-anslutningar
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+
+    const bikes = [];
+
+    console.log('A bike connected:', socket.id);
 
     socket.on('disconnect', () => {
-        console.log('user disconnected:', socket.id);
+        console.log('A bike disconnected:', socket.id);
     });
 
-    // Exempel på en anpassad händelse
-    socket.on('message', (msg) => {
-        console.log('message:', msg);
-        // io.emit('message', msg);
+    socket.in('bike-add', (msg) => {
+        console.log('bike-add:', socket.id);
+
+        msg = msg.json();
+
+        console.log(msg);
+
+        // bikes.push(msg);
+        io.emit('bike-add', socket.id);
     });
 
     socket.on('bike-update', (msg) => {
         console.log('bike-update:', msg);
-        io.emit('message', msg);
+        io.emit('bike-update', msg);
     });
+
+    socket.on('bike-stop', (msg) => {
+        console.log('bike-stop:', msg);
+        io.emit('bike-stop', msg);
+    });
+
 });
 
 app.use((req, res, next) => {
