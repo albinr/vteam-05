@@ -42,10 +42,10 @@ FROM TempZone;
 --
 -- Load users from csv
 --
-LOAD DATA INFILE '/docker-entrypoint-initdb.d/user.csv'
-INTO TABLE User
-FIELDS TERMINATED BY ',' 
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
-(user_id, balance, email, simulation_user, admin);
+-- LOAD DATA INFILE '/docker-entrypoint-initdb.d/user.csv'
+-- INTO TABLE User
+-- FIELDS TERMINATED BY ',' 
+-- ENCLOSED BY '"'
+-- LINES TERMINATED BY '\n'
+-- IGNORE 1 ROWS
+-- (user_id, balance, email, simulation_user, admin);
