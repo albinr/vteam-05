@@ -59,12 +59,13 @@ export const addBikeMarker = (bikeData) => {
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
-                        : status === "rented" ?? status === "charging" ? "orange"
+                        : status === "in_use" ?? status === "charging" ? "orange"
                             : status === "maintance" ? "red"
                                 : "red"
                 }}>{status}</span><br />
                 Battery: {battery_level}%<br />
-                <Button id="bike_id" className="rent-button" onClick={handleButtonClick}>Bike Edit</Button>
+                <Button id="bike_id" className="rent-button" onClick={handleButtonClick} label={"Lock"} />
+                <Button id="bike_id" className="rent-button" onClick={handleButtonClick} label={"Shutdown"} />
             </Popup>
         </Marker>
     );
@@ -74,31 +75,37 @@ export const addBikeMarker = (bikeData) => {
 export const addChargingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-            <Marker
-                key={zone_id}
-                position={[longitude, latitude]}
-                icon={chargeIcon}
-            >
-                <Popup>
-                    <strong>{name}</strong><br />
-                </Popup>
-                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
-            </Marker>
+        <Marker
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={chargeIcon}
+        >
+            <Popup>
+                <strong>{city}</strong><br />
+                <strong>{name}</strong><br />
+                <strong>{type}</strong><br />
+                <strong>{radius}</strong><br />
+                <strong>{longitude}</strong><br />
+                <strong>{latitude}</strong><br />
+                <strong>{capacity}</strong><br />
+            </Popup>
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
+        </Marker>
     );
 };
 
 export const addParkingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-            <Marker
-                key={zone_id}
-                position={[longitude, latitude]}
-                icon={parkingIcon}
-            >
-                <Popup>
-                    <strong>{name}</strong><br />
-                </Popup>
-                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
-            </Marker>
+        <Marker
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={parkingIcon}
+        >
+            <Popup>
+                <strong>{name}</strong><br />
+            </Popup>
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
+        </Marker>
     );
 };
