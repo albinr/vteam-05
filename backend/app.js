@@ -43,34 +43,45 @@ const corsOptions = {
 
 // Hantera Socket.IO-anslutningar
 io.on('connection', (socket) => {
-
-    const bikes = [];
-
     console.log('A bike connected:', socket.id);
+    const bikes = [];
 
     socket.on('disconnect', () => {
         console.log('A bike disconnected:', socket.id);
     });
 
-    socket.in('bike-add', (msg) => {
-        console.log('bike-add:', socket.id);
-
-        msg = msg.json();
-
-        console.log(msg);
-
-        // bikes.push(msg);
-        io.emit('bike-add', socket.id);
+    socket.on('bike-add', (msg) => {
+        const bikeId = msg.bike_id;
+        console.log(`Bike ${bikeId} added`);
+        socket.join(bikeId); // Add bike to its own rooooom!
     });
+
 
     socket.on('bike-update', (msg) => {
         console.log('bike-update:', msg);
-        io.emit('bike-update', msg);
+        // io.emit('bike-update', msg); // Ska man dela upp infon till bara id och pos för admin-web?
     });
 
-    socket.on('bike-stop', (msg) => {
-        console.log('bike-stop:', msg);
-        io.emit('bike-stop', msg);
+    socket.on('command', (msg) => {
+        console.log('command:', msg);
+
+        try {
+            // Parse the message if it's a string
+            if (typeof msg === 'string') {
+                msg = JSON.parse(msg);
+            }
+
+            const bikeId = msg.bike_id;
+            if (!bikeId) {
+                console.error('command: Missing bike_id in message.');
+                return;
+            }
+
+            console.log(`Sending command to bike ${bikeId}`);
+            io.to(bikeId).emit('command', msg); // Emit to the specific bike!!!!!!
+        } catch (error) {
+            console.error('command: Error processing message', error);
+        }
     });
 
 });
@@ -119,11 +130,11 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user); // Serialize user data into the session
 });
 
-passport.deserializeUser(function(obj, done) {
+passport.deserializeUser(function (obj, done) {
     done(null, obj); // Deserialize user data from the session
 });
 
