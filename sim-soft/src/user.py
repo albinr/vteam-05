@@ -67,10 +67,10 @@ class User:
     async def run_user_interval(self):
         """Start the loop for simulating user."""
         # Run all tasks in the background
-        update_task = asyncio.create_task(self.rent_bike())
+        # update_task = asyncio.create_task(self.rent_bike())
 
 
-        await asyncio.gather(update_task)
+        # await asyncio.gather(update_task)
 
     async def rent_bike(self):
         """

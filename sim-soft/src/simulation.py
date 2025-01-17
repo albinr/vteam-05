@@ -35,6 +35,9 @@ class Simulation:
         self.zones = []
         self.cities = []
         self.bikes = []
+        self.fetchedBikes = {}
+        self.num_bikes = num_bikes
+        self.simulated = simulated
 
         self.fetch_zones()
 
@@ -61,10 +64,13 @@ class Simulation:
             bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
 
             # Add bike to simulation
-            self.bikes.append(Bike(bike_id=f"{uuid.uuid4()}",
-                location=(bike_longitude, bike_latitude), simulated=simulated))
+            new_bike = Bike(bike_id=f"{uuid.uuid4()}",
+                location=(bike_longitude, bike_latitude), simulated=simulated)
+            self.bikes.append(new_bike)
 
-
+    async def initialize_bikes(self):
+        for bike in self.bikes:
+            await bike.initialize()
 
     def fetch_zones(self):
         """
@@ -113,18 +119,18 @@ class Simulation:
         """
         while True:
             try:
-                bikes = requests.get(f"{API_URL}/v2/bikes", timeout=30)
-                if bikes.status_code != 200:
+                bikesData = requests.get(f"{API_URL}/v2/bikes", timeout=30)
+                if bikesData.status_code != 200:
                     # Throw error
-                    raise requests.exceptions.RequestException(f"Error getting bikes: {bikes.status_code}")
+                    raise requests.exceptions.RequestException(f"Error getting bikes: {bikesData.status_code}")
 
-                self.bikes = bikes.json()
+                self.fetchedBikes = bikesData.json()
 
                 for user in self.users:
-                    user.update_bikes(self.bikes)
+                    user.update_bikes(self.fetchedBikes)
 
             except requests.exceptions.RequestException as e:
-                    print(f"Error getting bikes: {bikes.status_code}")
+                    print(f"Error getting bikes: {bikesData.status_code}")
 
             await asyncio.sleep(FETCH_INTERVAL)
 
@@ -160,7 +166,7 @@ def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
         # Remove simulated trips
-        requests.delete(f"{API_URL}/v2/trips/1", timeout=30) # TODO: Change from 0 to 1 when fixed in db
+        requests.delete(f"{API_URL}/v2/trips/1", timeout=30)
     except requests.exceptions.RequestException as e:
         print(f"Error deleting trip data: {e}")
 
@@ -196,6 +202,7 @@ if __name__ == "__main__":
         """
         To test the file
         """
+        await simulation.initialize_bikes()
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
         # simulation.fetchZones()

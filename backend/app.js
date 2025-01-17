@@ -44,7 +44,7 @@ const corsOptions = {
 // Hantera Socket.IO-anslutningar
 io.on('connection', (socket) => {
     console.log('A bike connected:', socket.id);
-    const bikes = [];
+    // const bikes = [];
 
     socket.on('disconnect', () => {
         console.log('A bike disconnected:', socket.id);
@@ -54,12 +54,17 @@ io.on('connection', (socket) => {
         const bikeId = msg.bike_id;
         console.log(`Bike ${bikeId} added`);
         socket.join(bikeId); // Add bike to its own rooooom!
+        socket.data = msg;
+        console.log(socket);
     });
 
 
     socket.on('bike-update', (msg) => {
-        console.log('bike-update:', msg);
+        // console.log('bike-update:', msg);
         // io.emit('bike-update', msg); // Ska man dela upp infon till bara id och pos för admin-web?
+        // Print room count
+        const rooms = io.sockets.adapter.rooms;
+        console.log('Rooms:', rooms.size);
     });
 
     socket.on('command', (msg) => {
