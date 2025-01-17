@@ -155,7 +155,7 @@ app.get('/auth/google/callback',
         console.log(token);
 
         const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : USER_WEB_URL_SUCCESS;
-        res.redirect(`${redirectUrl}?token=${token}`);
+        res.redirect(`${successRedirect}?token=${token}`);
     }
 );
 
