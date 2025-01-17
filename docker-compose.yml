@@ -20,10 +20,10 @@ services:
       - bike_network
     volumes:
       - mariadb_data:/var/lib/mysql
+      - "./backend/database/zone.csv:/docker-entrypoint-initdb.d/zone.csv"
       - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
       - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
       - "./backend/database/insert.sql:/docker-entrypoint-initdb.d/3.sql"
-      - "./backend/database/zone.csv:/docker-entrypoint-initdb.d/zone.csv"
       # - "./backend/database/user.csv:/docker-entrypoint-initdb.d/user.csv"
 
   backend:
