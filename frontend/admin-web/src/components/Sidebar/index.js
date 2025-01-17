@@ -20,14 +20,14 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
                     <Link href="/" className={`sidebar-link ${pathname === "/" ? "active" : ""}`} onClick={handleLinkClick}>
                         Dashboard
                     </Link>
-                    <Link href="/users" className={`sidebar-link ${pathname === "/users" ? "active" : ""}`} onClick={handleLinkClick}>
-                        User management
+                    <Link href="/users" className={`sidebar-link ${pathname.includes("/users") ? "active" : ""}`} onClick={handleLinkClick}>
+                        Users
                     </Link>
-                    <Link href="/bikes" className={`sidebar-link ${pathname === "/bikes" ? "active" : ""}`} onClick={handleLinkClick}>
-                        Bike management
+                    <Link href="/bikes" className={`sidebar-link ${pathname.includes("/bikes") ? "active" : ""}`} onClick={handleLinkClick}>
+                        Bikes
                     </Link>
-                    <Link href="/zones" className={`sidebar-link ${pathname === "/zones" ? "active" : ""}`} onClick={handleLinkClick}>
-                        Stations and Zones
+                    <Link href="/zones" className={`sidebar-link ${pathname.includes("/zones") ? "active" : ""}`} onClick={handleLinkClick}>
+                        Zones
                     </Link>
                 </nav>
             </aside>

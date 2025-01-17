@@ -28,10 +28,15 @@ export default function Header({ onToggleSidebar }) {
     return (
         <header className="header">
             <div className="header-left">
-                {/* Hamburger Menu */}
-                <button className="hamburger-menu" onClick={onToggleSidebar}>
-                    ☰
-                </button>
+                {session && (
+                    <button
+                        className="hamburger-menu"
+                        onClick={onToggleSidebar}
+                        aria-label="Toggle sidebar"
+                    >
+                        ☰
+                    </button>
+                )}
                 <h1 className="header-title">Admin Panel</h1>
             </div>
             <div className="header-right">

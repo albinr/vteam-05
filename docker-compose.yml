@@ -76,6 +76,8 @@ services:
     - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
     - "./backend/database/insert.sql:/docker-entrypoint-initdb.d/3.sql"
     - "./backend/database/zone.csv:/docker-entrypoint-initdb.d/zone.csv"
+    # - "./backend/database/user.csv:/docker-entrypoint-initdb.d/user.csv"
+
 
 networks:
   bike_network:

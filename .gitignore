@@ -22,3 +22,6 @@ build/
 *app-example
 expo-env*
 *.expo
+
+# mabey dangerous csv file?!?!?
+backend/database/user.csv
