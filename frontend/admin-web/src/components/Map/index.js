@@ -7,7 +7,7 @@ import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
-const Map = ({ posix = [62.0, 13.0], zoom = 12, markers = [] }) => {
+const Map = ({ posix = [62.0, 13.0], zoom = 10, markers = [] }) => {
     const [userPosition, setUserPosition] = useState(null);
 
     useEffect(() => {

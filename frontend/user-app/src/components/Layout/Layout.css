@@ -25,8 +25,7 @@
 .layout-main {
     flex: 1;
     /* padding: 16px; */
-    background-color: #f3f4f6;
-    /* Light gray background */
+    background-color: var(--bg);
 }
 
 /* header {

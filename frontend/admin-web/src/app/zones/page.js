@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import withAuth from "../hoc/withAuth";
+import withAuth from "../auth/hoc/withAuth";
 import Table from "@/components/Table";
 import Loader from "@/components/Loader";
 import { fetchZones } from "./api";
