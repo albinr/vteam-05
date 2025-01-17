@@ -126,9 +126,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
         if not self.sio.connected:
             return
 
-        data = self.get_data()
-        # print(f"Sending bike-update: {data}")  # Debugging log
-        await self.sio.emit('bike-update', data)
+        await self.sio.emit('bike-update', self.get_data())
 
 
     async def sim_battery(self):
@@ -165,7 +163,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
                 if self.speed > self.speed_limit:
                     self.speed = self.speed_limit
 
-                await self.send_update_to_socketio()
+            await self.send_update_to_socketio()
                 # print(f"[Bike {self.bike_id}] Traveling to: {self.location} with speed {self.speed:.2f} km/h")
             await asyncio.sleep(SLEEP_TIME)
 

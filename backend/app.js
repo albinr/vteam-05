@@ -52,9 +52,17 @@ io.on('connection', (socket) => {
 
     socket.on('bike-add', (msg) => {
         const bikeId = msg.bike_id;
-        console.log(`Bike ${bikeId} added`);
+        const room = io.sockets.adapter.rooms.get(bikeId);
+
+        if (room && room.has(socket.id)) {
+            console.log(`Bike ${bikeId} is already added by socket ${socket.id}`);
+            return;
+        }
+
+        socket.leave(socket.id); // Leave old (automatic) room
         socket.join(bikeId); // Add bike to its own rooooom!
         socket.data = msg;
+        console.log(`Bike ${bikeId} added`);
         console.log(socket.data);
     });
 
@@ -76,8 +84,12 @@ io.on('connection', (socket) => {
             }
 
             // Print room count
-            // const rooms = io.sockets.adapter.rooms;
-            // console.log('Rooms:', rooms.size);
+            const rooms = io.sockets.adapter.rooms;
+            console.log('Rooms:', rooms.size);
+
+            // Emit to frontend
+            io.emit('bike-update-frontend', msg);
+            // io.emit('bike-update-admin', msg)
         }
     });
 
