@@ -55,16 +55,30 @@ io.on('connection', (socket) => {
         console.log(`Bike ${bikeId} added`);
         socket.join(bikeId); // Add bike to its own rooooom!
         socket.data = msg;
-        console.log(socket);
+        console.log(socket.data);
     });
 
 
     socket.on('bike-update', (msg) => {
-        // console.log('bike-update:', msg);
-        // io.emit('bike-update', msg); // Ska man dela upp infon till bara id och pos för admin-web?
-        // Print room count
-        const rooms = io.sockets.adapter.rooms;
-        console.log('Rooms:', rooms.size);
+        const bikeId = msg.bike_id;
+        if (bikeId) {
+            if (io.sockets.adapter.rooms.has(bikeId)) {
+                const room = io.sockets.adapter.rooms.get(bikeId);
+                room.forEach(socketId => {
+                    const roomSocket = io.sockets.sockets.get(socketId);
+                    if (roomSocket) {
+                        roomSocket.data = msg;
+                        console.log(`Updated data for socket ${socketId}:`, roomSocket.data);
+                    }
+                });
+            } else {
+                console.log(`Room ${bikeId} does not exist.`);
+            }
+
+            // Print room count
+            // const rooms = io.sockets.adapter.rooms;
+            // console.log('Rooms:', rooms.size);
+        }
     });
 
     socket.on('command', (msg) => {

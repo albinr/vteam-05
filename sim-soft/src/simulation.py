@@ -69,6 +69,7 @@ class Simulation:
             self.bikes.append(new_bike)
 
     async def initialize_bikes(self):
+        print("Initializing bikes...")
         for bike in self.bikes:
             await bike.initialize()
 

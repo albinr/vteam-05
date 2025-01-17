@@ -87,6 +87,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             "battery": f"{self.battery}",
             "location": self.location,
             "status": f"{self.status}",
+            "speed": f"{self.speed}",
             "timestamp": datetime.now().isoformat()
         }
 
@@ -224,7 +225,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             else:
                 print(f"Unknown command: {command}")
 
-            # await self.send_update_to_socketio()
+            await self.send_update_to_socketio()
 
         except json.JSONDecodeError as e:
             print(f"Failed to parse command data: {e}")
