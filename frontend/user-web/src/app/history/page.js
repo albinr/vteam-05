@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import withAuth from "../hoc/withAuth";
 import { apiClient } from "@/services/apiClient";
 
@@ -8,6 +8,30 @@ import "./history.css";
 
 const History = ({ session }) => {
     const [selectedTable, setSelectedTable] = useState("trip");
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function getUser() {
+            try {
+                const user = await apiClient.get("/user/data");
+                console.log(user);
+                setUser(user);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching user:", error.message);
+                setIsLoading(false);
+            }
+        }
+
+        getUser();
+    }, [])
+
+    async function getTrip() {
+        const userTrip = await apiClient.get(`/trips/from/${user.id}`);
+        console.log(userTrip);
+    }
+    getTrip();
 
     const handleClick = (tableType) => {
         setSelectedTable(tableType);
@@ -53,4 +77,5 @@ const History = ({ session }) => {
         </div>
     );
 };
+
 export default withAuth(History);

@@ -1,6 +1,6 @@
 .outer-box {
     padding: 20px;
-    background-color: gray;
+    background-color: #eeeeee;
     border-radius: 5px;
 }
 
@@ -27,7 +27,7 @@ h2 {
 }
 
 .table th {
-    background-color: rgb(131, 78, 78);
+    background-color: #939393;
 }
 
 .table th, .table td {
@@ -36,9 +36,10 @@ h2 {
 }
 
 .button-history {
-    width: 75px;
     height: 32.5px;
     border-radius: 5px;
     outline: none;
     border: 2px solid transparent;
+    color: black;
+    font-size: 16px;
 }

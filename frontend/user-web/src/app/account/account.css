@@ -1,7 +1,7 @@
 .outer-box {
     height: 70%;
     margin: 0 auto;
-    background-color: gray;
+    background-color: #eeeeee;
     padding: 2.5%;
     margin-top: 35px;
     border-radius: 5px;
@@ -24,7 +24,7 @@ h1 {
     align-items: flex-start;
     width: 47.5%;
     height: 95%;
-    background-color: gray;
+    background-color: #eeeeee;
     gap: 10px;
 }
 
@@ -33,27 +33,31 @@ h1 {
     flex-direction: column;
     width: 47.5%;
     height: 95%;
-    background-color: gray;
+    background-color: #eeeeee;
     gap: 10px;
 }
 
 .email-box {
+    display: flex;
     width: 90%;
-    height: 60px;
+    height: 45px;
     background-color: white;
     padding-left: 10px;
     padding-top: 5px;
     border-radius: 5px;
     word-wrap: break-word;
+    align-items: center;
 }
 
 .money-box {
+    display: flex;
     width: 90%;
-    height: 60px;
+    height: 45px;
     background-color: white;
     padding-left: 10px;
     padding-top: 5px;
     border-radius: 5px;
+    align-items: center;
 }
 
 

@@ -31,24 +31,16 @@ export default function Header({}) {
                 <h1 className="header-title">User-web</h1>
             </div>
             <div className="header-right">
-                <Button
-                    href="/account"
-                    label={"Account"}
-                />
-                <Button
-                    href="/history"
-                    label={"History"}
-                />
                 {session ? (
                     <div className="user-info">
-                        <p>{session.user?.name || "User"}</p>
-                        {session.user?.image && (
-                            <img
-                                src={session.user.image}
-                                alt="User Profile"
-                                className="user-profile-image"
-                            />
-                        )}
+                        <Button
+                        href="/account"
+                        label={"Account"}
+                    />
+                    <Button
+                        href="/history"
+                        label={"History"}
+                    />
                         <LogoutButton className="header-logout" />
                     </div>
                 ) : (

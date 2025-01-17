@@ -1,7 +1,7 @@
 .outer-box {
     height: 70%;
     margin: 0 auto;
-    background-color: gray;
+    background-color: #eeeeee;
     padding: 2.5%;
     margin-top: 35px;
     border-radius: 5px;
@@ -24,7 +24,7 @@ h1 {
     align-items: flex-start;
     width: 47.5%;
     height: 95%;
-    background-color: gray;
+    background-color: #eeeeee;
     gap: 10px;
 }
 
@@ -33,7 +33,7 @@ h1 {
     flex-direction: column;
     width: 47.5%;
     height: 95%;
-    background-color: gray;
+    background-color: #eeeeee;
     gap: 10px;
 }
 
@@ -48,22 +48,26 @@ h1 {
 }
 
 .money-box {
+    display: flex;
     width: 90%;
-    height: 60px;
+    height: 50px;
     background-color: white;
     padding-left: 10px;
     padding-top: 5px;
     border-radius: 5px;
+    align-items: center;
 }
 
 .balance-box {
+    display: flex;
     width: 200px;
-    height: 60px;
+    height: 45px;
     background-color: white;
     padding-left: 10px;
     padding-top: 5px;
     border-radius: 5px;
     margin: 0 0 10px 0;
+    align-items: center;
 }
 
 .big-button{
@@ -88,10 +92,12 @@ h1 {
 }
 
 .submit {
-    width: 75px;
-    height: 32.5px;
+    width: 80px;
+    height: 40px;
     font-size: 20px;
     border-radius: 5px;
     outline: none;
     border: 2px solid transparent;
+    background-color: #555555;
+    color: white;
 }
