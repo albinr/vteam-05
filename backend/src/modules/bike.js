@@ -120,7 +120,6 @@ async function updateBike(bikeId, updatedData) {
         return { message: "Cykel uppdaterad", affectedRows: result.affectedRows };
     } catch (error) {
         console.error("Error vid uppdatering av cykel:", error.message);
-        throw error;
     }
 }
 

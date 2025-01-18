@@ -15,11 +15,11 @@ import requests
 from socketio import AsyncClient
 
 # Constants
-SLEEP_TIME = 5  # Seconds for simulation update loop
-API_UPDATE_INTERVAL = 6  # Seconds for sending updates to API
+SLEEP_TIME = 10  # Seconds for simulation update loop
+API_UPDATE_INTERVAL = 11  # Seconds for sending updates to API
 
-MIN_TRAVEL_TIME = 0.1 # Minutes of minimum travel time for simulation
-MAX_TRAVEL_TIME = 0.5 # Minutes of maximum travel time for simulation
+MIN_TRAVEL_TIME = 5 # Minutes of minimum travel time for simulation
+MAX_TRAVEL_TIME = 10 # Minutes of maximum travel time for simulation
 
 # API_URL="http://backend:1337"
 # WEBSOCKET_URL="http://backend:1337"
@@ -51,11 +51,14 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.location = location
         self.speed = speed
         self.speed_limit = speed_limit
-        self.update_delay = random.uniform(0, 4)
+        self.update_delay = random.uniform(0, 10)
         self.status = status  # 'available', 'in_use', 'maintenance', 'charging'
         self.simulated = simulated  # To mark if the bike is simulated
         self.user_owner = None
-        self.sio = AsyncClient()
+        self.sio = AsyncClient(reconnection=True,
+                            reconnection_attempts=5,
+                            reconnection_delay=5,
+                            reconnection_delay_max=60)
         self.is_updating = False
 
         self.sio.on('connect', self.on_connect)
@@ -67,6 +70,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
     async def initialize(self):
         """Initialize the bike asynchronously."""
         print("Initializing bike...")
+        # Sleep for a random time to avoid all bikes connecting at the same time
         try:
             # Connect to the WebSocket server
             await self.sio.connect(WEBSOCKET_URL)
@@ -84,10 +88,12 @@ class Bike: # pylint: disable=too-many-instance-attributes
         """Return the current data of the bike."""
         return {
             "bike_id": f"{self.bike_id}",
-            "battery": f"{self.battery}",
-            "location": self.location,
+            "battery_level": self.battery,
+            "latitude": self.location[0],
+            "longitude": self.location[1],
             "status": f"{self.status}",
-            "speed": f"{self.speed}",
+            "simulation": self.simulated,
+            "speed": self.speed,
             "timestamp": datetime.now().isoformat()
         }
 
@@ -149,6 +155,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
     async def sim_travel(self):
         """Simulate bike travel."""
+
         while self.status != "shutdown":
             if self.status == "in_use" and self.battery > 0:
                 # Simulate travel

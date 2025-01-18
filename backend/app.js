@@ -23,6 +23,7 @@ const middleware = require("./middleware/index.js");
 const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
 const v3Router = require("./route/v3/api.js");
+const bikeDB = require("./src/modules/bike.js");
 
 
 // Options for cors
@@ -59,40 +60,85 @@ io.on('connection', (socket) => {
             return;
         }
 
-        socket.leave(socket.id); // Leave old (automatic) room
-        socket.join(bikeId); // Add bike to its own rooooom!
-        socket.data = msg;
-        console.log(`Bike ${bikeId} added`);
-        console.log(socket.data);
+        if (!bikeId || msg.battery_level === undefined || msg.longitude === undefined || msg.latitude === undefined || msg.simulation === undefined) {
+            console.error('bike-add: Missing required bike properties');
+            return;
+        }
+
+        try {
+            socket.leave(socket.id); // Leave old (automatic) room
+            socket.join(bikeId); // Add bike to its own rooooom!
+            socket.data = msg;
+            bikeDB.addBike(
+                bikeId,
+                msg.battery_level,
+                msg.longitude,
+                msg.latitude,
+                msg.simulation
+            );
+            console.log(`Bike ${bikeId} added to database and room.`);
+        } catch (error) {
+            console.error('bike-add:', error);
+        }
     });
 
+    const updateBuffer = [];
+    const dbUpdateBuffer = [];
+    const EMIT_INTERVAL = 3000; // Emit to frontend 1 per 3 seconds
+    const DB_UPDATE_INTERVAL = 10000; // Update db every 10s
+
+    // Function to emit buffered updates
+    function emitBufferedUpdates() {
+        if (updateBuffer.length > 0) {
+            io.emit('bike-update-frontend', updateBuffer);
+            updateBuffer.length = 0; // Clear the buffer
+        }
+    }
+    setInterval(emitBufferedUpdates, EMIT_INTERVAL);
+
+    async function processDbUpdates() {
+        if (dbUpdateBuffer.length > 0) {
+            for (const msg of dbUpdateBuffer) {
+                const bikeId = msg.bike_id;
+                try {
+                    await bikeDB.updateBike(bikeId, msg);
+                    console.log(`Successfully updated bike ${bikeId} in the database.`);
+                } catch (error) {
+                    console.log(`Error updating bike ${bikeId}:`, error);
+                }
+            }
+            dbUpdateBuffer.length = 0; // Clear the buffer
+        }
+    }
+    setInterval(processDbUpdates, DB_UPDATE_INTERVAL);
 
     socket.on('bike-update', (msg) => {
         const bikeId = msg.bike_id;
         if (bikeId) {
             if (io.sockets.adapter.rooms.has(bikeId)) {
                 const room = io.sockets.adapter.rooms.get(bikeId);
+
+                dbUpdateBuffer.push(msg);
+
                 room.forEach(socketId => {
                     const roomSocket = io.sockets.sockets.get(socketId);
                     if (roomSocket) {
                         roomSocket.data = msg;
-                        console.log(`Updated data for socket ${socketId}:`, roomSocket.data);
+                        console.log(`Updated socket data for ${socketId}`);
                     }
                 });
             } else {
                 console.log(`Room ${bikeId} does not exist.`);
             }
-
             // Print room count
             const rooms = io.sockets.adapter.rooms;
             console.log('Rooms:', rooms.size);
 
             // Emit to frontend
-            io.emit('bike-update-frontend', msg);
+            updateBuffer.push(msg);
             // io.emit('bike-update-admin', msg)
         }
     });
-
     socket.on('command', (msg) => {
         console.log('command:', msg);
 
