@@ -12,7 +12,10 @@ const http = require('http'); // Importera http-modulen
 const app = express();
 const server = http.createServer(app); // Skapa en HTTP-server med Express
 const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
-const io = new Server(server); // Skapa en Socket.IO-server kopplad till HTTP-servern
+const io = new Server(server, {
+    pingInterval: 60000, // Ping every 60 seconds
+    pingTimeout: 30000   // Wait 30 seconds for a pong response
+});
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
 const { authenticateJWT, authorizeAdmin } = require("./middleware/auth.js");
