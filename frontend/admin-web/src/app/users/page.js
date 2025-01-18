@@ -14,15 +14,14 @@ const userColumns = [
 ];
 
 const Users = () => {
-    const [users, setUsers] = useState([]); // All user data
-    const [currentPage, setCurrentPage] = useState(1); // Current page number
-    const usersPerPage = 10; // Number of users per page
-
-    const router = useRouter(); // Skapa router-instans
+    const [users, setUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10; 
+    const router = useRouter();
 
 
     // search logic
-    const [searchTerm, setSearchTerm] = useState(""); // Search term
+    const [searchTerm, setSearchTerm] = useState("");
     const [filteredUsers, setFilteredUsers] = useState([]); // Filtered users
 
 
