@@ -1,4 +1,14 @@
-const { getUserInfo, addUser, updateUser, deleteUsers, getAllUsers, deleteUser } = require('../../src/modules/user.js');
+const { 
+    getUserInfo, 
+    addUser, 
+    updateUser, 
+    deleteUsers, 
+    getAllUsers, 
+    deleteUser, 
+    findOrCreateUser, 
+    giveAdmin, 
+    isUserAdmin 
+} = require('../../src/modules/user.js');
 jest.mock('../../src/db/db.js', () => require('../db/dbDev.js'));
 
 describe('User Module Tests', () => {
@@ -14,7 +24,6 @@ describe('User Module Tests', () => {
     });
 
     test('should add a new user successfully and fetch it', async () => {
-
         const userId = 1;
         const email = "testuser@hotmail.com";
         const balance = 100;
@@ -72,7 +81,64 @@ describe('User Module Tests', () => {
         await deleteUsers(1);
 
         const allAfter = await getAllUsers();
-    
         expect(allAfter).toEqual([]);
+    });
+
+    test('should delete a single user', async () => {
+        const userId = 5;
+        await addUser(userId, "toDelete@hotmail.com", 10);
+
+        const result = await deleteUser(userId);
+        expect(result.affectedRows).toEqual(1);
+
+        const users = await getAllUsers();
+        expect(users.find(user => user.user_id === userId)).toBeUndefined();
+    });
+
+    test('should give admin rights to a user', async () => {
+        const userId = 6;
+        await addUser(userId, "adminTest@hotmail.com", 100);
+
+        const adminResult = await giveAdmin(userId);
+        expect(adminResult.affectedRows).toEqual(1);
+
+        const user = await getUserInfo(userId);
+        expect(user.admin).toBe(1);
+    });
+
+    test('should check if user is admin or not', async () => {
+        const userIdAdmin = 7;
+        const userIdNonAdmin = 8;
+        
+        await addUser(userIdAdmin, "admin@hotmail.com", 100);
+        await giveAdmin(userIdAdmin);
+        
+        await addUser(userIdNonAdmin, "notAdmin@hotmail.com", 100);
+
+        const isAdmin = await isUserAdmin(userIdAdmin);
+        expect(isAdmin).toBe(true);
+
+        const isNotAdmin = await isUserAdmin(userIdNonAdmin);
+        expect(isNotAdmin).toBe(false);
+    });
+
+    test('should find or create a user', async () => {
+        const oauthUser = {
+            id: 'oauth123',
+            emails: [{ value: 'oauth@example.com' }],
+            displayName: 'OAuth User',
+            photos: [{ value: 'photo-url.com' }]
+        };
+
+        const user = await findOrCreateUser(oauthUser);
+        expect(user).toEqual(expect.objectContaining({
+            user_id: 'oauth123',
+            email: 'oauth@example.com',
+            balance: 0
+        }));
+
+        // Check if user already exists
+        const existingUser = await findOrCreateUser(oauthUser);
+        expect(existingUser).toEqual(user); // Should return the same user object
     });
 });
