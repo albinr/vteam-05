@@ -1,4 +1,4 @@
-const { addBike, showBikes, showBike, deleteBike, updateBike, deleteBikes } = require('../../src/modules/bike.js');
+const { addBike, showBikes, showBike, deleteBike, updateBike, deleteBikes, getAvailableBikes } = require('../../src/modules/bike.js');
 
 // Byt ut db/db.js mot testDBsdsdfsdf
 jest.mock('../../src/db/db.js', () => require('../db/dbDev.js'));
@@ -65,4 +65,13 @@ describe('Bike Module Tests', () => {
         await expect(bikesx).toEqual([])
     })
 
+    test('should fetch available bikes', async () => {
+        await addBike('simulatedBike1', 50, 11, 22, 1);
+        const availableBikes = await getAvailableBikes();
+        expect(Array.isArray(availableBikes)).toBe(true);
+
+        expect(availableBikes.length).toBeGreaterThan(0); 
+        expect(availableBikes[0]).toHaveProperty('bike_id');
+        expect(availableBikes[0]).toHaveProperty('status', 'available');
+    });
 });
