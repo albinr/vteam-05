@@ -21,23 +21,18 @@ describe('Trip Module Tests', () => {
     });
 
     beforeEach(async () => {
-        // Generera unika användar-ID
         userId1 = `user1_${Date.now()}`;
         userId2 = `user2_${Date.now()}`;
         
-        // Lägg till användare i databasen
         await addUser(userId1, "test1@gmail.com", 100, 1);
         await addUser(userId2, "test2@gmail.com", 100, 1);
         
-        // Generera unika cykel-ID
         bikeId1 = `bike1_${Date.now()}`;
         bikeId2 = `bike2_${Date.now()}`;
         
-        // Lägg till cyklar i databasen
         await addBike(bikeId1, 100, 10, 10, 1);
         await addBike(bikeId2, 100, 11, 11, 1);
 
-        // Se till att alla trippar avslutas före test
         await endTrip(bikeId1);
         await endTrip(bikeId2);
     });
@@ -47,7 +42,7 @@ describe('Trip Module Tests', () => {
         await testDB.query('DELETE FROM Trip');
         await testDB.query('DELETE FROM User');
         await testDB.query('DELETE FROM Bike');
-        await testDB.query('ALTER TABLE User AUTO_INCREMENT = 1'); // Återställ auto-inkrement
+        await testDB.query('ALTER TABLE User AUTO_INCREMENT = 1');
     });
 
     afterAll(async () => {
@@ -58,9 +53,8 @@ describe('Trip Module Tests', () => {
     test('should start a trip successfully', async () => {
         const result = await startTrip(bikeId1, userId1);
         
-        // If StartTrip returns a flat array or object instead:
         expect(result).toBeDefined();
-        expect(result.message).toBeUndefined(); // Adjust based on actual return format
+        expect(result.message).toBeUndefined();
     });
 
     test('should return an error if bike is unavailable', async () => {
@@ -110,7 +104,7 @@ describe('Trip Module Tests', () => {
         await startTrip(bikeId1, userId1);
         await startTrip(bikeId2, userId2);
 
-        const result = await deleteTrips(1); // Simulated trips only
+        const result = await deleteTrips(1);
         expect(result).toBeDefined();
 
         const trips = await showAllTrips();
@@ -134,11 +128,11 @@ describe('Trip Module Tests', () => {
     
         const ongoingTrip = await OngoingTripByUser(userId1);
         expect(ongoingTrip).toBeDefined();
-        expect(ongoingTrip.length).toBe(1); // Since it's an array with one item
-        expect(ongoingTrip[0].end_time).toBeNull(); // Check the first (and only) item's end_time
+        expect(ongoingTrip.length).toBe(1);
+        expect(ongoingTrip[0].end_time).toBeNull();
     
         await endTrip(bikeId1);
         const noOngoingTrip = await OngoingTripByUser(userId1);
-        expect(noOngoingTrip).toEqual([]); // Expecting an empty array when no trip is ongoing
+        expect(noOngoingTrip).toEqual([]);
     });
 });

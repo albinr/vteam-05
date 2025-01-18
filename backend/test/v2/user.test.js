@@ -137,8 +137,7 @@ describe('User Module Tests', () => {
             balance: 0
         }));
 
-        // Check if user already exists
         const existingUser = await findOrCreateUser(oauthUser);
-        expect(existingUser).toEqual(user); // Should return the same user object
+        expect(existingUser).toEqual(user);
     });
 });

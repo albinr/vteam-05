@@ -68,8 +68,8 @@ describe('Bike Module Tests', () => {
     test('should fetch available bikes', async () => {
         await addBike('simulatedBike1', 50, 11, 22, 1);
         const availableBikes = await getAvailableBikes();
-        expect(Array.isArray(availableBikes)).toBe(true); // Check if it returns an array
-        // Assuming at least one bike is available
+        expect(Array.isArray(availableBikes)).toBe(true);
+
         expect(availableBikes.length).toBeGreaterThan(0); 
         expect(availableBikes[0]).toHaveProperty('bike_id');
         expect(availableBikes[0]).toHaveProperty('status', 'available');
