@@ -15,6 +15,9 @@ import requests
 from socketio import AsyncClient
 
 # Constants
+SLEEP_TIME_IN_USE = 5
+SLEEP_TIME_IDLE = 600 
+
 SLEEP_TIME = 10  # Seconds for simulation update loop
 API_UPDATE_INTERVAL = 11  # Seconds for sending updates to API
 
@@ -104,6 +107,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
         if status:
             self.status = status
+            await self.send_update_to_socketio()
         if location:
             self.location = location
         if battery:
@@ -155,24 +159,33 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
     async def sim_travel(self):
         """Simulate bike travel."""
-
+        await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
         while self.status != "shutdown":
             if self.status == "in_use" and self.battery > 0:
-                # Simulate travel
+                # Simulate movement
                 random_x = random.uniform(-0.005, 0.005)
                 random_y = random.uniform(-0.005, 0.005)
+                self.location = (
+                    self.location[0] + random_x,
+                    self.location[1] + random_y
+                )
 
-                self.location = (self.location[0] + random_x,
-                                self.location[1] + random_y)
-
-                # Simulate speed (km/h), calculate from random_X and random_Y
-                self.speed = (random_x ** 2 + random_y ** 2) ** 0.5 / SLEEP_TIME * 60 * 60
+                # Simulate speed (km/h)
+                distance = (random_x ** 2 + random_y ** 2) ** 0.5
+                self.speed = distance / SLEEP_TIME_IN_USE * 3600  # Convert to km/h
                 if self.speed > self.speed_limit:
                     self.speed = self.speed_limit
 
-            await self.send_update_to_socketio()
-                # print(f"[Bike {self.bike_id}] Traveling to: {self.location} with speed {self.speed:.2f} km/h")
-            await asyncio.sleep(SLEEP_TIME)
+                # Send an update more frequently while in use
+                await self.send_update_to_socketio()
+                await asyncio.sleep(SLEEP_TIME_IN_USE)
+            else:
+                # Bike is not in use: set speed = 0, optionally no movement
+                self.speed = 0
+                # If you want a "heartbeat" update so admins see it's still online:
+                await self.send_update_to_socketio()
+                # Sleep longer if idle to reduce load
+                await asyncio.sleep(SLEEP_TIME_IDLE)
 
 
     async def sim_random_bike_status(self):
@@ -216,15 +229,18 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
             command = data.get("command")
             if command == "stop":
-                await self.update_bike_data(status="maintenance") # kanske kan lägga till "disabled" som status?
+                await self.update_bike_data(status="maintenance")
                 print(f"Bike {self.bike_id} status set to 'maintenance'")
-            elif command == "unlock":
+            elif command == "available":
                 await self.update_bike_data(status="available")
                 print(f"Bike {self.bike_id} status set to 'available'")
+            elif command == "rented":
+                await self.update_bike_data(status="in_use")
+                print(f"Bike {self.bike_id} status set to 'in_use'")
             elif command == "charge":
-                await self.update_bike_data(status="charging") # nu när vi inte hämtar status från db, hur ladda i chargestation?
+                await self.update_bike_data(status="charging")
                 print(f"Bike {self.bike_id} status set to 'charging'")
-            elif command == "kill": # Stänger av cykeln helt!?!?
+            elif command == "kill":
                 await self.update_bike_data(status="shutdown")
                 print(f"Bike {self.bike_id} status set to 'shutdown'")
             else:

@@ -16,7 +16,8 @@ from user import User
 
 API_URL="http://backend:1337"
 
-FETCH_INTERVAL = 5
+FETCH_INTERVAL = 20
+USER_RENT_PORTION = 1 // 6 
 
 class Simulation:
     """
@@ -139,13 +140,13 @@ class Simulation:
         """
         Distrubute bikes to users.
         """
-        for user in self.users:
+        for user in self.users[:len(self.users) * USER_RENT_PORTION]:
             for bike in self.bikes:
                 if user.bike:
                     break
 
                 if not bike.user_owner:
-                    bike.status = "in_use"
+                    # bike.status = "in_use"
                     bike.user_owner = user.user_id
                     user.bike = bike.bike_id
                     break

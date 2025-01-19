@@ -72,13 +72,13 @@ io.on('connection', (socket) => {
             socket.leave(socket.id); // Leave old (automatic) room
             socket.join(bikeId); // Add bike to its own rooooom!
             socket.data = msg;
-            bikeDB.addBike(
-                bikeId,
-                msg.battery_level,
-                msg.longitude,
-                msg.latitude,
-                msg.simulation
-            );
+            // bikeDB.addBike(
+            //     bikeId,
+            //     msg.battery_level,
+            //     msg.longitude,
+            //     msg.latitude,
+            //     msg.simulation
+            // );
             console.log(`Bike ${bikeId} added to database and room.`);
         } catch (error) {
             console.error('bike-add:', error);
@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
             for (const msg of dbUpdateBuffer) {
                 const bikeId = msg.bike_id;
                 try {
-                    await bikeDB.updateBike(bikeId, msg);
+                    // await bikeDB.updateBike(bikeId, msg);
                     console.log(`Successfully updated bike ${bikeId} in the database.`);
                 } catch (error) {
                     console.log(`Error updating bike ${bikeId}:`, error);
