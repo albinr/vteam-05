@@ -14,7 +14,7 @@ MIN_TRAVEL_TIME = 3 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 10 # Minutes of maximum travel time for simulation
 
 RETRY_INTERVAL = 5
-RETURN_OR_HIRE_PROBABILITY = 10
+RETURN_OR_HIRE_PROBABILITY = 4
 RENT_INTERVAL = 2
 
 API_URL="http://backend:1337"

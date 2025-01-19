@@ -17,7 +17,7 @@ from user import User
 API_URL="http://backend:1337"
 
 FETCH_INTERVAL = 20
-USER_RENT_PORTION = 1 // 6 
+USER_RENT_PORTION = 1 // 6
 
 class Simulation:
     """
@@ -106,7 +106,7 @@ class Simulation:
                 f"Status: {bike.status}, "
                 f"Location: {bike.location}")
 
-    async def start_bikes(self):
+    async def start_bikes_and_users(self):
         """Start the bike update and interval loop."""
         bike_tasks = [bike.run_bike_interval() for bike in self.bikes]
         user_tasks = [user.run_user_interval() for user in self.users]
@@ -156,7 +156,7 @@ class Simulation:
         print("[Simulation] Starting simulation...")
         self.state = "running"
         self.list_bikes()
-        await self.start_bikes()
+        await self.start_bikes_and_users()
 
     async def update_bike_data(self, bike_id, status=None, location=None, battery=None):
         """Update specific bike data (status, location, or battery)."""
@@ -205,6 +205,7 @@ if __name__ == "__main__":
         To test the file
         """
         await simulation.initialize_bikes()
+        await asyncio.sleep(60*5)
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
         # simulation.fetchZones()

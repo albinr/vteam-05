@@ -16,7 +16,7 @@ from socketio import AsyncClient
 
 # Constants
 SLEEP_TIME_IN_USE = 5
-SLEEP_TIME_IDLE = 600 
+SLEEP_TIME_IDLE = 60
 
 SLEEP_TIME = 10  # Seconds for simulation update loop
 API_UPDATE_INTERVAL = 11  # Seconds for sending updates to API
@@ -84,8 +84,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             return
 
     async def add_to_websocket(self):
-        data = self.get_data()
-        await self.sio.emit('bike-add', data)
+        await self.sio.emit('bike-add', self.get_data())
 
     def get_data(self):
         """Return the current data of the bike."""
@@ -107,11 +106,12 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
         if status:
             self.status = status
-            await self.send_update_to_socketio()
         if location:
             self.location = location
         if battery:
             self.battery = battery
+
+        await self.send_update_to_socketio()
 
     async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
@@ -124,20 +124,26 @@ class Bike: # pylint: disable=too-many-instance-attributes
             battery_task = asyncio.create_task(self.sim_battery())
             travel_task = asyncio.create_task(self.sim_travel())
             status_task = asyncio.create_task(self.sim_random_bike_status())
-            # update_task = asyncio.create_task(self.send_update_to_socketio())
+            update_task = asyncio.create_task(self.send_updates_interval_to_socketio())
 
-            await asyncio.gather(battery_task, travel_task, status_task)
+            await asyncio.gather(battery_task, travel_task, status_task, update_task)
         # else:
             # update_task = asyncio.create_task(self.send_update_to_socketio())
             # await update_task
 
 
     async def send_update_to_socketio(self):
-        if not self.sio.connected:
-            return
+        if self.sio.connected:
+            await self.sio.emit('bike-update', self.get_data())
 
-        await self.sio.emit('bike-update', self.get_data())
-
+    async def send_updates_interval_to_socketio(self):
+        await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
+        while self.status != "shutdown":
+            await self.send_update_to_socketio()
+            if self.status == "in_use":
+                await asyncio.sleep(SLEEP_TIME_IN_USE)
+            else:
+                await asyncio.sleep(SLEEP_TIME_IDLE)
 
     async def sim_battery(self):
         """Simulate battery drain when bike is unlocked."""
@@ -159,9 +165,10 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
     async def sim_travel(self):
         """Simulate bike travel."""
-        await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
+        # await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
         while self.status != "shutdown":
             if self.status == "in_use" and self.battery > 0:
+                await asyncio.sleep(SLEEP_TIME_IN_USE)
                 # Simulate movement
                 random_x = random.uniform(-0.005, 0.005)
                 random_y = random.uniform(-0.005, 0.005)
@@ -177,15 +184,14 @@ class Bike: # pylint: disable=too-many-instance-attributes
                     self.speed = self.speed_limit
 
                 # Send an update more frequently while in use
-                await self.send_update_to_socketio()
-                await asyncio.sleep(SLEEP_TIME_IN_USE)
+                # await self.send_update_to_socketio()
             else:
+                await asyncio.sleep(SLEEP_TIME_IDLE)
                 # Bike is not in use: set speed = 0, optionally no movement
                 self.speed = 0
                 # If you want a "heartbeat" update so admins see it's still online:
-                await self.send_update_to_socketio()
+                # await self.send_update_to_socketio()
                 # Sleep longer if idle to reduce load
-                await asyncio.sleep(SLEEP_TIME_IDLE)
 
 
     async def sim_random_bike_status(self):
@@ -219,7 +225,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
         print(data, type(data))
         try:
             # data = json.loads(data)
-            
+
             if data.get("bike_id").strip() != str(self.bike_id).strip():
                 print(f"{data.get('bike_id')} != {self.bike_id}")
                 print("Command not for this bike. Skipping.")

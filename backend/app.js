@@ -13,8 +13,8 @@ const app = express();
 const server = http.createServer(app); // Skapa en HTTP-server med Express
 const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
 const io = new Server(server, {
-    pingInterval: 60000, // Ping every 60 seconds
-    pingTimeout: 30000   // Wait 30 seconds for a pong response
+    pingInterval: 60*1000*10,
+    pingTimeout: 60*1000*9,
 });
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
@@ -50,40 +50,62 @@ io.on('connection', (socket) => {
     console.log('A bike connected:', socket.id);
     // const bikes = [];
 
+
+
     socket.on('disconnect', () => {
-        console.log('A bike disconnected:', socket.id);
+        // console.log('A bike disconnected:', socket.id);
+        console.log(`Bike ${socket.data.bike_id} disconnected.`);
     });
 
     socket.on('bike-add', (msg) => {
         const bikeId = msg.bike_id;
-        const room = io.sockets.adapter.rooms.get(bikeId);
-
-        if (room && room.has(socket.id)) {
-            console.log(`Bike ${bikeId} is already added by socket ${socket.id}`);
+        if (!bikeId) {
+            console.error('Missing bike_id in message.');
             return;
         }
-
-        if (!bikeId || msg.battery_level === undefined || msg.longitude === undefined || msg.latitude === undefined || msg.simulation === undefined) {
-            console.error('bike-add: Missing required bike properties');
-            return;
-        }
-
-        try {
-            socket.leave(socket.id); // Leave old (automatic) room
-            socket.join(bikeId); // Add bike to its own rooooom!
-            socket.data = msg;
-            // bikeDB.addBike(
-            //     bikeId,
-            //     msg.battery_level,
-            //     msg.longitude,
-            //     msg.latitude,
-            //     msg.simulation
-            // );
-            console.log(`Bike ${bikeId} added to database and room.`);
-        } catch (error) {
-            console.error('bike-add:', error);
-        }
+        socket.join('bikes-room'); // Join a single room for all bikes
+        socket.data.bike_id = bikeId; // Store the bike ID for targeting
+        bikeDB.addBike(
+            bikeId,
+            msg.battery_level,
+            msg.longitude,
+            msg.latitude,
+            msg.simulation
+        );
+        console.log(`Bike ${bikeId} added to the system.`);
     });
+
+    // // add bikes to own rooms
+    // socket.on('bike-add', (msg) => {
+    //     const bikeId = msg.bike_id;
+    //     const room = io.sockets.adapter.rooms.get(bikeId);
+
+    //     if (room && room.has(socket.id)) {
+    //         console.log(`Bike ${bikeId} is already added by socket ${socket.id}`);
+    //         return;
+    //     }
+
+    //     if (!bikeId || msg.battery_level === undefined || msg.longitude === undefined || msg.latitude === undefined || msg.simulation === undefined) {
+    //         console.error('bike-add: Missing required bike properties');
+    //         return;
+    //     }
+
+    //     try {
+    //         socket.leave(socket.id); // Leave old (automatic) room
+    //         socket.join(bikeId); // Add bike to its own rooooom!
+    //         socket.data = msg;
+    //         // bikeDB.addBike(
+    //         //     bikeId,
+    //         //     msg.battery_level,
+    //         //     msg.longitude,
+    //         //     msg.latitude,
+    //         //     msg.simulation
+    //         // );
+    //         console.log(`Bike ${bikeId} added to database and room.`);
+    //     } catch (error) {
+    //         console.error('bike-add:', error);
+    //     }
+    // });
 
     const updateBuffer = [];
     const dbUpdateBuffer = [];
@@ -115,33 +137,73 @@ io.on('connection', (socket) => {
     }
     setInterval(processDbUpdates, DB_UPDATE_INTERVAL);
 
-    socket.on('bike-update', (msg) => {
+    // socket.on('bike-update', (msg) => {
+    //     const bikeId = msg.bike_id;
+    //     if (bikeId) {
+    //         if (io.sockets.adapter.rooms.has(bikeId)) {
+    //             const room = io.sockets.adapter.rooms.get(bikeId);
+
+    //             dbUpdateBuffer.push(msg);
+
+    //             room.forEach(socketId => {
+    //                 const roomSocket = io.sockets.sockets.get(socketId);
+    //                 if (roomSocket) {
+    //                     roomSocket.data = msg;
+    //                     console.log(`Updated socket data for ${socketId}`);
+    //                 }
+    //             });
+    //         } else {
+    //             console.log(`Room ${bikeId} does not exist.`);
+    //         }
+    //         // Print room count
+    //         const rooms = io.sockets.adapter.rooms;
+    //         console.log('Rooms:', rooms.size);
+
+    //         // Emit to frontend
+    //         updateBuffer.push(msg);
+    //         // io.emit('bike-update-admin', msg)
+    //     }
+    // });
+    // socket.on('bike-update', (msg) => {
+    //     const bikeId = msg.bike_id;
+
+    // });
+    socket.on('bike-update', async (msg) => {
         const bikeId = msg.bike_id;
-        if (bikeId) {
-            if (io.sockets.adapter.rooms.has(bikeId)) {
-                const room = io.sockets.adapter.rooms.get(bikeId);
-
-                dbUpdateBuffer.push(msg);
-
-                room.forEach(socketId => {
-                    const roomSocket = io.sockets.sockets.get(socketId);
-                    if (roomSocket) {
-                        roomSocket.data = msg;
-                        console.log(`Updated socket data for ${socketId}`);
-                    }
-                });
-            } else {
-                console.log(`Room ${bikeId} does not exist.`);
-            }
-            // Print room count
-            const rooms = io.sockets.adapter.rooms;
-            console.log('Rooms:', rooms.size);
-
-            // Emit to frontend
-            updateBuffer.push(msg);
-            // io.emit('bike-update-admin', msg)
+        if (!bikeId) {
+            console.error('bike-update: Missing bike_id in message.');
+            return;
         }
+
+        // Find the socket for the bike based on bike_id
+        const targetSocket = Array.from(io.sockets.sockets.values()).find(
+            (socket) => socket.data.bike_id === bikeId
+        );
+
+        if (targetSocket) {
+            // Update the socket's data
+            targetSocket.data = msg;
+
+            // Add the update to the buffer for broadcasting to the frontend
+            updateBuffer.push(msg);
+
+
+            await bikeDB.updateBike(bikeId, msg);
+
+            // Add the update to the database update buffer
+            // dbUpdateBuffer.push(msg);
+
+            console.log(`Updated bike ${bikeId} data for socket ${targetSocket.id}.`);
+        } else {
+            console.log(`bike-update: No socket found for bike ${bikeId}.`);
+        }
+
+        // see how many sockets in "bikes-room" room
+        const room = io.sockets.adapter.rooms.get('bikes-room');
+        console.log('Sockets in bikes-room:', room ? room.size : 0);
     });
+
+
     socket.on('command', (msg) => {
         console.log('command:', msg);
 
@@ -158,7 +220,7 @@ io.on('connection', (socket) => {
             }
 
             console.log(`Sending command to bike ${bikeId}`);
-            io.to(bikeId).emit('command', msg); // Emit to the specific bike!!!!!!
+            io.to(bikeId).emit('command', msg);
         } catch (error) {
             console.error('command: Error processing message', error);
         }
