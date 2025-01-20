@@ -1,8 +1,7 @@
 import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
-import { apiClient } from "@/services/apiClient";
-import Cookies from "js-cookie";
 import Button from "../Button";
+import { getWebSocket } from "@/services/websocket";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,18 +35,21 @@ const chargeIcon = L.icon({
     popupAnchor: [0, -28],
 });
 
+// Function to send a command to the WebSocket server
+const sendCommand = (bikeId, command) => {
+    try {
+        const socket = getWebSocket(); // Get the WebSocket instance
+        socket.emit("command", { bike_id: bikeId, command });
+        console.log(`Sent command "${command}" to bike ${bikeId}`);
+    } catch (error) {
+        console.error("Error sending command:", error);
+    }
+};
+
+
 export const addBikeMarker = (bikeData) => {
     // const { id, position, battery, status } = bikeData;
     const { bike_id, battery_level, latitude, longitude, status } = bikeData;
-
-    const handleButtonClick = async () => {
-        try {
-            window.location.href = `/bikes/${bike_id}`;
-        } catch (error) {
-            console.error("Error selecting bike:", error);
-            return error;
-        }
-    };
 
     return (
         <Marker
@@ -64,8 +66,14 @@ export const addBikeMarker = (bikeData) => {
                                 : "red"
                 }}>{status}</span><br />
                 Battery: {battery_level}%<br />
-                <Button id="bike_id" className="rent-button" onClick={handleButtonClick} label={"Lock"} />
-                <Button id="bike_id" className="rent-button" onClick={handleButtonClick} label={"Shutdown"} />
+                <Button
+                    onClick={() => sendCommand(bike_id, "stop")}
+                    label={"Lock"}
+                />
+                <Button
+                    onClick={() => sendCommand(bike_id, "shutdown")}
+                    label={"Shutdown"}
+                />
             </Popup>
         </Marker>
     );
@@ -103,7 +111,13 @@ export const addParkingStationMarker = (stationData) => {
             icon={parkingIcon}
         >
             <Popup>
+                <strong>{city}</strong><br />
                 <strong>{name}</strong><br />
+                <strong>{type}</strong><br />
+                <strong>{radius}</strong><br />
+                <strong>{longitude}</strong><br />
+                <strong>{latitude}</strong><br />
+                <strong>{capacity}</strong><br />
             </Popup>
             <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
         </Marker>
