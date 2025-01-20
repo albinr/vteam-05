@@ -20,6 +20,9 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
                     <Link href="/" className={`sidebar-link ${pathname === "/" ? "active" : ""}`} onClick={handleLinkClick}>
                         Dashboard
                     </Link>
+                    <Link href="/map" className={`sidebar-link ${pathname.includes("/map") ? "active" : ""}`} onClick={handleLinkClick}>
+                        Map
+                    </Link>
                     <Link href="/users" className={`sidebar-link ${pathname.includes("/users") ? "active" : ""}`} onClick={handleLinkClick}>
                         Users
                     </Link>
