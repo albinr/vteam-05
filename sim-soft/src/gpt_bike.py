@@ -52,10 +52,12 @@ class Bike:
     async def initialize(self):
         """Connects to the Socket.IO server and informs the server about this bike."""
         try:
-            # Optional: Sleep a small, random amount to stagger connections
-            await asyncio.sleep(random.uniform(0, 2))
 
             await self.sio.connect(WEBSOCKET_URL)
+
+            # Optional: Sleep a small, random amount to stagger connections
+            await asyncio.sleep(random.uniform(0, 0.2))
+
             await self._add_bike_to_server()
             print(f"[Bike {self.bike_id}] Connected to server.")
         except Exception as e:
@@ -73,6 +75,7 @@ class Bike:
         if not self.sio.connected:
             return  # No simulation if we failed to connect
 
+        await asyncio.sleep(random.uniform(0, 5))
         while self.status != "shutdown":
             # 1. Update battery
             if self.status == "in_use":
