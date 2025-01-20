@@ -31,7 +31,8 @@ CREATE TABLE Bike
   battery_level FLOAT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
   speed FLOAT DEFAULT 0,
-  simulation INT DEFAULT 0
+  simulation INT DEFAULT 0,
+  SPATIAL INDEX (position)
 );
 
 --

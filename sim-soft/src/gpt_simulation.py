@@ -155,7 +155,7 @@ class Simulation:
         """Start the simulation and run bike updates."""
         print("[Simulation] Starting simulation...")
         self.state = "running"
-        self.list_bikes()
+        # self.list_bikes()
         await self.start_bikes_and_users()
 
     async def update_bike_data(self, bike_id, status=None, location=None, battery=None):
