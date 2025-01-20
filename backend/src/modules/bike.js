@@ -103,8 +103,20 @@ async function updateBike(bikeId, updateData) {
     }
 }
 
+async function deleteBikeMovement(bikeId) {
+    try {
+        const sql = `DELETE FROM BikeMovement WHERE bike_id = ?`;
+        const [result] = await pool.query(sql, [bikeId]);
+        return result;
+    } catch (error) {
+        console.error("Error att ta bort cykel movement:", error);
+        throw error;
+    }
+}
+
 async function deleteBike(bikeId) {
     try {
+        await deleteBikeMovement(bikeId)
         const sql = `DELETE FROM Bike WHERE bike_id = ?`;
         const [result] = await pool.query(sql, [bikeId]);
         return result;
@@ -113,6 +125,7 @@ async function deleteBike(bikeId) {
         throw error;
     }
 }
+
 
 async function deleteBikes(simulatedOnly) {
     const inputRemove = simulatedOnly ? 1 : 0;
@@ -128,5 +141,6 @@ module.exports = {
     deleteBike,
     deleteBikes,
     getAvailableBikes,
-    getCityBikes
+    getCityBikes,
+    deleteBikeMovement
 };

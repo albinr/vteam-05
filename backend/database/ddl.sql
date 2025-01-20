@@ -224,6 +224,7 @@ CREATE PROCEDURE RemoveBikes(
 BEGIN
   IF input_remove = 1 THEN
     DELETE FROM Bike WHERE simulation = 1;
+    DELETE FROM BikeMovement;
   ELSE
     DELETE FROM Bike;
   END IF;
@@ -451,7 +452,7 @@ DELIMITER ;;
 
 CREATE PROCEDURE UpdateBike(
   IN u_bike_id VARCHAR(36),
-  IN new_position_text TEXT,  -- Accepterar nu en textrepresentation av en POINT
+  IN new_position_text TEXT,
   IN new_battery_level FLOAT,
   IN new_status ENUM('available', 'in_use', 'maintenance', 'charging')
 )
