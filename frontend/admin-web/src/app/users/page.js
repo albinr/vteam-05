@@ -4,6 +4,8 @@ import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { fetchUsers } from "./api";
 import Button from "@/components/Button";
+import "./Users.css"
+import withAuth from "../auth/hoc/withAuth";
 
 const userColumns = [
     { header: "Admin", accessor: "admin" },
@@ -73,7 +75,7 @@ const Users = () => {
 
 
     return (
-        <div>
+        <div className="users-container">
             <h1>Users</h1>
             <p>Manage and control users</p>
             <div className="pagination-controls">
@@ -108,4 +110,4 @@ const Users = () => {
     );
 };
 
-export default Users;
+export default withAuth(Users);

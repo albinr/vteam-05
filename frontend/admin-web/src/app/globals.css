@@ -46,13 +46,6 @@ form label {
   color: #333;
 }
 
-input {
-  padding: 10px;
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;         /* Opera/IE 8+ */
-}
-
 input[type="text"],
 input[type="email"],
 input[type="number"],
@@ -71,6 +64,8 @@ select {
   /* margin-bottom: 15px; */
   width: 100%;
   box-sizing: border-box;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
 }
 
 input:focus,

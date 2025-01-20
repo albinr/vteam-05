@@ -4,6 +4,8 @@ import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { fetchZones } from "./api"; // Updated API call
 import Button from "@/components/Button";
+import "./Zones.css"
+import withAuth from "../auth/hoc/withAuth";
 
 const zoneColumns = [
     { header: "ID", accessor: "zone_id" },
@@ -73,7 +75,7 @@ const Zones = () => {
     };
 
     return (
-        <div>
+        <div className="zones-container">
             <h1>Zones</h1>
             <p>Manage and control zones</p>
             <div className="pagination-controls">
@@ -109,4 +111,4 @@ const Zones = () => {
     );
 };
 
-export default Zones;
+export default withAuth(Zones);
