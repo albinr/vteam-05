@@ -444,3 +444,30 @@ BEGIN
 END;;
 
 DELIMITER ;
+
+
+DELIMITER ;;
+
+CREATE PROCEDURE UpdateBike(
+  IN u_bike_id VARCHAR(36),
+  IN new_position_text TEXT,  -- Accepterar nu en textrepresentation av en POINT
+  IN new_battery_level FLOAT,
+  IN new_status ENUM('available', 'in_use', 'maintenance', 'charging')
+)
+BEGIN
+  SET @new_position = IF(new_position_text IS NOT NULL, ST_GeomFromText(new_position_text), NULL);
+
+  UPDATE Bike
+  SET
+    position = COALESCE(@new_position, position),
+    battery_level = COALESCE(new_battery_level, battery_level),
+    status = COALESCE(new_status, status)
+  WHERE bike_id = u_bike_id;
+
+  IF @new_position IS NOT NULL THEN
+    INSERT INTO BikeMovement (bike_id, position)
+    VALUES (u_bike_id, @new_position);
+  END IF;
+END;;
+
+DELIMITER ;

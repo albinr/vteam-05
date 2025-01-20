@@ -76,7 +76,6 @@ router.put("/:bikeId", async (req, res) => {
     const updatedData = req.body;
     try {
         const result = await bike.updateBike(bikeId, updatedData);
-        req.io.emit('bike-updated', { bikeId, updatedData });
         res.json(result);
     } catch (error) {
         res.json({ error: error.message || "Något gick fel vid uppdatering av cykeln." });
