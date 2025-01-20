@@ -29,6 +29,17 @@ async function addUser(user_id, email, balance, isSimulated = 0) {
     }
 }
 
+async function addMoney(user_id, amount) {
+    try {
+        const sql = `CALL AddMoney(?, ?)`;
+        const [result] = await pool.query(sql, [user_id, amount]);
+        return result;
+    } catch (error) {
+        console.error(`Fel vid överföring av pengar för användare ${user_id} :`, error);
+        throw error;
+    }
+}
+
 async function updateUser(userId, updatedData) {
     try {
         const data = [];
@@ -151,5 +162,6 @@ module.exports = {
     deleteUser,
     findOrCreateUser,
     giveAdmin,
-    isUserAdmin
+    isUserAdmin,
+    addMoney
 };
