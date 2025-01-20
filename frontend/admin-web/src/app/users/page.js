@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { fetchUsers } from "./api";
 import Button from "@/components/Button";
 import "./Users.css"
+import withAuth from "../auth/hoc/withAuth";
 
 const userColumns = [
     { header: "Admin", accessor: "admin" },
@@ -109,4 +110,4 @@ const Users = () => {
     );
 };
 
-export default Users;
+export default withAuth(Users);
