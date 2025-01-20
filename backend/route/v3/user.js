@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../../src/modules/user.js");
+const { deleteTripByUserId } = require("../../src/modules/trip.js");
 const { authenticateJWT, authorizeAdmin, authUserOrAdmin } = require("../../middleware/auth.js");
 
 // lägg till en ny användare
@@ -66,6 +67,7 @@ router.delete("/:isSimulated", authenticateJWT, authorizeAdmin, async (req, res)
 router.delete("/one/:userId", authenticateJWT, authUserOrAdmin, async (req, res) => {
     const { userId } = req.params;
     try {
+        await deleteTripByUserId(userId)
         const result = await user.deleteUser(userId);
         res.json({ message: `Användare med ID ${userId} har raderats` });
     } catch (error) {
