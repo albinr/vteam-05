@@ -30,6 +30,10 @@ h2 {
     background-color: #939393;
 }
 
+.table td {
+    background-color: white;
+}
+
 .table th, .table td {
     padding: 8px;
     text-align: left;

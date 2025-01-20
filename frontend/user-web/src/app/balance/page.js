@@ -15,7 +15,7 @@ const Balance = ({ session }) => {
     useEffect(() => {
         async function getUser() {
             try {
-                const user = await apiClient.get("/user/data");
+                const user = await apiClient.get("user/data");
                 console.log(user);
                 setUser(user);
                 setBalance(user.userInfo.balance);
@@ -46,7 +46,7 @@ const Balance = ({ session }) => {
         setAddAmount("");
 
         try {
-            await apiClient.put(`/users/${user.id}`, {
+            await apiClient.put(`v3/users/${user.id}`, {
                 balance: newBalance,
             });
         } catch (error) {

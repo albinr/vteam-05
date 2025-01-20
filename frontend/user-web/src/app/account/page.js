@@ -15,7 +15,7 @@ const Account = ({ session }) => {
     useEffect(() => {
         async function getUser() {
             try {
-                const user = await apiClient.get("/user/data");
+                const user = await apiClient.get("user/data");
                 console.log(user);
                 setUser(user);
                 setIsLoading(false);
