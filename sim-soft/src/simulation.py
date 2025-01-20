@@ -11,7 +11,8 @@ import requests
 import signal
 import sys
 import random
-from bike import Bike
+from sim_bike import SimBike
+# from bike import Bike
 from user import User
 
 API_URL="http://backend:1337"
@@ -65,7 +66,7 @@ class Simulation:
             bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
 
             # Add bike to simulation
-            new_bike = Bike(bike_id=f"{uuid.uuid4()}",
+            new_bike = SimBike(bike_id=f"{uuid.uuid4()}",
                 location=(bike_longitude, bike_latitude), simulated=simulated)
             self.bikes.append(new_bike)
 

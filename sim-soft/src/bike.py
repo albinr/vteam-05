@@ -10,8 +10,6 @@ import random
 import uuid
 import json
 from datetime import datetime
-import requests
-# import websockets
 from socketio import AsyncClient
 
 # Constants
@@ -21,11 +19,6 @@ SLEEP_TIME_IDLE = 60
 SLEEP_TIME = 10  # Seconds for simulation update loop
 API_UPDATE_INTERVAL = 11  # Seconds for sending updates to API
 
-MIN_TRAVEL_TIME = 5 # Minutes of minimum travel time for simulation
-MAX_TRAVEL_TIME = 10 # Minutes of maximum travel time for simulation
-
-# API_URL="http://backend:1337"
-# WEBSOCKET_URL="http://backend:1337"
 API_URL="http://backend:1337"
 WEBSOCKET_URL="http://backend:1337"
 
@@ -57,7 +50,6 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.update_delay = random.uniform(0, 10)
         self.status = status  # 'available', 'in_use', 'maintenance', 'charging'
         self.simulated = simulated  # To mark if the bike is simulated
-        self.user_owner = None
         self.sio = AsyncClient(reconnection=True,
                             reconnection_attempts=5,
                             reconnection_delay=5,
@@ -67,13 +59,10 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.sio.on('connect', self.on_connect)
         self.sio.on('disconnect', self.on_disconnect)
         self.sio.on('command', self.on_command)
-        # self.sio.on('bike-stop', self.on_server_event)
-        # self.sio.on(self.bike_id, self.on_command)
 
     async def initialize(self):
         """Initialize the bike asynchronously."""
         print("Initializing bike...")
-        # Sleep for a random time to avoid all bikes connecting at the same time
         try:
             # Connect to the WebSocket server
             await self.sio.connect(WEBSOCKET_URL)
@@ -115,105 +104,32 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
     async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
-        # Run all tasks in the background
 
-        if not self.sio.connected:  # Connect only if not already connected
-            return
-
-        if self.simulated:
-            battery_task = asyncio.create_task(self.sim_battery())
-            travel_task = asyncio.create_task(self.sim_travel())
-            status_task = asyncio.create_task(self.sim_random_bike_status())
-            update_task = asyncio.create_task(self.send_updates_interval_to_socketio())
-
-            await asyncio.gather(battery_task, travel_task, status_task, update_task)
-        # else:
-            # update_task = asyncio.create_task(self.send_update_to_socketio())
-            # await update_task
-
+        if self.sio.connected:  # Run only if connected to the WebSocket server
+            # Run all tasks in the background
+            update_task = asyncio.create_task(self.send_update_to_socketio())
+            await update_task
 
     async def send_update_to_socketio(self):
+        """Send an update to the WebSocket server."""
+        # Wait for update to finish
+        while self.is_updating:
+            await asyncio.sleep(1)
+
         if self.sio.connected:
+            self.is_updating = True
             await self.sio.emit('bike-update', self.get_data())
+            self.is_updating = False
 
     async def send_updates_interval_to_socketio(self):
-        await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
-        while self.status != "shutdown":
-            await self.send_update_to_socketio()
-            if self.status == "in_use":
-                await asyncio.sleep(SLEEP_TIME_IN_USE)
-            else:
-                await asyncio.sleep(SLEEP_TIME_IDLE)
-
-    async def sim_battery(self):
-        """Simulate battery drain when bike is unlocked."""
-        while self.status != "shutdown":
-            if self.status == "in_use":
-                # Simulate battery drain
-                self.battery -= random.uniform(0.01, 0.05)
-            if self.status == "charging" and self.battery < 100:
-                # Simulate battery charging
-                self.battery += random.uniform(0.01, 0.05)
-
-                # Make sure that the battery doesn't go over 100
-                if self.battery > 100: # pylint: disable=consider-using-min-builtin
-                    self.battery = 100
-
-            # await self.send_update_to_socketio()
-
-            await asyncio.sleep(SLEEP_TIME)
-
-    async def sim_travel(self):
-        """Simulate bike travel."""
         # await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
         while self.status != "shutdown":
-            if self.status == "in_use" and self.battery > 0:
+            if self.status == "in_use":
                 await asyncio.sleep(SLEEP_TIME_IN_USE)
-                # Simulate movement
-                random_x = random.uniform(-0.005, 0.005)
-                random_y = random.uniform(-0.005, 0.005)
-                self.location = (
-                    self.location[0] + random_x,
-                    self.location[1] + random_y
-                )
-
-                # Simulate speed (km/h)
-                distance = (random_x ** 2 + random_y ** 2) ** 0.5
-                self.speed = distance / SLEEP_TIME_IN_USE * 3600  # Convert to km/h
-                if self.speed > self.speed_limit:
-                    self.speed = self.speed_limit
-
-                # Send an update more frequently while in use
-                # await self.send_update_to_socketio()
             else:
                 await asyncio.sleep(SLEEP_TIME_IDLE)
-                # Bike is not in use: set speed = 0, optionally no movement
-                self.speed = 0
-                # If you want a "heartbeat" update so admins see it's still online:
-                # await self.send_update_to_socketio()
-                # Sleep longer if idle to reduce load
 
-
-    async def sim_random_bike_status(self):
-        """ Randomly change the bike status."""
-        while self.status != "shutdown":
-            # self.status = random.choice(['available',
-            #                             'available',
-            #                             'available',
-            #                             'charging',
-            #                             'charging',
-            #                             'maintenance'])
-            # self.status = random.choice(['in_use',
-            #                 'in_use',
-            #                 'available',
-            #                 'charging',
-            #                 'charging',
-            #                 'maintenance'])
-            # self.status = "in_use"
-            # print(f"[Bike {self.bike_id}] Status changed to: {self.status}")
-
-            # Change status every X-Y minutes
-            await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
+            await self.send_update_to_socketio()
 
     async def on_connect(self):
         print(f"Bike {self.bike_id} connected to Socket.IO server.")
@@ -258,9 +174,6 @@ class Bike: # pylint: disable=too-many-instance-attributes
             print(f"Failed to parse command data: {e}")
         except Exception as e:
             print(f"Error handling command: {e}")
-
-
-
 
 if __name__ == "__main__":
     bike1 = Bike(BIKE_ID, simulated=True)
