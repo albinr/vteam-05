@@ -30,6 +30,12 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
     const { bikeId, userId } = req.params;
     try {
         const result = await trip.startTrip(bikeId, userId);
+
+        req.io.to(bikeId).emit("command", {
+            bike_id: bikeId,
+            command: "rented",
+        });
+
         res.json({ message: `Resa startad för cykel med ID ${bikeId} för användare med ID ${userId}`, result });
     } catch (error) {
         res.json({ error: 'Något gick fel när resan skulle startas', details: error.message });
@@ -40,6 +46,12 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
 router.post("/end/:bike_id", async (req, res) => {
     const { bike_id } = req.params;
     const result = await trip.endTrip(bike_id);
+
+    req.io.to(bike_id).emit("command", {
+        bike_id: bike_id,
+        command: "available",
+    });
+
     res.json({ message: `Resa avslutad för cykel med ID ${bike_id}`, result });
 });
 

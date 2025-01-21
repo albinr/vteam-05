@@ -11,8 +11,7 @@ import requests
 import signal
 import sys
 import random
-from sim_bike import SimBike
-# from bike import Bike
+from bike import Bike
 from user import User
 
 API_URL="http://backend:1337"
@@ -25,7 +24,7 @@ class Simulation:
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=True):
-        # on_exit()
+        on_exit()
 
         # self.bikes = [
         #                 Bike(bike_id=f"{uuid.uuid4()}",
@@ -66,7 +65,7 @@ class Simulation:
             bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
 
             # Add bike to simulation
-            new_bike = SimBike(bike_id=f"{uuid.uuid4()}",
+            new_bike = Bike(bike_id=f"{uuid.uuid4()}",
                 location=(bike_longitude, bike_latitude), simulated=simulated)
             self.bikes.append(new_bike)
 
@@ -109,7 +108,7 @@ class Simulation:
 
     async def start_bikes_and_users(self):
         """Start the bike update and interval loop."""
-        bike_tasks = [bike.run_bike_interval() for bike in self.bikes]
+        bike_tasks = [bike.run_simulation() for bike in self.bikes]
         user_tasks = [user.run_user_interval() for user in self.users]
 
         get_bikes_task = asyncio.create_task(self.get_bikes())
@@ -156,7 +155,7 @@ class Simulation:
         """Start the simulation and run bike updates."""
         print("[Simulation] Starting simulation...")
         self.state = "running"
-        self.list_bikes()
+        # self.list_bikes()
         await self.start_bikes_and_users()
 
     async def update_bike_data(self, bike_id, status=None, location=None, battery=None):

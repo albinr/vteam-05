@@ -37,6 +37,9 @@ async def main():
     # Handle commands
     if args.command == "start":
         simulation = Simulation(num_bikes=args.num_bikes)
+        await simulation.initialize_bikes()
+        print("Waiting for bikes to start...")
+        # await asyncio.sleep(60)
         simulation_task = asyncio.create_task(simulation.start())
 
         # Update bike 2's battery level

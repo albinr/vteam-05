@@ -81,51 +81,42 @@ async function addBike(bikeId, batteryLevel, longitude, latitude, isSimulated = 
     }
 }
 
-async function updateBike(bikeId, updatedData) {
+async function updateBike(bikeId, updateData) {
     try {
-        const data = [];
-        const params = [];
+        const newPosition = updateData.longitude !== undefined && updateData.latitude !== undefined 
+            ? `POINT(${updateData.longitude} ${updateData.latitude})` 
+            : null;
 
-        if (updatedData.status) {
-            data.push("status = ?");
-            params.push(updatedData.status);
-        }
+        const result = await pool.query(
+            `CALL UpdateBike(?, ?, ?, ?)`,
+            [
+                bikeId,
+                newPosition,
+                updateData.battery_level,
+                updateData.status
+            ]
+        );
 
-        if (updatedData.battery_level !== undefined) {
-            data.push("battery_level = ?");
-            params.push(updatedData.battery_level);
-        }
-
-        if (updatedData.longitude !== undefined && updatedData.latitude !== undefined) {
-            const location = `POINT(${updatedData.longitude} ${updatedData.latitude})`;
-            data.push("position = ST_PointFromText(?)");
-            params.push(location);
-        }
-
-        if (updatedData.simulation !== undefined) {
-            data.push("simulation = ?");
-            params.push(updatedData.simulation);
-        }
-
-        params.push(bikeId);
-
-        const sql = `UPDATE Bike SET ${data.join(", ")} WHERE bike_id = ?`;
-
-        const [result] = await pool.query(sql, params);
-
-        if (result.affectedRows === 0) {
-            throw new Error(`Ingen cykel med ID ${bikeId} hittades.`);
-        }
-
-        return { message: "Cykel uppdaterad", affectedRows: result.affectedRows };
+        console.log(`Cykel med ${bikeId} har uppdaterats`);
     } catch (error) {
-        console.error("Error vid uppdatering av cykel:", error.message);
+        console.error('Error updating bike details:', error);
+    }
+}
+
+async function deleteBikeMovement(bikeId) {
+    try {
+        const sql = `DELETE FROM BikeMovement WHERE bike_id = ?`;
+        const [result] = await pool.query(sql, [bikeId]);
+        return result;
+    } catch (error) {
+        console.error("Error att ta bort cykel movement:", error);
         throw error;
     }
 }
 
 async function deleteBike(bikeId) {
     try {
+        await deleteBikeMovement(bikeId)
         const sql = `DELETE FROM Bike WHERE bike_id = ?`;
         const [result] = await pool.query(sql, [bikeId]);
         return result;
@@ -134,6 +125,7 @@ async function deleteBike(bikeId) {
         throw error;
     }
 }
+
 
 async function deleteBikes(simulatedOnly) {
     const inputRemove = simulatedOnly ? 1 : 0;
@@ -149,5 +141,6 @@ module.exports = {
     deleteBike,
     deleteBikes,
     getAvailableBikes,
-    getCityBikes
+    getCityBikes,
+    deleteBikeMovement
 };
