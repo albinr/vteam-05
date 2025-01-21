@@ -156,7 +156,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             elif command == "available":
                 await self.update_bike_data(status="available")
                 print(f"Bike {self.bike_id} status set to 'available'")
-            elif command == "rented":
+            elif command == "rent":
                 await self.update_bike_data(status="in_use")
                 print(f"Bike {self.bike_id} status set to 'in_use'")
             elif command == "charge":
