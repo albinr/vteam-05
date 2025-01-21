@@ -25,7 +25,7 @@ class Simulation:
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=True):
-        on_exit()
+        # on_exit()
 
         # self.bikes = [
         #                 Bike(bike_id=f"{uuid.uuid4()}",

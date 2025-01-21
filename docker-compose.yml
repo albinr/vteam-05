@@ -1,4 +1,31 @@
+networks:
+  bike_network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+
 services:
+  database:
+    image: mariadb:latest
+    container_name: mariadb-compose
+    environment:
+      MYSQL_ROOT_PASSWORD: scrt_pa_s_db
+      MYSQL_DATABASE: vteam
+      MYSQL_USER: dbadm
+      MYSQL_PASSWORD: scrt_pa_s_db
+    ports:
+      - "3306:3306"
+    networks:
+      - bike_network
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - "./backend/database/zone.csv:/docker-entrypoint-initdb.d/zone.csv"
+      - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
+      - "./backend/database/insert.sql:/docker-entrypoint-initdb.d/3.sql"
+      # - "./backend/database/user.csv:/docker-entrypoint-initdb.d/user.csv"
+
   backend:
     build:
       context: ./backend
@@ -20,8 +47,20 @@ services:
       DB_NAME: vteam
     restart: always
 
+  simulation:
+    build: ./sim-soft
+    depends_on:
+      - backend
+    networks:
+      - bike_network
+    container_name: simulation
+    volumes:
+      - ./sim-soft/src:/app
+
   admin-web:
     build: ./frontend/admin-web
+    depends_on:
+      - backend
     container_name: admin-web-container
     volumes:
       - ./frontend/admin-web:/app
@@ -32,6 +71,8 @@ services:
 
   user-web:
     build: ./frontend/user-web
+    depends_on:
+      - backend
     container_name: user-web-container
     volumes:
       - ./frontend/user-web:/app
@@ -42,6 +83,8 @@ services:
 
   user-app:
     build: ./frontend/user-app
+    depends_on:
+      - backend
     container_name: user-app-container
     volumes:
       - ./frontend/user-app:/app
@@ -49,37 +92,3 @@ services:
       - 3002:3002
     networks:
       - bike_network
-
-  simulation:
-    build: ./sim-soft
-    networks:
-      - bike_network
-    container_name: simulation
-    volumes:
-      - ./sim-soft/src:/app
-
-  database:
-    image: mariadb:latest
-    container_name: mariadb-compose
-    environment:
-      MYSQL_ROOT_PASSWORD: scrt_pa_s_db
-      MYSQL_DATABASE: vteam
-      MYSQL_USER: dbadm
-      MYSQL_PASSWORD: scrt_pa_s_db
-    ports:
-      - "3306:3306"
-    networks:
-      - bike_network
-    volumes:
-    - mariadb_data:/var/lib/mysql
-    - "./backend/database/setup.sql:/docker-entrypoint-initdb.d/1.sql"
-    - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
-    - "./backend/database/insert.sql:/docker-entrypoint-initdb.d/3.sql"
-    - "./backend/database/zone.csv:/docker-entrypoint-initdb.d/zone.csv"
-
-networks:
-  bike_network:
-    driver: bridge
-
-volumes:
-  mariadb_data:

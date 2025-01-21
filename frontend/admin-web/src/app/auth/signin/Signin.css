@@ -1,9 +1,20 @@
-.signin-container{
-    display: flex;
-    width: 100%;
-    height: 70%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
+.signin-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.signin-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.signin-container p {
+    font-size: 16px;
+    margin-bottom: 20px;
 }

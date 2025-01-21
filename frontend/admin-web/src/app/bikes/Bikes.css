@@ -1,4 +1,10 @@
-.bike-map{
+.bike-map {
+    flex: 1;
+    position: relative;
     width: 100%;
-    height: 500px;
+    height: 100%;
+}
+
+.bikes-container {
+    padding: 16px;
 }

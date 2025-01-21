@@ -9,6 +9,7 @@
     background-color: #fff;
     color: #333;
     z-index: 1100;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header-left {

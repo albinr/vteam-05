@@ -7,6 +7,7 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../../src/modules/user.js");
+const { deleteTripByUserId } = require("../../src/modules/trip.js");
 
 // lägg till en ny användare
 router.post("/", async (req, res) => {
@@ -74,6 +75,7 @@ router.delete("/:isSimulated", async (req, res) => {
 router.delete("/one/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
+        await deleteTripByUserId(userId)
         const result = await user.deleteUser(userId);
         res.json({ message: `Användare med ID ${userId} har raderats` });
     } catch (error) {

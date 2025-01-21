@@ -18,6 +18,9 @@ CREATE TABLE TempZone (
     radius INT DEFAULT 75
 );
 
+SHOW WARNINGS;
+SHOW ERRORS;
+
 LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/zone.csv'
 INTO TABLE TempZone
 CHARSET utf8
@@ -26,8 +29,10 @@ FIELDS
     ENCLOSED BY '"'
 LINES
     TERMINATED BY '\n'
-IGNORE 1 LINES
-;
+IGNORE 1 LINES;
+
+SHOW WARNINGS;
+SHOW ERRORS;
 
 INSERT INTO Zone (name, city, type, coordinates, capacity, radius)
 SELECT
@@ -38,3 +43,18 @@ SELECT
     capacity,
     radius
 FROM TempZone;
+
+SHOW WARNINGS;
+SHOW ERRORS;
+
+
+--
+-- Load users from csv
+--
+-- LOAD DATA INFILE '/docker-entrypoint-initdb.d/user.csv'
+-- INTO TABLE User
+-- FIELDS TERMINATED BY ',' 
+-- ENCLOSED BY '"'
+-- LINES TERMINATED BY '\n'
+-- IGNORE 1 ROWS
+-- (user_id, balance, email, simulation_user, admin);

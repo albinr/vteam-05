@@ -16,7 +16,7 @@ const bikeIcon = L.icon({
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
-    popupAnchor: [0, -28],
+    popupAnchor: [0, -14],
 });
 
 const parkingIcon = L.icon({
@@ -54,7 +54,31 @@ export const addBikeMarker = (bikeData) => {
 
         try {
             console.log("Renting bike: ", bike_id);
-            await apiClient.post(`/trips/start/${bike_id}/${userId}`);
+            let token = Cookies.get("token");
+
+            console.log(token);
+            // const response = await apiClient.post(`/trips/start/${bike_id}/${userId}`,
+            //     {
+            //         headers: {
+            //             Authorization: `Bearer ${token}`
+            //         }
+            //     }
+            // );
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trips/start/${bike_id}/${userId}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            console.log(data);
+
+            if (!data.result) {
+                throw new Error(response.message);
+            }
 
             // Redirect to "/trip"
             window.location.href = "/trip";
@@ -73,10 +97,10 @@ export const addBikeMarker = (bikeData) => {
             icon={bikeIcon}
         >
             <Popup
-                style={{
-                    window: "90vw",
-                    heigh: "90vh"
-                }}
+                // style={{
+                //     window: "90vw",
+                //     heigh: "90vh",
+                // }}
             >
                 <strong>{bike_id}</strong><br />
                 <span style={{
