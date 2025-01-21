@@ -56,6 +56,19 @@ setInterval(() => {
 
 const bikes = {}; // Stores bike data from websockets
 
+/**
+ * Function for adding bike to websocket and database.
+ *
+ * @param {string} bikeId Bike ID
+ * @param {number} position Latitude and longitude (as array) -> [longitude, latitude]
+ * @param {number} speed Speed of bike
+ * @param {number} battery_level Battery level of bike
+ * @param {string} status Status of bike
+ * @param {boolean} simulated Simulation status of bike (true/false)
+ * @param {*} socketId Socket ID of bike
+ *
+ * @returns {void}
+ */
 async function addBike(bikeId, position, speed, battery_level, status, simulated, socketId) {
     bikes[bikeId] = {
         position,
