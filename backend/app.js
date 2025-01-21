@@ -13,6 +13,12 @@ const app = express();
 const server = http.createServer(app); // Skapa en HTTP-server med Express
 const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
 const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000", // Din frontend-URL
+        methods: ["GET", "POST"],
+        credentials: true
+    },
+    transports: ["websocket", "polling"],
     pingInterval: 25000,  // 25 seconds
     pingTimeout: 60000    // 1 minute
 });
