@@ -13,8 +13,8 @@ const app = express();
 const server = http.createServer(app); // Skapa en HTTP-server med Express
 const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
 const io = new Server(server, {
-    pingInterval: 60*1000*10,
-    pingTimeout: 60*1000*9,
+    pingInterval: 25000,  // 25 seconds
+    pingTimeout: 60000    // 1 minute
 });
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
@@ -27,7 +27,6 @@ const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
 const v3Router = require("./route/v3/api.js");
 const bikeDB = require("./src/modules/bike.js");
-
 
 // Options for cors
 const corsOptions = {
@@ -45,187 +44,201 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
-// Hantera Socket.IO-anslutningar
-io.on('connection', (socket) => {
-    console.log('A bike connected:', socket.id);
-    // const bikes = [];
+setInterval(() => {
+    const used = process.memoryUsage();
+    console.log('---');
+    for (let key in used) {
+      console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
+    }
+    console.log('---');
+  }, 5000); // Log every 5 seconds
 
 
+const bikes = {}; // Stores bike data from websockets
 
-    socket.on('disconnect', () => {
-        // console.log('A bike disconnected:', socket.id);
-        console.log(`Bike ${socket.data.bike_id} disconnected.`);
-    });
+async function addBike(bikeId, position, speed, battery_level, status, simulated, socketId) {
+    bikes[bikeId] = {
+        position,
+        speed,
+        battery_level,
+        status,
+        simulated,
+        lastUpdated: Date.now(),
+        socketId,
+    };
 
-    socket.on('bike-add', (msg) => {
-        const bikeId = msg.bike_id;
-        if (!bikeId) {
-            console.error('Missing bike_id in message.');
-            return;
-        }
-        socket.join('bikes-room'); // Join a single room for all bikes
-        socket.data.bike_id = bikeId; // Store the bike ID for targeting
-        bikeDB.addBike(
+    try {
+        // TODO: addBike behöver status och speed
+        await bikeDB.addBike(
             bikeId,
-            msg.battery_level,
-            msg.longitude,
-            msg.latitude,
-            msg.simulation
+            battery_level,
+            position[0],
+            position[1],
+            simulated
         );
-        console.log(`Bike ${bikeId} added to the system.`);
-    });
-
-    // // add bikes to own rooms
-    // socket.on('bike-add', (msg) => {
-    //     const bikeId = msg.bike_id;
-    //     const room = io.sockets.adapter.rooms.get(bikeId);
-
-    //     if (room && room.has(socket.id)) {
-    //         console.log(`Bike ${bikeId} is already added by socket ${socket.id}`);
-    //         return;
-    //     }
-
-    //     if (!bikeId || msg.battery_level === undefined || msg.longitude === undefined || msg.latitude === undefined || msg.simulation === undefined) {
-    //         console.error('bike-add: Missing required bike properties');
-    //         return;
-    //     }
-
-    //     try {
-    //         socket.leave(socket.id); // Leave old (automatic) room
-    //         socket.join(bikeId); // Add bike to its own rooooom!
-    //         socket.data = msg;
-    //         // bikeDB.addBike(
-    //         //     bikeId,
-    //         //     msg.battery_level,
-    //         //     msg.longitude,
-    //         //     msg.latitude,
-    //         //     msg.simulation
-    //         // );
-    //         console.log(`Bike ${bikeId} added to database and room.`);
-    //     } catch (error) {
-    //         console.error('bike-add:', error);
-    //     }
-    // });
-
-    const updateBuffer = [];
-    const dbUpdateBuffer = [];
-    const EMIT_INTERVAL = 3000; // Emit to frontend 1 per 3 seconds
-    const DB_UPDATE_INTERVAL = 10000; // Update db every 10s
-
-    // Function to emit buffered updates
-    function emitBufferedUpdates() {
-        if (updateBuffer.length > 0) {
-            io.emit('bike-update-frontend', updateBuffer);
-            updateBuffer.length = 0; // Clear the buffer
-        }
+        console.log(`WS - [${bikeId}] added to system.`);
+    } catch (error) {
+        console.error('WS - Error adding bike:', error);
+        return;
     }
-    setInterval(emitBufferedUpdates, EMIT_INTERVAL);
+}
 
-    async function processDbUpdates() {
-        if (dbUpdateBuffer.length > 0) {
-            for (const msg of dbUpdateBuffer) {
-                const bikeId = msg.bike_id;
-                try {
-                    // await bikeDB.updateBike(bikeId, msg);
-                    console.log(`Successfully updated bike ${bikeId} in the database.`);
-                } catch (error) {
-                    console.log(`Error updating bike ${bikeId}:`, error);
-                }
-            }
-            dbUpdateBuffer.length = 0; // Clear the buffer
-        }
-    }
-    setInterval(processDbUpdates, DB_UPDATE_INTERVAL);
+/**
+ * Function to update bike data in websocket and database.
+ *
+ * @param {string} bikeId Bike ID
+ * @param {number} position Latitude and longitude (as array) -> [longitude, latitude]
+ * @param {number} speed Speed of bike
+ * @param {number} battery_level Battery level of bike
+ * @param {string} status Status of bike
+ * @param {boolean} simulated Simulation status of bike (true/false)
+ */
+async function updateBike(bikeId, position, speed, battery_level, status, simulated) {
+    if (bikes[bikeId]) {
+        // If data is the same, don't update or emit
+        if (bikes[bikeId].position[0] === position[0] &&
+            bikes[bikeId].position[1] === position[1] &&
+            bikes[bikeId].speed === speed &&
+            bikes[bikeId].battery_level === battery_level &&
+            bikes[bikeId].status === status &&
+            bikes[bikeId].simulated === simulated) {
+            // console.log(`WS - [${bikeId}] data is the same, update not necessary.`); // Disable if too spammy
 
-    // socket.on('bike-update', (msg) => {
-    //     const bikeId = msg.bike_id;
-    //     if (bikeId) {
-    //         if (io.sockets.adapter.rooms.has(bikeId)) {
-    //             const room = io.sockets.adapter.rooms.get(bikeId);
-
-    //             dbUpdateBuffer.push(msg);
-
-    //             room.forEach(socketId => {
-    //                 const roomSocket = io.sockets.sockets.get(socketId);
-    //                 if (roomSocket) {
-    //                     roomSocket.data = msg;
-    //                     console.log(`Updated socket data for ${socketId}`);
-    //                 }
-    //             });
-    //         } else {
-    //             console.log(`Room ${bikeId} does not exist.`);
-    //         }
-    //         // Print room count
-    //         const rooms = io.sockets.adapter.rooms;
-    //         console.log('Rooms:', rooms.size);
-
-    //         // Emit to frontend
-    //         updateBuffer.push(msg);
-    //         // io.emit('bike-update-admin', msg)
-    //     }
-    // });
-    // socket.on('bike-update', (msg) => {
-    //     const bikeId = msg.bike_id;
-
-    // });
-    socket.on('bike-update', async (msg) => {
-        const bikeId = msg.bike_id;
-        if (!bikeId) {
-            console.error('bike-update: Missing bike_id in message.');
             return;
         }
 
-        // Find the socket for the bike based on bike_id
-        const targetSocket = Array.from(io.sockets.sockets.values()).find(
-            (socket) => socket.data.bike_id === bikeId
-        );
+        bikes[bikeId].position = position;
+        bikes[bikeId].speed = speed;
+        bikes[bikeId].status = status;
+        bikes[bikeId].battery_level = battery_level;
+        bikes[bikeId].simulated = simulated;
+        bikes[bikeId].lastUpdated = Date.now();
 
-        if (targetSocket) {
-            // Update the socket's data
-            targetSocket.data = msg;
+        await bikeDB.updateBike(bikeId, {
+            longitude: position[0],
+            latitude: position[1],
+            battery_level: battery_level,
+            status: status,
+            simulated: simulated
+        });
 
-            // Add the update to the buffer for broadcasting to the frontend
-            updateBuffer.push(msg);
+        io.emit('bike-update-frontend', {
+            bike_id: bikeId,
+            latitude: position[1],
+            longitude: position[0],
+            battery_level: battery_level,
+            status: status,
+            simulated: simulated
+        });
 
+        console.log(`WS - [${bikeId}} updated.`);
+    } else {
+        console.log(`WS - [${bikeId}] not found.`);
+    }
+}
 
-            await bikeDB.updateBike(bikeId, msg);
+/**
+ * Funtion to handle sending commands to specific bike (via websocket emit).
+ *
+ * @param {object} command Command object to send, contains bike_id and command
+ *
+ * @returns {void}
+ */
+function sendCommandToBike(command) {
+    const bikeId = command.bike_id || null;
+    if (bikes[bikeId]) {
+        const socketId = bikes[bikeId].socketId;
+        const socket = io.sockets.sockets.get(socketId);
+        if (socket) {
+            socket.emit('command', command);
 
-            // Add the update to the database update buffer
-            // dbUpdateBuffer.push(msg);
-
-            console.log(`Updated bike ${bikeId} data for socket ${targetSocket.id}.`);
+            console.log(`WS - [${bikeId}] Command sent to bike: ${command.command}`);
         } else {
-            console.log(`bike-update: No socket found for bike ${bikeId}.`);
+            console.log(`WS - [${bikeId}] Socket not found for bike.`);
         }
+    } else {
+        console.log(`WS - [${bikeId}] Bike not found.`);
+    }
+}
 
-        // see how many sockets in "bikes-room" room
-        const room = io.sockets.adapter.rooms.get('bikes-room');
-        console.log('Sockets in bikes-room:', room ? room.size : 0);
+/**
+ * SocketIO connection handler.
+ */
+io.on('connection', (socket) => {
+    console.log(`WS - [ ${socket.id}] Client connected with ID.`);
+
+    /**
+     * Add a bike to websocket system and database.
+     *
+     * @param {Object} data Data object with bike information
+     * @param {string} data.bike_id Bike ID
+     * @param {number} data.latitude Latitude for bike
+     * @param {number} data.longitude Longitude for bike
+     * @param {number} data.speed Speed for bike
+     * @param {number} data.battery_level Battery level for bike
+     * @param {string} data.status Status for bike
+     * @param {boolean} data.simulation Simulation status for bike (true/false)
+     * @param {string} data.socketId Socket ID for bike
+     *
+     * @returns {void}
+     */
+    socket.on('bike-add', (data) => {
+        const bikeId = data.bike_id;
+        const position = [data.latitude, data.longitude];
+        const speed = data.speed;
+        const battery_level = data.battery_level;
+        const status = data.status;
+        const simulated = data.simulation;
+
+        addBike(bikeId, position, speed, battery_level, status, simulated, socket.id);
+        socket.emit('bike-added', { bikeId, position, speed });
     });
 
+    /**
+     * Update a bikes information in the websocket system and database.
+     *
+     * @param {Object} data Data object with bike information
+     * @param {string} data.bike_id Bike ID
+     * @param {number} data.latitude Latitude for bike
+     * @param {number} data.longitude Longitude for bike
+     * @param {number} data.speed Speed for bike
+     * @param {number} data.battery_level Battery level for bike
+     * @param {string} data.status Status for bike
+     * @param {boolean} data.simulation Simulation status for bike (true/false)
+     *
+     * @returns {void}
+     */
+    socket.on('bike-update', (data) => {
+        const bikeId = data.bike_id;
+        const position = [data.latitude, data.longitude];
+        const speed = data.speed;
+        const battery_level = data.battery_level;
+        const status = data.status;
+        const simulated = data.simulation;
 
-    socket.on('command', (msg) => {
-        console.log('command:', msg);
+        updateBike(bikeId, position, speed, battery_level, status, simulated);
 
-        try {
-            // Parse the message if it's a string
-            if (typeof msg === 'string') {
-                msg = JSON.parse(msg);
-            }
-
-            const bikeId = msg.bike_id;
-            if (!bikeId) {
-                console.error('command: Missing bike_id in message.');
-                return;
-            }
-
-            console.log(`Sending command to bike ${bikeId}`);
-            io.to(bikeId).emit('command', msg);
-        } catch (error) {
-            console.error('command: Error processing message', error);
-        }
+        socket.emit('bike-updated', { bikeId, position, speed });
     });
 
+    /**
+     * Handles commands sent to update bikes.
+     *
+     * @param {string} command Command object to send, contains bike_id and command
+     *
+     * @returns {void}
+     */
+    socket.on('command', (command) => {
+        command = JSON.parse(command); // Convert to json object
+        sendCommandToBike(command);
+    });
+
+    /**
+     * Handle socket disconnects (only logs to console).
+     */
+    socket.on('disconnect', () => {
+        console.log(`WS - [${socket.id}] Client disconnected with socket-ID.`);
+    });
 });
 
 app.use((req, res, next) => {
