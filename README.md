@@ -18,7 +18,7 @@ A system for managing electric scooter rentals across Swedish cities, designed f
   - Python-based simulation to test large-scale operations
 
 ## Technologies
-- **Frontend**: React, React Native
+- **Frontend**: Next.js
 - **Backend**: Express.js, REST api, WebSockets, MariaDB
 - **Simulation**: Python
 - **Tools**: Docker, GitHub Actions
