@@ -10,6 +10,7 @@ async function showBikes() {
                 battery_level,
                 ST_X(position) AS longitude,
                 ST_Y(position) AS latitude,
+                speed,
                 simulation
             FROM Bike
         `);

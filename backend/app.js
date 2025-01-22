@@ -377,7 +377,7 @@ app.get('/auth/google/callback',
 
         console.log(token);
 
-        const redirectUrl = isAdmin ? ADMIN_WEB_URL_SUCCESS : successRedirect;
+        const redirectUrl = successRedirect;
         res.redirect(`${redirectUrl}?token=${token}`);
 
     }

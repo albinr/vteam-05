@@ -33,7 +33,7 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
 
         req.io.to(bikeId).emit("command", {
             bike_id: bikeId,
-            command: "rented",
+            command: "rent",
         });
 
         res.json({ message: `Resa startad för cykel med ID ${bikeId} för användare med ID ${userId}`, result });
