@@ -3,7 +3,7 @@
 const ADMIN_WEB_URL_SUCCESS = "http://localhost:3000/auth/login-success";
 const USER_WEB_URL_SUCCESS = "http://localhost:3001/auth/login-success";
 const USER_APP_URL_SUCCESS = "http://localhost:3002/auth/login-success";
-const AUTH_URL_FAILED = "/auth/failed";
+const AUTH_URL_FAILED = "auth/failed";
 
 const port = process.env.DBWEBB_PORT || 1337;
 const path = require("path");
@@ -309,10 +309,7 @@ passport.deserializeUser(function (obj, done) {
 const ensureAdmin = async (req, res, next) => {
     if (!req.isAuthenticated()) {
         return passport.authenticate('google', {
-            scope: ['profile', 'email'],
-            state: JSON.stringify({
-                successRedirect: ADMIN_WEB_URL_SUCCESS,
-            })
+            scope: ['profile', 'email']
         })(req, res, next);
     }
 
@@ -351,6 +348,10 @@ app.get('/auth/user-app/google', (req, res, next) => {
         scope: ['profile', 'email'],
         state: state
     })(req, res, next);
+});
+
+app.get('/auth/failed', (req, res) => {
+    res.redirect(`${ADMIN_WEB_URL_SUCCESS}?error=true`);
 });
 
 app.get('/auth/google/callback',
