@@ -60,14 +60,25 @@ class Simulation:
             # Get random city to start bike in
             random_city = self.cities[random.randint(0, len(self.cities) - 1)]
 
-            # Get random zone in city
-            random_zone_int = random.randint(0, len(self.zones[random_city]) - 1)
-            bike_latitude = self.zones[random_city][random_zone_int]["latitude"]
-            bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
+            # Get random starting zone in city
+            start_zone_index = random.randint(0, len(self.zones[random_city]) - 1)
+            start_latitude = self.zones[random_city][start_zone_index]["latitude"]
+            start_longitude = self.zones[random_city][start_zone_index]["longitude"]
+
+            destination_zone_index = start_zone_index
+            while destination_zone_index == start_zone_index:
+                destination_zone_index = random.randint(0, len(self.zones[random_city]) - 1)
+            dest_latitude = self.zones[random_city][destination_zone_index]["latitude"]
+            dest_longitude = self.zones[random_city][destination_zone_index]["longitude"]
 
             # Add bike to simulation
-            new_bike = SimBike(bike_id=f"{uuid.uuid4()}",
-                location=(bike_longitude, bike_latitude), simulated=simulated)
+            new_bike = SimBike(
+                bike_id=f"{uuid.uuid4()}",
+                location=(start_longitude, start_latitude),
+                simulated=simulated
+                )
+            new_bike.set_start_location(start_latitude, start_longitude)
+            new_bike.set_destination(dest_latitude, dest_longitude)
             self.bikes.append(new_bike)
 
     async def initialize_bikes(self):

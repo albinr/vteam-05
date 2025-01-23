@@ -9,6 +9,8 @@ import asyncio
 import random
 import uuid
 import json
+from geopy.distance import geodesic
+import math
 from datetime import datetime
 from socketio import AsyncClient
 from bike import Bike
@@ -25,6 +27,8 @@ MAX_TRAVEL_TIME = 10 # Minutes of maximum travel time for simulation
 
 API_URL="http://backend:1337"
 WEBSOCKET_URL="http://backend:1337"
+# API_URL="http://localhost:1337"
+# WEBSOCKET_URL="http://localhost:1337"
 
 BIKE_ID = uuid.uuid4()
 
@@ -35,6 +39,30 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.simulated = True
+        self.start_location = None
+        self.destination = None  # Tuple (latitude, longitude)
+        self.moving = False  # Flag for ongoing travel
+
+    def set_start_location(self, latitude, longitude):
+        """Save the start location of the bike, so it can later be switched with destinaiton."""
+        self.start_location = (latitude, longitude)
+        print(f"Bike {self.bike_id} destination set to {self.destination}")
+
+    def set_destination(self, latitude, longitude):
+        """Assign a destination to the bike."""
+        self.destination = (latitude, longitude)
+        print(f"Bike {self.bike_id} destination set to {self.destination}")
+    
+    def calculate_bearing(self, start, end):
+        """Calculate the bearing from start to end coordinates."""
+        start_lat, start_lon = math.radians(start[0]), math.radians(start[1])
+        end_lat, end_lon = math.radians(end[0]), math.radians(end[1])
+        d_lon = end_lon - start_lon
+
+        x = math.sin(d_lon) * math.cos(end_lat)
+        y = math.cos(start_lat) * math.sin(end_lat) - math.sin(start_lat) * math.cos(end_lat) * math.cos(d_lon)
+        bearing = math.atan2(x, y)
+        return (math.degrees(bearing) + 360) % 360
 
     async def run_bike_interval(self):
         """Start the update loop for sending data and battery drain."""
@@ -71,35 +99,33 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
             await asyncio.sleep(SLEEP_TIME)
 
     async def sim_travel(self):
-        """Simulate bike travel."""
-        # await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
+        """Simulate travel to the assigned destination."""
         while self.status != "shutdown":
-            if self.status == "in_use" and self.battery > 0:
+            if self.status == "in_use" and self.battery > 0 and self.destination:
                 await asyncio.sleep(SLEEP_TIME_IN_USE)
-                # Simulate movement
-                random_x = random.uniform(-0.005, 0.005)
-                random_y = random.uniform(-0.005, 0.005)
-                self.location = (
-                    self.location[0] + random_x,
-                    self.location[1] + random_y
-                )
 
-                # Simulate speed (km/h)
-                distance = (random_x ** 2 + random_y ** 2) ** 0.5
-                self.speed = distance / SLEEP_TIME_IN_USE * 3600  # Convert to km/h
-                if self.speed > self.speed_limit:
-                    self.speed = self.speed_limit
+                # Calculate the distance to the destination
+                distance_to_dest = geodesic(self.location, self.destination).meters
+                if distance_to_dest < 10:  # Close enough to the destination
+                    self.location = self.destination  # Snap to destination
+                    self.speed = 0
+                    self.destination = self.start_location  # Switch destination with start location
+                    print(f"Bike {self.bike_id} arrived at destination.")
+                    await self.update_bike_data(status="available")
+                else:
+                    if not self.speed:
+                        self.speed = random.uniform(10, self.speed_limit)
+                    # Move toward the destination
+                    bearing = self.calculate_bearing(self.location, self.destination)
+                    delta_lat = (self.speed / 111320) * math.cos(math.radians(bearing))
+                    delta_lon = (self.speed / (111320 * math.cos(math.radians(self.location[0])))) * math.sin(math.radians(bearing))
+                    self.location = (self.location[0] + delta_lat, self.location[1] + delta_lon)
+                    self.battery -= random.uniform(0.01, 0.05)  # Simulate battery drain
 
-                # Send an update more frequently while in use
-                # await self.send_update_to_socketio()
+                # Send an update to the WebSocket server
+                await self.send_update_to_socketio()
             else:
                 await asyncio.sleep(SLEEP_TIME_IDLE)
-                # Bike is not in use: set speed = 0, optionally no movement
-                self.speed = 0
-                # If you want a "heartbeat" update so admins see it's still online:
-                # await self.send_update_to_socketio()
-                # Sleep longer if idle to reduce load
-
 
     async def sim_random_bike_status(self):
         """ Randomly change the bike status."""
@@ -122,25 +148,22 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
             # Change status every X-Y minutes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
-
-if __name__ == "__main__":
+async def main():
     bike1 = SimBike(BIKE_ID, simulated=True)
-    # bike2 = Bike(uuid.uuid4(), simulated=True)
-    # bike3 = Bike(uuid.uuid4(), simulated=True)
-    # bike4 = Bike(uuid.uuid4(), simulated=True)
-    # bike5 = Bike(uuid.uuid4(), simulated=True)
+    # Set up the bike's initial configuration
+    bike1.set_start_location(59.3293, 18.0686)  # Starting location (Stockholm center)
+    bike1.set_destination(59.3420, 18.0535)  # Destination (nearby location in Stockholm)
+    bike1.status = "in_use"  # Set the bike to in-use status for travel simulation
 
-    async def main():
-        await bike1.initialize()  # Initialize bike asynchronously
+    # Initialize the bike (connect to WebSocket server, etc.)
+    await bike1.initialize()
 
-        await asyncio.gather(
-            bike1.run_bike_interval(),
-            # bike2.run_bike_interval(),
-            # bike3.run_bike_interval(),
-            # bike4.run_bike_interval(),
-            # bike5.run_bike_interval(),
-            # Add other bikes here if needed
-        )
+    # Run the bike simulation
+    await asyncio.gather(
+        bike1.run_bike_interval(),
+    )
 
-    # Run the main coroutine
+# Run the async main function
+if __name__ == "__main__":
     asyncio.run(main())
+
