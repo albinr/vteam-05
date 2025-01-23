@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import LogoutButton from "@/components/LogoutButton";
-import { FaLocationDot, FaSquareArrowUpRight, FaBell } from "react-icons/fa6";
 import Cookies from "js-cookie";
+import { apiClient } from "@/services/apiClient";
 
 import "./Header.css";
 
@@ -11,29 +11,45 @@ export default function Header() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Fetch user_id from cookies
-        // TODO: Get user data from API instead (via JWT)
-        const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
+        // Fetch token from cookies
+        const token = Cookies.get("token");
 
-        setUser(user);
+        if (!token) {
+            return;
+        }
+
+        async function fetchUser() {
+            const dbUser = await apiClient.get("/user/data", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (dbUser.message == "Access denied: Invalid token") {
+                return;
+            }
+
+            setUser(dbUser);
+        }
+
+        fetchUser();
     }, []);
 
 
-
-        if (!user) {
-            return null;
-        }
-
-        if (user) {
-            return (
-                <header>
+    return (
+        <header>
+            {
+                user ?
                     <div id="header-right">
                         <img id="header-user-img" src={user.image} alt="Profile Picture" />
+                    </div> :
+                    <div id="header-right">
+                        <img id="header-user-img" src={"."} alt="" />
                     </div>
-                    <div id="header-left">
-                        <LogoutButton />
-                    </div>
-                </header>
-            );
-        }
+            }
+            <div id="header-left">
+                <LogoutButton />
+            </div>
+        </header>
+    );
 }
