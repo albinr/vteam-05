@@ -2,6 +2,7 @@ import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import { apiClient } from "@/services/apiClient";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -55,7 +56,7 @@ export const addBikeMarker = (bikeData) => {
         try {
             let token = Cookies.get("token");
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trips/start/${bike_id}/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/trips/start/${bike_id}/${userId}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`

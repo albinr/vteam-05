@@ -13,7 +13,7 @@ export default function MapPage() {
     useEffect(() => {
         const fetchBikes = async () => {
             try {
-                const response = await apiClient.get("/bikes/available");
+                const response = await apiClient.get("/v3/bikes/available");
 
                 for (let bike of response) {
                     bike.type = "bike";
@@ -27,7 +27,7 @@ export default function MapPage() {
 
         const fetchZones = async () => {
             try {
-                const response = await apiClient.get("/zones");
+                const response = await apiClient.get("/v3/zones");
                 setZones(response);
             } catch (error) {
                 console.error("Error fetching zones:", error);

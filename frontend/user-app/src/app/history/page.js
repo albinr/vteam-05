@@ -18,7 +18,7 @@ const HistoryPage = () => {
             const user_id = Cookies.get("user") ? JSON.parse(Cookies.get("user")).id : null;
 
             // Fetch active trip
-            const trips = await apiClient.get(`/trips/from/${user_id}`,
+            const trips = await apiClient.get(`/v3/trips/from/${user_id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get("token")}`
@@ -43,7 +43,6 @@ const HistoryPage = () => {
 
             setTrips(trips);
 
-            console.log("Trips: ", trips);
             setLoading(false);
         }
 
