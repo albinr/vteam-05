@@ -20,8 +20,6 @@ export default function MapPage() {
                     bike.type = "bike";
                 }
 
-                console.log(response);
-
                 setBikes(response);
             } catch (error) {
                 console.error("Error fetching bikes:", error);
@@ -32,7 +30,6 @@ export default function MapPage() {
             try {
                 const response = await apiClient.get("/zones");
                 setZones(response);
-                console.log("Zones: ", response);
             } catch (error) {
                 console.error("Error fetching zones:", error);
             }
