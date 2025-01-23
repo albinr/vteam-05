@@ -43,12 +43,10 @@ const Map = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=nu
                 {bikeMarkers.map((marker) => addBikeMarker(marker))}
             </MarkerClusterGroup>
             <MarkerClusterGroup chunkedLoading>
-                {parkingMarkers.map((marker) => addParkingStationMarker(marker))}
+
             </MarkerClusterGroup>
-            <MarkerClusterGroup chunkedLoading>
-                {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
-            </MarkerClusterGroup>
-            <ZoomControl position="bottomright" />
+            {parkingMarkers.map((marker) => addParkingStationMarker(marker))}
+            {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
         </MapContainer>
     );
 };
