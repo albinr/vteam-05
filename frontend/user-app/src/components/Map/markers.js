@@ -1,6 +1,5 @@
 import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
-import { apiClient } from "@/services/apiClient";
 import Cookies from "js-cookie";
 
 // Ensure default icons are correctly loaded
@@ -13,7 +12,6 @@ L.Icon.Default.mergeOptions({
 
 const bikeIcon = L.icon({
     iconUrl: "/icons/bike-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -14],
@@ -21,7 +19,6 @@ const bikeIcon = L.icon({
 
 const parkingIcon = L.icon({
     iconUrl: "/icons/parking-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -28],
@@ -29,17 +26,15 @@ const parkingIcon = L.icon({
 
 const chargeIcon = L.icon({
     iconUrl: "/icons/charge-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -28],
 });
 
 export const addBikeMarker = (bikeData) => {
-    // const { id, position, battery, status } = bikeData;
     const { bike_id, battery_level, latitude, longitude, status, simulation } = bikeData;
 
-    console.log(bikeData);
+    // console.log(bikeData);
 
     const handleButtonClick = async () => {
         if (status !== "available") {
@@ -85,12 +80,7 @@ export const addBikeMarker = (bikeData) => {
             position={[longitude, latitude]}
             icon={bikeIcon}
         >
-            <Popup
-                // style={{
-                //     window: "90vw",
-                //     heigh: "90vh",
-                // }}
-            >
+            <Popup>
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
@@ -110,7 +100,6 @@ export const addBikeMarker = (bikeData) => {
     );
 };
 
-// Fix the marker
 export const addChargingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
@@ -147,8 +136,6 @@ export const addParkingStationMarker = (stationData) => {
     );
 };
 
-
-// Fix the marker
 export const addZoneMarker = (zoneData) => { 
     const { id, position, battery, status } = zoneData;
     return (
