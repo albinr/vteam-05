@@ -35,17 +35,19 @@ const chargeIcon = L.icon({
     popupAnchor: [0, -28],
 });
 
-// Function to send a command to the WebSocket server
-const sendCommand = (bikeId, command) => {
+const sendCommand = (bikeId, commandToSend) => {
     try {
-        const socket = getWebSocket(); // Get the WebSocket instance
-        socket.emit("command", { bike_id: bikeId, command });
-        console.log(`Sent command "${command}" to bike ${bikeId}`);
+        const socket = getWebSocket();
+        if (socket.connected) { // Check if the socket is connected
+            socket.emit("command", { bike_id: bikeId, command: commandToSend });
+            console.log(`Sent command "${commandToSend}" to bike ${bikeId}`);
+        } else {
+            console.error("WebSocket is not connected.");
+        }
     } catch (error) {
         console.error("Error sending command:", error);
     }
 };
-
 
 export const addBikeMarker = (bikeData) => {
     // const { id, position, battery, status } = bikeData;
@@ -68,11 +70,15 @@ export const addBikeMarker = (bikeData) => {
                 Battery: {battery_level}%<br />
                 <Button
                     onClick={() => sendCommand(bike_id, "stop")}
-                    label={"Lock"}
+                    label={"Stop"}
                 />
                 <Button
                     onClick={() => sendCommand(bike_id, "shutdown")}
                     label={"Shutdown"}
+                />
+                <Button
+                    onClick={() => sendCommand(bike_id, "rent")}
+                    label={"Rent for testing"}
                 />
             </Popup>
         </Marker>
