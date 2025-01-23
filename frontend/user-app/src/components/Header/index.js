@@ -16,14 +16,6 @@ export default function Header() {
         const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
 
         setUser(user);
-        // Fetch user
-        // const getUser = async () => {
-        //     const user = await apiClient.get(`/users/${user_id}`);
-        //     setUser(user);
-        // };
-
-
-        // getUser();
     }, []);
 
 
@@ -39,7 +31,6 @@ export default function Header() {
                         <img id="header-user-img" src={user.image} alt="Profile Picture" />
                     </div>
                     <div id="header-left">
-                        {/* <p id="header-user-id">{user.id || ""}</p> */}
                         <LogoutButton />
                     </div>
                 </header>

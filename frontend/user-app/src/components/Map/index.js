@@ -1,15 +1,13 @@
 "use client";
 
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
-// import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
 const locationIcon = L.icon({
     iconUrl: "/icons/location-icon.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [18, 18],
     iconAnchor: [18, 18],
     popupAnchor: [0, -18],

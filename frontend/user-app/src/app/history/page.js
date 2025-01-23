@@ -71,7 +71,6 @@ const HistoryPage = () => {
             {trips.map((trip, index) => {
                 return <div key={index} className="trip">
                     <h2>Trip ID_{trip.trip_id}</h2>
-                    {/* day time_from - time_to (duration) */}
                     <p>
                         {
                             new Date(trip.start_time).toLocaleString("en-US", { weekday: 'long' })
