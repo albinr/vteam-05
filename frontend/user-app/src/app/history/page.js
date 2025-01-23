@@ -70,7 +70,7 @@ const HistoryPage = () => {
             <h1>Previous Trips</h1>
             {trips.map((trip, index) => {
                 return <div key={index} className="trip">
-                    <h2>Trip {trip.trip_id}</h2>
+                    <h2>Trip ID_{trip.trip_id}</h2>
                     {/* day time_from - time_to (duration) */}
                     <p>
                         {
