@@ -1,6 +1,7 @@
 import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
 import Cookies from "js-cookie";
+import { useState } from "react";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -32,6 +33,8 @@ const chargeIcon = L.icon({
 });
 
 export const addBikeMarker = (bikeData) => {
+    const [message, setMessage] = useState();
+
     const { bike_id, battery_level, latitude, longitude, status, simulation } = bikeData;
 
     // console.log(bikeData);
@@ -69,6 +72,10 @@ export const addBikeMarker = (bikeData) => {
             window.location.href = "/trip";
 
         } catch (error) {
+            console.error("Error starting trip:", error);
+            // Add text to a popup
+            setMessage("Trip could not be started. Please try again later.");
+
             return error;
         }
 
@@ -90,11 +97,12 @@ export const addBikeMarker = (bikeData) => {
                 }}>{status}</span><br />
                 Battery: {battery_level}%<br />
                 {
-                    status === "available" && !simulation ?
+                    status === "available" ?
                         <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
                         :
                         <button id={bike_id} className="rent-button rent-button-disabled" disabled>Not Available (bike is unavailable or simulated)</button>
                 }
+                {message && <p>{message}</p>}
             </Popup>
         </Marker>
     );
