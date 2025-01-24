@@ -56,19 +56,45 @@ class Simulation:
         """
         Add a bike to the simulation.
         """
+        print(self.zones)
         for _ in range(1, num_bikes + 1):
             # Get random city to start bike in
-            random_city = self.cities[random.randint(0, len(self.cities) - 1)]
+            random_city = random.choice(self.cities)
 
-            # Get random zone in city
-            random_zone_int = random.randint(0, len(self.zones[random_city]) - 1)
-            bike_latitude = self.zones[random_city][random_zone_int]["latitude"]
-            bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
+            zones = self.zones[random_city]
+            random.shuffle(zones)
+
+            # Select random start and destination zones
+            start_zone = zones[0]
+            destination_zone = zones[1]
+
+            # Extract coordinates for start and destination
+            start_latitude = start_zone["latitude"]
+            start_longitude = start_zone["longitude"]
+            start_type = start_zone["type"]
+
+            dest_latitude = destination_zone["latitude"]
+            dest_longitude = destination_zone["longitude"]
+            dest_type = destination_zone["type"]
 
             # Add bike to simulation
-            new_bike = SimBike(bike_id=f"{uuid.uuid4()}",
-                location=(bike_longitude, bike_latitude), simulated=simulated)
+            new_bike = SimBike(
+                bike_id=f"{uuid.uuid4()}",
+                location=(start_longitude, start_latitude),
+                start_type=start_type,
+                dest_type=dest_type,
+                simulated=simulated,
+            )
+            # Set start and destination
+            new_bike.set_start_location(start_longitude, start_latitude)
+            new_bike.set_destination(dest_longitude, dest_latitude)
+            new_bike.start_type = start_type
+            new_bike.dest_type = dest_type
+            # new_bike.status = "in_use" # Set bike status to in_use for testing moving bikes
             self.bikes.append(new_bike)
+            print(f"Bike {new_bike.bike_id} start: ({start_latitude}, {start_longitude})")
+            print(f"Bike {new_bike.bike_id} destination: ({dest_latitude}, {dest_longitude})")
+
 
     async def initialize_bikes(self):
         print("Initializing bikes...")
