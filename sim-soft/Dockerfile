@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 
 # cli test with entrypoint
 # ENTRYPOINT ["python", "cli.py", "start", "--num-bikes", "5"]
-CMD ["python", "cli.py", "start", "--num-bikes", "2 "]
+CMD ["python", "cli.py", "start", "--num-bikes", "3000"]
 
 # Freeze program on startup
 # CMD ["tail", "-f", "/dev/null"]

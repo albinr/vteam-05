@@ -8,11 +8,8 @@ in a system for renting bikes.
 import asyncio
 import random
 import uuid
-import json
 from geopy.distance import geodesic
 import math
-from datetime import datetime
-from socketio import AsyncClient
 from bike import Bike
 
 # Constants
@@ -25,11 +22,6 @@ API_UPDATE_INTERVAL = 11  # Seconds for sending updates to API
 MIN_TRAVEL_TIME = 5 # Minutes of minimum travel time for simulation
 MAX_TRAVEL_TIME = 10 # Minutes of maximum travel time for simulation
 
-API_URL="http://backend:1337"
-WEBSOCKET_URL="http://backend:1337"
-# API_URL="http://localhost:1337"
-# WEBSOCKET_URL="http://localhost:1337"
-
 BIKE_ID = uuid.uuid4()
 
 class SimBike(Bike): # pylint: disable=too-many-instance-attributes
@@ -40,8 +32,8 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
         super().__init__(*args, **kwargs)
         self.simulated = True
         self.start_location = None
-        self.destination = None  # Tuple (latitude, longitude)
-        self.moving = False  # Flag for ongoing travel
+        self.destination = None
+        self.moving = False
 
     def set_start_location(self, latitude, longitude):
         """Save the start location of the bike, so it can later be switched with destinaiton."""
@@ -114,13 +106,15 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                     await self.update_bike_data(status="available")
                 else:
                     if not self.speed:
-                        self.speed = random.uniform(10, self.speed_limit)
+                        self.speed = random.uniform(5, self.speed_limit)
                     # Move toward the destination
                     bearing = self.calculate_bearing(self.location, self.destination)
                     delta_lat = (self.speed / 111320) * math.cos(math.radians(bearing))
                     delta_lon = (self.speed / (111320 * math.cos(math.radians(self.location[0])))) * math.sin(math.radians(bearing))
                     self.location = (self.location[0] + delta_lat, self.location[1] + delta_lon)
                     self.battery -= random.uniform(0.01, 0.05)  # Simulate battery drain
+                    print(f"Bike {self.bike_id} is moving to destination.")
+                    print(f"Bike {self.bike_id} location: {self.location}")
 
                 # Send an update to the WebSocket server
                 await self.send_update_to_socketio()
@@ -149,7 +143,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
 async def main():
-    bike1 = SimBike(BIKE_ID, simulated=True)
+    bike1 = SimBike(BIKE_ID,location = (59.3293, 18.0686) ,simulated=True)
     # Set up the bike's initial configuration
     bike1.set_start_location(59.3293, 18.0686)  # Starting location (Stockholm center)
     bike1.set_destination(59.3420, 18.0535)  # Destination (nearby location in Stockholm)
