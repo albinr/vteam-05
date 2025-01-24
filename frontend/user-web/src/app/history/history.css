@@ -47,3 +47,21 @@ h2 {
     color: black;
     font-size: 16px;
 }
+
+@media (max-width: 500px) {
+    .outer-box {
+        padding: 0px;
+    }
+
+    .table th, .table td {
+        padding: 4px;
+    }
+
+    .inner-box {
+        gap: 0px;
+    }
+
+    .layout-main {
+        padding: 3px;
+    }
+}

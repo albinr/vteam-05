@@ -6,9 +6,12 @@ import "./Home.css";
 const Home = ({ session }) => {
 
     return (
-        <div>
-            <h1>Home</h1>
-            <p>Welcome, {session.user?.name || "User"}!</p>
+        <div className="outer-box">
+            <div className="inner-box">
+                <h1>Home</h1>
+                <h3>Welcome, {session.user?.name || "User"}!</h3>
+                <p>Here you can see you'r recent trips and payment</p>
+            </div>
         </div>
     );
 };

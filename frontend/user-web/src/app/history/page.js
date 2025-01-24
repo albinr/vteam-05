@@ -53,6 +53,32 @@ const History = ({ session }) => {
         fetchZones();
     }, []);
 
+    function isClose(lat1, lon1, lon2, lat2) {
+        const closelat = Math.abs(lat1 - lat2) <= 0.001;
+        const closelon = Math.abs(lon2 - lon1) <= 0.001;
+        console.log(closelat, closelon)
+        return closelat && closelon;
+    }
+
+    const processedTripData = tripData.map((trip) => {
+        const [startLat, startLon] = trip.start_position.split(" ").map(Number);
+        const [endLat, endLon] = trip.end_position.split(" ").map(Number);
+
+        const startZone = zones.find((zone) =>
+            isClose(startLat, startLon, zone.latitude, zone.longitude)
+        );
+
+        const endZone = zones.find((zone) =>
+            isClose(endLat, endLon, zone.latitude, zone.longitude)
+        );
+
+        return {
+            ...trip,
+            startZoneName: startZone ? startZone.name : "not parked inside zone",
+            endZoneName: endZone ? endZone.name : "not parked inside zone",
+        };
+    });
+
 
     const time = (dateString) => {
         const date = new Date(dateString);
@@ -72,42 +98,42 @@ const History = ({ session }) => {
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                {/* <th>Start Location</th>
-                                <th>End Location</th> */}
+                                <th>Start Location</th>
+                                <th>End Location</th>
                                 <th>Duration</th>
                                 <th>Cost</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {tripData.length > 0 ? (
-                            tripData.map((trip, index) => (
-                            <tr key={index}>
-                                <td>{time(trip.start_time)}</td>
-                                {/* <td>{trip.startLocation || "N/A"}</td>
-                                <td>{trip.endLocation || "N/A"}</td> */}
-                                <td>{trip.duration_minutes} minutes</td>
-                                <td>{trip.price}</td>
-                            </tr>
-                        ))
-                        ) : (
+                            {processedTripData.length > 0 ? (
+                                processedTripData.map((trip, index) => (
+                                    <tr key={index}>
+                                        <td>{time(trip.start_time)}</td>
+                                        <td>{trip.startZoneName}</td>
+                                        <td>{trip.endZoneName}</td>
+                                        <td>{trip.duration_minutes} minutes</td>
+                                        <td>{trip.price}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5">No trips available.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+            ) : (
+                <table className="table">
+                    <thead>
                         <tr>
-                            <td colSpan="3">No trips available.</td>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
                         </tr>
-                    )}
-                        </tbody>
-                    </table>
-                ) : (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Payment Method</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
                 )}
             </div>
         </div>
