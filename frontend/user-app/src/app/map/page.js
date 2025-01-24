@@ -1,25 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import io from "socket.io-client";
+import { apiClient } from "@/services/apiClient";
 import Map from "@/components/Map";
 import "./MapPage.css";
-import { useEffect, useState } from "react";
-import { apiClient } from "@/services/apiClient";
 
 export default function MapPage() {
     const [bikes, setBikes] = useState([]);
     const [zones, setZones] = useState([]);
     const [startPosition, setStartPosition] = useState(null);
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         const fetchBikes = async () => {
             try {
                 const response = await apiClient.get("/v3/bikes/available");
-
-                for (let bike of response) {
-                    bike.type = "bike";
-                }
-
-                setBikes(response);
+                setBikes(response.map(bike => ({ ...bike, type: "bike" })));
             } catch (error) {
                 console.error("Error fetching bikes:", error);
             }
@@ -42,9 +39,7 @@ export default function MapPage() {
             }
 
             function success(position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
+                const { latitude, longitude } = position.coords;
                 setStartPosition([latitude, longitude]);
             }
 
@@ -53,9 +48,40 @@ export default function MapPage() {
             }
         };
 
+        const connectToWebSocket = async () => {
+            const newSocket = io(`${process.env.NEXT_PUBLIC_API_BASE_URL}`, {
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+            setSocket(newSocket);
+
+            newSocket.on('bike-update-frontend', (newBike) => {
+                // Update simulation to new value (mismatch between systems)
+                newBike.simulation = newBike.simulated;
+
+                // Update bike in state
+                setBikes(prevBikes => {
+                    return prevBikes.map(bike =>
+                        bike.bike_id === newBike.bike_id ?
+                        { ...bike, ...newBike, type: "bike" } :
+                        bike
+                    );
+                });
+            });
+
+            return () => {
+                if (socket) {
+                    // Disconnect socket
+                    socket.disconnect();
+                }
+            };
+        };
+
         fetchBikes();
         fetchZones();
         fetchUserPosition();
+        connectToWebSocket();
     }, []);
 
     return (

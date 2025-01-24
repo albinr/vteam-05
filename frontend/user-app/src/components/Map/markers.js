@@ -33,12 +33,8 @@ const chargeIcon = L.icon({
     popupAnchor: [0, -28],
 });
 
-export const addBikeMarker = (bikeData) => {
-    const [message, setMessage] = useState();
-
+export const addBikeMarker = ({ bikeData }) => {
     const { bike_id, battery_level, latitude, longitude, status, simulation } = bikeData;
-
-    // console.log(bikeData);
 
     const handleButtonClick = async () => {
         if (status !== "available") {
@@ -65,19 +61,11 @@ export const addBikeMarker = (bikeData) => {
 
             const data = await response.json();
 
-            if (!data.result) {
-                throw new Error(response.message);
-            }
-
             // Redirect to "/trip"
             window.location.href = "/trip";
 
         } catch (error) {
             console.error("Error starting trip:", error);
-            // Add text to a popup
-            setMessage("Trip could not be started. Please try again later.");
-
-            return error;
         }
 
     };
@@ -92,18 +80,18 @@ export const addBikeMarker = (bikeData) => {
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
-                    : status === "rented" ?? status === "charging" ? "orange"
-                    : status === "maintance" ? "red"
+                    : ["rented", "charging"].includes(status) ? "orange"
+                    : status === "maintenance" ? "red"
                     : "red"
                 }}>{status}</span><br />
-                Battery: {battery_level}%<br />
+                Battery: {Math.round(battery_level)}%<br />
                 {
-                    status === "available" ?
-                        <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
+                    status === "available" && !simulation ?
+                        <button id={bike_id} className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
                         :
-                        <button id={bike_id} className="rent-button rent-button-disabled" disabled>Not Available (bike is unavailable or simulated)</button>
+                        <button id={bike_id} className="rent-button rent-button-disabled" disabled>Bike Not Available</button>
                 }
-                {message && <p>{message}</p>}
+                {/* {message && <p>{message}</p>} */}
             </Popup>
         </Marker>
     );
@@ -145,7 +133,7 @@ export const addParkingStationMarker = (stationData) => {
     );
 };
 
-export const addZoneMarker = (zoneData) => { 
+export const addZoneMarker = (zoneData) => {
     const { id, position, battery, status } = zoneData;
     return (
         <Marker

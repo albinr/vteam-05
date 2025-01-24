@@ -14,7 +14,7 @@ const locationIcon = L.icon({
 });
 
 const Map = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=null}) => {
-    const bikeMarkers = markers.filter(marker => marker.type === "bike");
+    const bikeMarkers = markers.filter(marker => marker.type === "bike" && marker.status === "available");
     const parkingMarkers = markers.filter(marker => marker.type === "parking");
     const chargingStationMarkers = markers.filter(marker => marker.type === "chargestation");
 
@@ -38,7 +38,7 @@ const Map = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=nu
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <MarkerClusterGroup chunkedLoading>
-                {bikeMarkers.map((marker) => addBikeMarker(marker))}
+                {bikeMarkers.map((marker) => addBikeMarker({ bikeData: marker }))}
             </MarkerClusterGroup>
             <MarkerClusterGroup chunkedLoading>
 
