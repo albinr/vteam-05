@@ -28,11 +28,13 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
     """
     Bike class for simulating an electric bike.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, start_type=None, dest_type=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.simulated = True
         self.start_location = None
         self.destination = None
+        self.start_type = start_type
+        self.dest_type = dest_type
         self.moving = False
 
     def set_start_location(self, latitude, longitude):
@@ -85,6 +87,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                 # Make sure that the battery doesn't go over 100
                 if self.battery > 100: # pylint: disable=consider-using-min-builtin
                     self.battery = 100
+                    await self.update_bike_data(status="available")
 
             # await self.send_update_to_socketio()
 
@@ -101,9 +104,18 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                 if distance_to_dest < 10:  # Close enough to the destination
                     self.location = self.destination  # Snap to destination
                     self.speed = 0
-                    self.destination = self.start_location  # Switch destination with start location
-                    print(f"Bike {self.bike_id} arrived at destination.")
-                    await self.update_bike_data(status="available")
+
+                    if self.dest_type == "chargestation":
+                        await self.update_bike_data(status="charging")
+                        print(f"Bike {self.bike_id} is charging at {self.destination}.")
+                    else:
+                        await self.update_bike_data(status="available")
+                        print(f"Bike {self.bike_id} is available at {self.destination}.")
+
+                    self.start_location, self.destination = self.destination, self.start_location
+                    self.start_type, self.dest_type = self.dest_type, self.start_type
+                    print(f"Bike {self.bike_id} arrived at destination. {self.status}")
+                    # await self.update_bike_data(status="available") # Redundant?
                 else:
                     if not self.speed:
                         self.speed = random.uniform(5, self.speed_limit)

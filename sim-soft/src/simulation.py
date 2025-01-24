@@ -71,18 +71,25 @@ class Simulation:
             # Extract coordinates for start and destination
             start_latitude = start_zone["latitude"]
             start_longitude = start_zone["longitude"]
+            start_type = start_zone["type"]
+
             dest_latitude = destination_zone["latitude"]
             dest_longitude = destination_zone["longitude"]
+            dest_type = destination_zone["type"]
 
             # Add bike to simulation
             new_bike = SimBike(
                 bike_id=f"{uuid.uuid4()}",
                 location=(start_longitude, start_latitude),
+                start_type=start_type,
+                dest_type=dest_type,
                 simulated=simulated,
             )
             # Set start and destination
             new_bike.set_start_location(start_longitude, start_latitude)
             new_bike.set_destination(dest_longitude, dest_latitude)
+            new_bike.start_type = start_type
+            new_bike.dest_type = dest_type
             # new_bike.status = "in_use" # Set bike status to in_use for testing moving bikes
             self.bikes.append(new_bike)
             print(f"Bike {new_bike.bike_id} start: ({start_latitude}, {start_longitude})")
