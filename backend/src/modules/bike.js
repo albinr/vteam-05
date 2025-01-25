@@ -10,6 +10,7 @@ async function showBikes() {
                 battery_level,
                 ST_X(position) AS longitude,
                 ST_Y(position) AS latitude,
+                speed,
                 simulation
             FROM Bike
         `);
@@ -48,7 +49,8 @@ async function showBike(bikeId) {
             status,
             battery_level,
             ST_X(position) AS longitude,
-            ST_Y(position) AS latitude
+            ST_Y(position) AS latitude,
+            speed
         FROM Bike
         WHERE bike_id = ?
     `, [bikeId]);

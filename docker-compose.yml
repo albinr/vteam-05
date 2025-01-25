@@ -47,16 +47,6 @@ services:
       DB_NAME: vteam
     restart: always
 
-  simulation:
-    build: ./sim-soft
-    depends_on:
-      - backend
-    networks:
-      - bike_network
-    container_name: simulation
-    volumes:
-      - ./sim-soft/src:/app
-
   admin-web:
     build: ./frontend/admin-web
     depends_on:
@@ -92,3 +82,13 @@ services:
       - 3002:3002
     networks:
       - bike_network
+
+  simulation:
+    build: ./sim-soft
+    depends_on:
+      - backend
+    networks:
+      - bike_network
+    container_name: simulation
+    volumes:
+      - ./sim-soft/src:/app
