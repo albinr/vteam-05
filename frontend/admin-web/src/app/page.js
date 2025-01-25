@@ -39,7 +39,7 @@ const Home = ({ session }) => {
             <p>Welcome, {session.user?.name || "User"}!</p>
             <p>Here you can view scooter locations and manage the platform.</p>
             <div className="dash-map">
-                <Map markers={bikes} />
+                {/* <Map markers={bikes} /> */}
             </div>
             <div className="dash-links">
                 <Link href="/users">Users</Link>

@@ -5,6 +5,7 @@ let socket;
 export const initializeWebSocket = () => {
     if (!socket) {
         socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL, {
+            transports: ["websocket"],
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,

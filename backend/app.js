@@ -14,7 +14,20 @@ const server = http.createServer(app); // Skapa en HTTP-server med Express
 const { Server } = require("socket.io"); // Importera Server-klassen från Socket.IO
 const io = new Server(server, {
     pingInterval: 25000,  // 25 seconds
-    pingTimeout: 60000    // 1 minute
+    pingTimeout: 60000,    // 1 minute
+    cors: {
+        origin: [
+            "http://admin-web:3000",
+            "http://user-web:3001",
+            "http://user-app:3002",
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002"
+        ],
+        methods: ["GET", "POST"],
+        transports: ["websocket", "polling"],
+        credentials: true
+    }
 });
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
