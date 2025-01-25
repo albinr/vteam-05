@@ -55,8 +55,7 @@ const MapView = () => {
 
             socket.on("bike-update-frontend", (newBike) => {
                 newBike.simulation = newBike.simulated;
-                console.log("Received bike update:", newBike);
-
+                // console.log("Received bike update:", newBike);
                 setBikes(prevBikes =>
                     prevBikes.map(bike =>
                         bike.bike_id === newBike.bike_id

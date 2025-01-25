@@ -39,7 +39,7 @@ const sendCommand = (bikeId, commandToSend) => {
     try {
         const socket = getWebSocket();
         if (socket.connected) { // Check if the socket is connected
-            socket.emit("command", { bike_id: bikeId, command: commandToSend });
+            socket.emit("command", JSON.stringify({ bike_id: bikeId, command: commandToSend }));
             console.log(`Sent command "${commandToSend}" to bike ${bikeId}`);
         } else {
             console.error("WebSocket is not connected.");
