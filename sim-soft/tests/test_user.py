@@ -17,7 +17,7 @@ class TestUser(unittest.TestCase):
     """
     @patch('requests.post')
     @patch('builtins.print')
-    def setUp(self, mock_post, _):
+    def setUp(self, mock_post, _): # pylint: disable=arguments-differ
         mock_post.return_value.status_code = 201
         self.user = User(1, "user", "user@gmail.com")
 
