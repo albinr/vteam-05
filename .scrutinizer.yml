@@ -14,11 +14,11 @@ build:
         coverage:
             tests:
                 override:
-                  - command: echo "no test"
-                    coverage:
-                      file: backend/coverage/clover.xml
-                      format: clover
-                - command: echo "no test"
-                    coverage:
-                      file: sim-soft/coverage.xml
-                      format: clover
+                    - command: echo "no test"
+                      coverage:
+                        file: backend/coverage/clover.xml
+                        format: clover
+                    - command: echo "no test"
+                      coverage:
+                        file: sim-soft/coverage.xml
+                        format: clover
