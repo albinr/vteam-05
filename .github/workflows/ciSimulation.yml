@@ -43,8 +43,20 @@ jobs:
           source venv/bin/activate
           pylint sim-soft/src sim-soft/tests
 
-      - name: Run unittest
+      - name: Install coverage
+        run: |
+          source venv/bin/activate
+          pip install coverage
+
+      - name: Run tests with coverage
         run: |
           source venv/bin/activate
           cd sim-soft
-          python -m unittest discover tests
+          coverage run -m unittest discover tests
+          coverage xml -o coverage.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: sim-soft/coverage.xml

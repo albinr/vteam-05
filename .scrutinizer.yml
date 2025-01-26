@@ -18,7 +18,7 @@ build:
                     coverage:
                       file: backend/coverage/clover.xml
                       format: clover
-                - command: echo "no test"
+                - command: coverage run -m unittest discover -s sim-soft/tests
                     coverage:
                       file: sim-soft/coverage.xml
                       format: clover
