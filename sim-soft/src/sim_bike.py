@@ -10,7 +10,7 @@ import random
 import uuid
 from geopy.distance import geodesic
 import math
-from bike import Bike
+from src.bike import Bike
 
 # Constants
 SLEEP_TIME_IN_USE = 5

@@ -11,9 +11,9 @@ import requests
 import signal
 import sys
 import random
-from sim_bike import SimBike
+from src.sim_bike import SimBike
 # from bike import Bike
-from user import User
+from src.user import User
 
 API_URL="http://backend:1337"
 
