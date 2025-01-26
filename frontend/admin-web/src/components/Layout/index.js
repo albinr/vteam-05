@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie"; // For cookie management
+import { useState, useEffect, useContext, createContext } from "react";
+import Cookies from "js-cookie";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
@@ -9,32 +9,34 @@ import Loader from "@/components/Loader";
 import "./Layout.css";
 import FlashMessage from "../FlashMessage";
 
+const FlashMessageContext = createContext();
+
+export const useFlashMessage = () => useContext(FlashMessageContext);
+
 export default function Layout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [flashMessages, setFlashMessages] = useState([]); // Queue for flash messages
+    const [flashMessages, setFlashMessages] = useState([]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
     const addFlashMessage = (message, type = "info", duration = 3000) => {
-        const id = Date.now(); // Unique ID for each message
+        const id = Date.now();
         setFlashMessages((prevMessages) => [
             ...prevMessages,
             { id, message, type, duration },
         ]);
-    
-        // Remove message after `duration + animation duration`
-        const totalDuration = duration + 300; // 300ms for roll-up animation
+
+        const totalDuration = duration + 300;
         setTimeout(() => {
             setFlashMessages((prevMessages) =>
                 prevMessages.filter((msg) => msg.id !== id)
             );
         }, totalDuration);
     };
-    
 
     useEffect(() => {
         const token = Cookies.get("token");
@@ -42,7 +44,6 @@ export default function Layout({ children }) {
         setIsAuthenticated(!!token && !!user);
         setIsLoading(false);
 
-        // Example flash messages
         if (!token || !user) {
             addFlashMessage("Please log in to access all features", "warning");
         } else {
@@ -55,31 +56,32 @@ export default function Layout({ children }) {
     }
 
     return (
-        <div className="layout">
-            <Header onToggleSidebar={toggleSidebar} />
-            <div className="layout-body">
-                {isAuthenticated && (
-                    <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} />
-                )}
-                <div className={`layout-content ${isAuthenticated ? "authenticated" : ""}`}>
-                    {/* Render all flash messages */}
-                    {flashMessages.map((msg) => (
-                        <FlashMessage
-                            key={msg.id}
-                            message={msg.message}
-                            type={msg.type}
-                            duration={msg.duration}
-                            onDismiss={() =>
-                                setFlashMessages((prevMessages) =>
-                                    prevMessages.filter((m) => m.id !== msg.id)
-                                )
-                            }
-                        />
-                    ))}
-                    <main className="layout-main">{children}</main>
+        <FlashMessageContext.Provider value={addFlashMessage}>
+            <div className="layout">
+                <Header onToggleSidebar={toggleSidebar} />
+                <div className="layout-body">
+                    {isAuthenticated && (
+                        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} />
+                    )}
+                    <div className={`layout-content ${isAuthenticated ? "authenticated" : ""}`}>
+                        {flashMessages.map((msg) => (
+                            <FlashMessage
+                                key={msg.id}
+                                message={msg.message}
+                                type={msg.type}
+                                duration={msg.duration}
+                                onDismiss={() =>
+                                    setFlashMessages((prevMessages) =>
+                                        prevMessages.filter((m) => m.id !== msg.id)
+                                    )
+                                }
+                            />
+                        ))}
+                        <main className="layout-main">{children}</main>
+                    </div>
                 </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
+        </FlashMessageContext.Provider>
     );
 }

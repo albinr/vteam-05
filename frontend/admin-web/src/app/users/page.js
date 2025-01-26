@@ -75,7 +75,7 @@ const Users = () => {
 
 
     return (
-        <div className="users-container">
+        <div className="page-container">
             <h1>Users</h1>
             <p>Manage and control users</p>
             <div className="pagination-controls">
@@ -84,7 +84,6 @@ const Users = () => {
                     placeholder="Search by email or ID..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
                 />
                 <Button
                     label="<"

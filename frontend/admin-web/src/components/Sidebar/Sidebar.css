@@ -1,12 +1,13 @@
 /* General Sidebar Styles */
 .sidebar {
-  width: 220px;
+  /* width: 220px; */
+  width: 300px;
   height: 100%;
   background-color: #fff;
   color: #333;
   position: fixed;
   top: 60;
-  left: -220px; /* Initially hidden */
+  left: -300px; /* Initially hidden */
   transition: left 0.3s ease;
   z-index: 1000;
   display: flex;
@@ -72,7 +73,7 @@
   .sidebar {
       left: 0; /* Always visible on larger screens */
       position: relative; /* Inline with main content */
-      width: 220px;
+      width: 300px;
   }
 
   .sidebar.open {

@@ -55,3 +55,7 @@
     background-color: #eeeeee;
     cursor: pointer;
 }
+
+.table-container .button{
+    margin-right: 10px;
+}

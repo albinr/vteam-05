@@ -14,6 +14,15 @@ const zoneColumns = [
     { header: "Type", accessor: "type" },
     { header: "Radius", accessor: "radius" },
     { header: "Capacity", accessor: "capacity" },
+    {
+        header: "Actions", render: (row) => (
+            <>
+                <Button onClick={() => handleAction(row)} label={"Edit"} />
+                <Button onClick={() => handleAction(row)} label={"Delete"} />
+            </>
+        ),
+    },
+
 ];
 
 const Zones = () => {
@@ -75,7 +84,7 @@ const Zones = () => {
     };
 
     return (
-        <div className="zones-container">
+        <div className="page-container">
             <h1>Zones</h1>
             <p>Manage and control zones</p>
             <div className="pagination-controls">
@@ -84,23 +93,21 @@ const Zones = () => {
                     placeholder="Search by name or ID..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
                 />
                 <Button
                     label="<"
                     onClick={() => handlePageChange("prev")}
                     disabled={currentPage === 1}
                 />
-
+                <span>
+                    Page {currentPage} of {totalPages}
+                </span>
                 <Button
                     label=">"
                     onClick={() => handlePageChange("next")}
                     disabled={currentPage === totalPages}
                 />
-                <span>
-                    Page {currentPage} of {totalPages}
-                </span>
-                <Button label={"New Zone"} href="zones/create" />
+                {/* <Button label={"New Zone"} href="zones/create" /> */}
             </div>
             <Table
                 columns={zoneColumns}

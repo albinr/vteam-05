@@ -8,6 +8,8 @@ import { apiClient } from "@/services/apiClient";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
+import { useFlashMessage } from "@/components/Layout";
+
 
 const UpdateUser = () => {
     const { id } = useParams();
@@ -18,14 +20,14 @@ const UpdateUser = () => {
     });
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
-    const [error, setError] = useState(null);
 
     const router = useRouter();
+    const addFlashMessage = useFlashMessage();
 
     useEffect(() => {
         if (!id) {
-            setError("Invalid user ID.");
             setLoading(false);
+            addFlashMessage(`No valid user id`, "error")
             return;
         }
 
@@ -45,7 +47,7 @@ const UpdateUser = () => {
                 });
 
             } catch (err) {
-                setError(`Failed to fetch user details: ${err.message}`);
+                addFlashMessage(`Failed to fetch user details: ${err.message}`, "error")
             } finally {
                 setLoading(false);
             }
@@ -65,29 +67,29 @@ const UpdateUser = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         setUpdating(true);
-        setError(null);
 
         if (!formData.email || formData.email.trim() === "") {
-            setError("Email cannot be empty.");
+            addFlashMessage("Email cannot be empty.", "error");
             setUpdating(false);
             return;
         }
         if (!formData.balance || isNaN(parseFloat(formData.balance))) {
-            setError("Balance must be a valid number.");
+            addFlashMessage("Balance must be a valid number.", "error");
             setUpdating(false);
             return;
         }
 
         try {
-            console.log("user_id:", user.user_id, typeof user.user_id); // Should show 'string'
-            console.log("formData:", formData); // Ensure formData is correct
+            // console.log("user_id:", user.user_id, typeof user.user_id);
+            // console.log("formData:", formData);
             // const response = await updateUser(user.user_id, formData);
             const response = await apiClient.put(`/users/${id}`, formData);
-            console.log("User updated successfully!:", response);
+            addFlashMessage("User updated successfully!", "success");
+            // console.log("User updated successfully!:", response);
             router.push(`/users/${user.user_id}`);
         } catch (err) {
-            console.error("Error updating user:", err);
-            setError(`Failed to update user: ${err.message}`);
+            // console.error("Error updating user:", err);
+            addFlashMessage(`Failed to update user: ${err.message}`, "error");
         } finally {
             setUpdating(false);
         }
@@ -97,17 +99,8 @@ const UpdateUser = () => {
         return <Loader />;
     }
 
-    if (error) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <p className="error">{error}</p>
-            </div>
-        );
-    }
-
     return (
-        <div>
+        <div className="page-container">
             <h1>Update User</h1>
             <form onSubmit={handleUpdate}>
                 <div>

@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import withAuth from "../auth/hoc/withAuth";
 import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
-import { apiClient } from "@/services/apiClient";
+// import { apiClient } from "@/services/apiClient";
 import { fetchBikes } from "./api";
 import Button from "@/components/Button";
 import "./Bikes.css";
 
-// Table columns for e-bike management
 const bikeColumns = [
     { header: "ID", accessor: "bike_id" },
     { header: "Status", accessor: "status" },
@@ -27,8 +26,8 @@ const Bikes = () => {
     const router = useRouter();
 
     // Search logic
-    const [searchTerm, setSearchTerm] = useState(""); // Search term
-    const [filteredBikes, setFilteredBikes] = useState([]); // Filtered zones
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredBikes, setFilteredBikes] = useState([]);
 
     useEffect(() => {
         const loadBikes = async () => {
@@ -59,25 +58,25 @@ const Bikes = () => {
         setSearchTerm(term);
 
         if (term === "") {
-            setFilteredBikes(bikes); // Show all zones if search field is empty
+            setFilteredBikes(bikes);
         } else {
             const filtered = bikes.filter(
                 (bike) =>
-                    bike.status.toLowerCase().includes(term) || // Filter by name
-                    bike.bike_id.toString().includes(term)  // Filter by ID
+                    bike.status.toLowerCase().includes(term) ||
+                    bike.bike_id.toString().includes(term)
             );
             setFilteredBikes(filtered);
         }
 
-        setCurrentPage(1); // Reset to first page on search
+        setCurrentPage(1);
     };
 
     const handleBikeRowClick = (id) => {
-        router.push(`/bikes/${id}`); // Navigate to the zone detail page
+        router.push(`/bikes/${id}`);
     };
 
     return (
-        <div className="bikes-container">
+        <div className="page-container">
             <h1>Bikes</h1>
             <p>Manage and view bikes</p>
             <div className="pagination-controls">
@@ -86,22 +85,21 @@ const Bikes = () => {
                     placeholder="Search by status or ID..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
                 />
                 <Button
                     label="<"
                     onClick={() => handlePageChange("prev")}
                     disabled={currentPage === 1}
                 />
-
+                <span>
+                    Page {currentPage} of {totalPages}
+                </span>
                 <Button
                     label=">"
                     onClick={() => handlePageChange("next")}
                     disabled={currentPage === totalPages}
                 />
-                <span>
-                    Page {currentPage} of {totalPages}
-                </span>
+
             </div>
             <Table
                 columns={bikeColumns}

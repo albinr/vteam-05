@@ -7,6 +7,7 @@ import { fetchUserById, fetchUserTripsById, deleteUserById } from "../api";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
+import { useFlashMessage } from "@/components/Layout";
 
 const UserDetails = ({ session }) => {
     const { id } = useParams();
@@ -14,7 +15,8 @@ const UserDetails = ({ session }) => {
     const [trips, setTrips] = useState([]);
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+
+    const addFlashMessage = useFlashMessage();
 
     const router = useRouter();
 
@@ -24,11 +26,11 @@ const UserDetails = ({ session }) => {
 
         try {
             await deleteUserById(id);
-            alert("User deleted successfully.");
+            addFlashMessage(`User ${id} deleted successfully`, "success");
             router.push(`/users`)
         } catch (err) {
             console.error("Error deleting user:", err);
-            alert(`Failed to delete user: ${err.message}`);
+            addFlashMessage(`Failed to delete user: ${err.message}`, "error");
         }
     };
 
@@ -38,19 +40,17 @@ const UserDetails = ({ session }) => {
 
     useEffect(() => {
         if (!id) {
-            setError("Invalid user ID.");
             setLoading(false);
             return;
         }
 
         const loadUserData = async () => {
             try {
-                console.log("Fetching user details for ID:", id);
-
                 // Fetch user details
                 const userData = await fetchUserById(id);
                 console.log("User data:", userData);
                 setUser(userData);
+
                 // Fetch user trips
                 const userTrips = await fetchUserTripsById(id);
                 console.log("User trips:", userTrips);
@@ -81,7 +81,7 @@ const UserDetails = ({ session }) => {
     }
 
     return (
-        <div>
+        <div className="page-container">
             <h1>User Details</h1>
             <p><strong>User ID:</strong> {user.user_id}</p>
             <p><strong>Email:</strong> {user.email}</p>
