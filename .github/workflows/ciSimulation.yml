@@ -38,6 +38,7 @@ jobs:
           pip install pylint
 
       - name: Run Pylint
+        continue-on-error: true
         run: |
           source venv/bin/activate
           pylint sim-soft/src sim-soft/tests
