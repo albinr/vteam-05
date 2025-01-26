@@ -2,30 +2,30 @@
 import { useState, useEffect } from "react";
 import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
-import { fetchZones } from "./api"; // Updated API call
+import { fetchZones, deleteZoneById, updateZone, createZone } from "./api";
 import Button from "@/components/Button";
 import "./Zones.css"
 import withAuth from "../auth/hoc/withAuth";
 
-const zoneColumns = [
-    { header: "ID", accessor: "zone_id" },
-    { header: "City", accessor: "city" },
-    { header: "Name", accessor: "name" },
-    { header: "Type", accessor: "type" },
-    { header: "Radius", accessor: "radius" },
-    { header: "Capacity", accessor: "capacity" },
-    {
-        header: "Actions", render: (row) => (
-            <>
-                <Button onClick={() => handleAction(row)} label={"Edit"} />
-                <Button onClick={() => handleAction(row)} label={"Delete"} />
-            </>
-        ),
-    },
-
-];
-
 const Zones = () => {
+    const zoneColumns = [
+        { header: "ID", accessor: "zone_id" },
+        { header: "City", accessor: "city" },
+        { header: "Name", accessor: "name" },
+        { header: "Type", accessor: "type" },
+        { header: "Radius", accessor: "radius" },
+        { header: "Capacity", accessor: "capacity" },
+        {
+            header: "Actions", render: (row) => (
+                <>
+                    <Button onClick={() => handleZoneUpdate(row)} label={"Edit"} />
+                    <Button onClick={() => handleZoneDelete(row.zone_id)} label={"Delete"} />
+                </>
+            ),
+        },
+    
+    ];
+
     const [zones, setZones] = useState([]); // All zone data
     const [currentPage, setCurrentPage] = useState(1); // Current page number
     const zonesPerPage = 10; // Number of zones per page
@@ -65,22 +65,42 @@ const Zones = () => {
         setSearchTerm(term);
 
         if (term === "") {
-            setFilteredZones(zones); // Show all zones if search field is empty
+            setFilteredZones(zones);
         } else {
             const filtered = zones.filter(
                 (zone) =>
-                    zone.name.toLowerCase().includes(term) || // Filter by name
-                    zone.zone_id.toString().includes(term) ||  // Filter by ID
-                    zone.city.toLowerCase().includes(term) // Filter by city
+                    zone.name.toLowerCase().includes(term) ||
+                    zone.zone_id.toString().includes(term) ||
+                    zone.city.toLowerCase().includes(term)
             );
             setFilteredZones(filtered);
         }
 
-        setCurrentPage(1); // Reset to first page on search
+        setCurrentPage(1);
     };
 
     const handleZoneRowClick = (id) => {
-        router.push(`/zones/${id}`); // Navigate to the zone detail page
+        router.push(`/zones/${id}`);
+    };
+
+    const handleZoneDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this zone?")) {
+            try {
+                await deleteZoneById(id);
+                const updatedZones = zones.filter((zone) => zone.zone_id !== id);
+                setZones(updatedZones);
+                setFilteredZones(updatedZones);
+                alert("Zone deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting zone:", error);
+                alert("Failed to delete the zone.");
+            }
+        }
+    };
+
+    const handleZoneUpdate = (zone) => {
+        // Navigate to an update page or open a modal for editing
+        router.push(`/zones/edit/${zone.zone_id}`);
     };
 
     return (
@@ -107,7 +127,7 @@ const Zones = () => {
                     onClick={() => handlePageChange("next")}
                     disabled={currentPage === totalPages}
                 />
-                {/* <Button label={"New Zone"} href="zones/create" /> */}
+                <Button label={"New Zone"} href="zones/create" />
             </div>
             <Table
                 columns={zoneColumns}
