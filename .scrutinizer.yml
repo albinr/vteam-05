@@ -1,5 +1,5 @@
 filter:
-    excluded_paths: [node_modules/*, test/*, tests/*, sim-soft/*]
+    excluded_paths: [node_modules/*, test/*, tests/*]
 
 checks:
     javascript: true
