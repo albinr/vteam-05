@@ -17,13 +17,13 @@ class TestUser(unittest.TestCase):
     """
     @patch('requests.post')
     @patch('builtins.print')
-    def setUp(self, mock_post, mock_print):
+    def setUp(self, mock_post, _):
         mock_post.return_value.status_code = 201
         self.user = User(1, "user", "user@gmail.com")
 
     @patch('requests.post')
     @patch('builtins.print')
-    def test_register_success(self, mock_post, mock_print):
+    def test_register_success(self, mock_post, _):
         """
         Test user-registration is successful
         """
@@ -35,7 +35,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.added_to_db_tries, 1)
 
     @patch('builtins.print')
-    def test_register_failure(self, mock_print):
+    def test_register_failure(self, _):
         """
         Test user-registration is failure
         """
@@ -47,7 +47,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.added_to_db_tries, 1)
 
     @patch('builtins.print')
-    def test_update_bikes(self, mock_print):
+    def test_update_bikes(self, _):
         """
         Test updating bike data
         """
