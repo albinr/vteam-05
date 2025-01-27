@@ -30,7 +30,6 @@ const Table = ({ columns, data, onRowClick }) => {
                             >
                                 {columns.map((col, colIndex) => (
                                     <td key={colIndex}>
-                                        {/* Check if the column has a custom render function */}
                                         {col.render ? col.render(row) : row[col.accessor]}
                                     </td>
                                 ))}
@@ -46,13 +45,13 @@ const Table = ({ columns, data, onRowClick }) => {
 Table.propTypes = {
     columns: PropTypes.arrayOf(
         PropTypes.shape({
-            header: PropTypes.string.isRequired, // Column header text
-            accessor: PropTypes.string,          // Key in the row object to access
-            render: PropTypes.func,             // Custom render function (optional)
+            header: PropTypes.string.isRequired,
+            accessor: PropTypes.string,
+            render: PropTypes.func,
         })
     ).isRequired,
-    data: PropTypes.arrayOf(PropTypes.object).isRequired, // Array of row data objects
-    onRowClick: PropTypes.func, // Function called when a row is clicked
+    data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onRowClick: PropTypes.func,
 };
 
 Table.defaultProps = {

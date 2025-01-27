@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
 
 const withAuth = (WrappedComponent) => {
-    return (props) => {
+    const AuthenticatedComponent = (props) => {
         const [session, setSession] = useState(null);
         const [isLoading, setIsLoading] = useState(true);
 
@@ -38,6 +38,9 @@ const withAuth = (WrappedComponent) => {
 
         return <WrappedComponent {...props} session={session} />;
     };
+    AuthenticatedComponent.displayName = `withAuth(${WrappedComponent.displayName || WrappedComponent.name || "Component"})`;
+
+    return AuthenticatedComponent;
 };
 
 export default withAuth;

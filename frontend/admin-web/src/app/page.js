@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { fetchBikes } from "./bikes/api";
 import { fetchUsers } from "./users/api";
 import { fetchZones } from "./zones/api";
+import Image from "next/image";
 
 import "./Home.css";
 
@@ -62,7 +63,7 @@ const Home = ({ session }) => {
             <h1>Dashboard</h1>
             <div>
                 <p>Welcome, {session.user?.name || "User"}!</p>
-                <img src={session.user?.image} alt={session.user?.name} />
+                <Image src={session.user?.image} alt={session.user?.name} width={600} height={600} />
             </div>
             <div className="dash-stats">
                 <div className="dash-stat">

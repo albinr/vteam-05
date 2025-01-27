@@ -6,6 +6,7 @@ import LogoutButton from "@/components/LogoutButton";
 import "./Header.css";
 import Cookies from "js-cookie";
 import Button from "../Button";
+import Image from "next/image";
 
 export default function Header({ onToggleSidebar }) {
     const [session, setSession] = useState(null);
@@ -44,10 +45,12 @@ export default function Header({ onToggleSidebar }) {
                     <div className="user-info">
                         <p>{session.user?.name || "User"}</p>
                         {session.user?.image && (
-                            <img
+                            <Image
                                 src={session.user.image}
                                 alt="User Profile"
                                 className="user-profile-image"
+                                width={500}
+                                height={500}
                             />
                         )}
                         <LogoutButton className="header-logout" />

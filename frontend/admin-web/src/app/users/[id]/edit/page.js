@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import withAuth from "@/app/auth/hoc/withAuth";
-import { fetchUserById, updateUser } from "../../api";
 import { apiClient } from "@/services/apiClient";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
@@ -54,7 +53,7 @@ const UpdateUser = () => {
         };
 
         loadUserData();
-    }, [id]);
+    }, [id, addFlashMessage]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

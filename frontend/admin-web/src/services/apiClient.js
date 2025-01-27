@@ -23,11 +23,30 @@ export const apiClient = {
         return handleResponse(response);
     },
 
+    // async post(url, body, options = {}) {
+    //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
+    //         method: "POST",
+    //         headers: getHeaders(options),
+    //         body: JSON.stringify(body),
+    //         credentials: "include",
+    //         ...options,
+    //     });
+    //     return handleResponse(response);
+    // },
+
     async post(url, body, options = {}) {
+        const formBody = new URLSearchParams();
+        for (const key in body) {
+            formBody.append(key, body[key]);
+        }
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "POST",
-            headers: getHeaders(options),
-            body: JSON.stringify(body),
+            headers: {
+                ...getHeaders(options),
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formBody.toString(),
             credentials: "include",
             ...options,
         });
