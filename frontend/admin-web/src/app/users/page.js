@@ -8,8 +8,12 @@ import "./Users.css"
 import withAuth from "../auth/hoc/withAuth";
 
 const userColumns = [
-    { header: "Admin", accessor: "admin" },
     { header: "ID", accessor: "user_id" },
+    {
+        header: "Role",
+        accessor: "admin",
+        render: (role) => (role.admin === 1 ? "Admin" : "User"),
+    },
     { header: "Email", accessor: "email" },
     { header: "Balance", accessor: "balance" },
     { header: "Simulated", accessor: "simulation_user" },
@@ -18,13 +22,13 @@ const userColumns = [
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const usersPerPage = 10; 
+    const usersPerPage = 10;
     const router = useRouter();
 
 
     // search logic
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredUsers, setFilteredUsers] = useState([]); // Filtered users
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
 
     useEffect(() => {
@@ -56,26 +60,26 @@ const Users = () => {
         setSearchTerm(term);
 
         if (term === "") {
-            setFilteredUsers(users); // Visa alla användare om sökfältet är tomt
+            setFilteredUsers(users);
         } else {
             const filtered = users.filter(
                 (user) =>
-                    user.email.toLowerCase().includes(term) || // Filtrera på email
-                    user.user_id.toString().includes(term)    // Filtrera på ID
+                    user.email.toLowerCase().includes(term) ||
+                    user.user_id.toString().includes(term)
             );
             setFilteredUsers(filtered);
         }
 
-        setCurrentPage(1); // Återställ till första sidan vid sökning
+        setCurrentPage(1);
     };
 
     const handleUserRowClick = (id) => {
-        router.push(`/users/${id}`); // Navigera till detaljsidan
+        router.push(`/users/${id}`);
     };
 
 
     return (
-        <div className="users-container">
+        <div className="page-container">
             <h1>Users</h1>
             <p>Manage and control users</p>
             <div className="pagination-controls">
@@ -84,7 +88,6 @@ const Users = () => {
                     placeholder="Search by email or ID..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
                 />
                 <Button
                     label="<"

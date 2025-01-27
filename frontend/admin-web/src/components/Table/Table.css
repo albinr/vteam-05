@@ -1,8 +1,9 @@
 .table-container {
     margin: 10px 0;
-    overflow: hidden;
+    /* overflow: hidden; */
     border-radius: 10px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    overflow-x: auto;
 }
 
 .custom-table {
@@ -54,4 +55,8 @@
 .custom-table tbody tr:hover {
     background-color: #eeeeee;
     cursor: pointer;
+}
+
+.table-container .button{
+    margin-right: 10px;
 }

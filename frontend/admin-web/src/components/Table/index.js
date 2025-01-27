@@ -28,8 +28,10 @@ const Table = ({ columns, data, onRowClick }) => {
                                 onClick={() => onRowClick && onRowClick(row)}
                                 className={onRowClick ? "clickable-row" : ""}
                             >
-                                {columns.map((col) => (
-                                    <td key={col.accessor}>{row[col.accessor]}</td>
+                                {columns.map((col, colIndex) => (
+                                    <td key={colIndex}>
+                                        {col.render ? col.render(row) : row[col.accessor]}
+                                    </td>
                                 ))}
                             </tr>
                         ))
@@ -44,7 +46,8 @@ Table.propTypes = {
     columns: PropTypes.arrayOf(
         PropTypes.shape({
             header: PropTypes.string.isRequired,
-            accessor: PropTypes.string.isRequired,
+            accessor: PropTypes.string,
+            render: PropTypes.func,
         })
     ).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
