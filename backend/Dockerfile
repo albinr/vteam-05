@@ -33,6 +33,6 @@ CMD ["npm", "start"]
 
 # RUN ["npm", "install"]
 
-# RUN ["npm", "test"]
+RUN ["npm", "test"]
 
 # CMD ["node", "app.js"]
