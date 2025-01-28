@@ -42,7 +42,6 @@ class User: # pylint: disable=too-many-instance-attributes
         """
         try:
             requests.post(f"{API_URL}/v2/users", timeout=30, data={
-                # "username": self.username,
                 "user_id": self.user_id,
                 "email": self.email,
                 "balance": self.balance,
