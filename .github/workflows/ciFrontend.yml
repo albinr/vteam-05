@@ -28,9 +28,14 @@ jobs:
           cd frontend/admin-web
           npm install
 
-      - name: Run EsLint
+      - name: Run EsLint admin-web
         run: |
           cd frontend/admin-web
+          npm run lint
+
+      - name: Run EsLint for user-app
+        run: |
+          cd frontend/user-app
           npm run lint
 
       - name: Run Jest tests
