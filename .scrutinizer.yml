@@ -1,5 +1,5 @@
 filter:
-    excluded_paths: [node_modules/*, test/*, tests/*, sim-soft/*]
+    excluded_paths: [node_modules/*, test/*, tests/*, /sim-soft/tests/*]
 
 checks:
     javascript: true
@@ -14,7 +14,11 @@ build:
         coverage:
             tests:
                 override:
-                  - command: echo "no test"
-                    coverage:
-                      file: backend/coverage/clover.xml
-                      format: clover
+                    - command: echo "no test"
+                      coverage:
+                        file: backend/coverage/clover.xml
+                        format: clover
+                    - command: echo "no test"
+                      coverage:
+                        file: sim-soft/coverage.xml
+                        format: clover

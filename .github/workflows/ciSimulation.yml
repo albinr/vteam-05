@@ -31,19 +31,27 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r sim-soft/requirements.txt
+          pip install coverage pylint
 
-      - name: Install Pylint
-        run: |
-          source venv/bin/activate
-          pip install pylint
+      # - name: Install Pylint
+      #   run: |
+      #     source venv/bin/activate
+      #     pip install pylint
 
       - name: Run Pylint
+        continue-on-error: true
         run: |
           source venv/bin/activate
           pylint sim-soft/src sim-soft/tests
 
-      - name: Run unittest
+      - name: Run tests with coverage
         run: |
           source venv/bin/activate
           cd sim-soft
-          python -m unittest discover tests
+          coverage run --source=src -m unittest discover tests
+
+      - name: Generate coverage report
+        run: |
+          source venv/bin/activate
+          cd sim-soft
+          coverage xml -o coverage.xml

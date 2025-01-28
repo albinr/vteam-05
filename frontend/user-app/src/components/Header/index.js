@@ -2,47 +2,59 @@
 
 import React, { useEffect, useState } from "react";
 import LogoutButton from "@/components/LogoutButton";
-import { FaLocationDot, FaSquareArrowUpRight, FaBell } from "react-icons/fa6";
 import Cookies from "js-cookie";
+import { apiClient } from "@/services/apiClient";
 
 import "./Header.css";
+import Image from "next/image";
 
 export default function Header() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Fetch user_id from cookies
-        // TODO: Get user data from API instead (via JWT)
-        const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
+        // Fetch token from cookies
+        const token = Cookies.get("token");
 
-        setUser(user);
-        // Fetch user
-        // const getUser = async () => {
-        //     const user = await apiClient.get(`/users/${user_id}`);
-        //     setUser(user);
-        // };
+        if (!token) {
+            return;
+        }
 
+        async function fetchUser() {
+            const dbUser = await apiClient.get("/user/data", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        // getUser();
+            if (dbUser.message == "Access denied: Invalid token") {
+                return;
+            }
+
+            setUser(dbUser);
+        }
+
+        fetchUser();
     }, []);
 
 
-
-        if (!user) {
-            return null;
-        }
-
-        if (user) {
-            return (
-                <header>
-                    <div id="header-right">
-                        <img id="header-user-img" src={user.image} alt="Profile Picture" />
-                    </div>
-                    <div id="header-left">
-                        {/* <p id="header-user-id">{user.id || ""}</p> */}
-                        <LogoutButton />
-                    </div>
-                </header>
-            );
-        }
+    return (
+        <header>
+            {user ? (
+                <div id="header-right">
+                    {user.image ? (
+                        <Image id="header-user-img" src={user.image} alt="Profile Picture" width={60} height={60} />
+                    ) : (
+                        <Image id="header-user-img" src="/default-profile.png" alt="Empty Profile Picture" width={60} height={60} />
+                    )}
+                </div>
+            ) : (
+                <div id="header-right">
+                    <Image id="header-user-img" src="/default-profile.png" alt="Empty Profile Picture" width={60} height={60} />
+                </div>
+            )}
+            <div id="header-left">
+                <LogoutButton />
+            </div>
+        </header>
+    );
 }

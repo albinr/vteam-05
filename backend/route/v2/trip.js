@@ -1,5 +1,6 @@
 "use strict";
 const express = require("express");
+
 const router = express.Router();
 const trip = require("../../src/modules/trip.js");
 
@@ -13,10 +14,10 @@ router.get("/", async (req, res) => {
 router.get("/from/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    const trips = await trip.showTripsByUser(userId)
+    const trips = await trip.showTripsByUser(userId);
 
-    res.json(trips)
-})
+    res.json(trips);
+});
 
 // Visa resor från en viss cykel
 router.get("/:bike_id", async (req, res) => {
@@ -31,7 +32,7 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
     try {
         const result = await trip.startTrip(bikeId, userId);
 
-        req.io.to(bikeId).emit("command", {
+        req.io.emit("command", {
             bike_id: bikeId,
             command: "rent",
         });
@@ -47,7 +48,7 @@ router.post("/end/:bike_id", async (req, res) => {
     const { bike_id } = req.params;
     const result = await trip.endTrip(bike_id);
 
-    req.io.to(bike_id).emit("command", {
+    req.io.emit("command", {
         bike_id: bike_id,
         command: "available",
     });
@@ -76,19 +77,18 @@ router.delete("/:isSimulated", async (req, res) => {
 router.get("/active/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    const trips = await trip.OngoingTripByUser(userId)
+    const trips = await trip.OngoingTripByUser(userId);
 
-    res.json(trips)
-})
+    res.json(trips);
+});
 
 // Radera utifrån tripId
 router.delete("/one/:tripId", async (req, res) => {
     const { tripId } = req.params;
 
-    const trips = await trip.deleteTripById(tripId)
+    const trips = await trip.deleteTripById(tripId);
 
-    res.json(trips)
-})
-
+    res.json(trips);
+});
 
 module.exports = router;

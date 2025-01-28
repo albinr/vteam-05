@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   testdatabase:
@@ -20,7 +19,7 @@ services:
   backend-container-test:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: DockerfileTest
     container_name: backend-container-test
     ports:
       - "1338:1337"

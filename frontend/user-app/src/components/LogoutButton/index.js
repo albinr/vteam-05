@@ -13,7 +13,6 @@ const LogoutButton = ({ label = "Sign Out", className = "" }) => {
         Cookies.remove("token");
 
         // Redirect to the sign-in page
-        // router.push("/auth/signin");
         window.location.href = "/auth/signin";
     };
 
