@@ -16,17 +16,6 @@ const Home = () => {
 
     return (
         <div>
-            {/* <h1>Dashboard</h1> */}
-            {/* <p>Welcome, {session.user?.name || "User"}!</p>
-            <p>Your email: {session.user?.email || "Not available"}</p>
-            <p>Here you can view scooter locations and manage the platform.</p> */}
-            { /* <Gmap
-                center={{ lat: 59.3293, lng: 18.0686 }}
-                zoom={14}
-                markers={[...ebikeMarkers, ...parkingStations, ...chargingStations]}
-                circles={allowedZoneCircle}
-                disableDefaultUI={false}
-            /> */ }
             <Loader />
         </div>
     );

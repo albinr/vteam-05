@@ -22,6 +22,15 @@
     filter: brightness(80%);
 }
 
+.rent-button-disabled {
+    filter: brightness(50%);
+}
+
+.rent-button-disabled:hover {
+    filter: brightness(50%) !important;
+    cursor: not-allowed;
+}
+
 .leaflet-popup-content-wrapper {
     background: var(--bg);
     width: 100vw;
@@ -32,6 +41,6 @@
 .leaflet-popup-content {
     /* width: 70vw;
     height: 50vh; */
-    font-size: 2rem;
+    font-size: 1.4rem;
     text-align: center;
 }

@@ -1,22 +1,20 @@
 "use client";
 
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
-// import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
 const locationIcon = L.icon({
     iconUrl: "/icons/location-icon.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [18, 18],
     iconAnchor: [18, 18],
     popupAnchor: [0, -18],
 });
 
 const Map = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=null}) => {
-    const bikeMarkers = markers.filter(marker => marker.type === "bike");
+    const bikeMarkers = markers.filter(marker => marker.type === "bike" && marker.status === "available");
     const parkingMarkers = markers.filter(marker => marker.type === "parking");
     const chargingStationMarkers = markers.filter(marker => marker.type === "chargestation");
 
@@ -40,15 +38,13 @@ const Map = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=nu
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <MarkerClusterGroup chunkedLoading>
-                {bikeMarkers.map((marker) => addBikeMarker(marker))}
+                {bikeMarkers.map((marker) => addBikeMarker({ bikeData: marker }))}
             </MarkerClusterGroup>
             <MarkerClusterGroup chunkedLoading>
-                {parkingMarkers.map((marker) => addParkingStationMarker(marker))}
+
             </MarkerClusterGroup>
-            <MarkerClusterGroup chunkedLoading>
-                {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
-            </MarkerClusterGroup>
-            <ZoomControl position="bottomright" />
+            {parkingMarkers.map((marker) => addParkingStationMarker(marker))}
+            {chargingStationMarkers.map((marker) => addChargingStationMarker(marker))}
         </MapContainer>
     );
 };
