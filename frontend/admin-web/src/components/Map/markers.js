@@ -98,12 +98,22 @@ export const addChargingStationMarker = (stationData) => {
                 <strong>{city}</strong><br />
                 <strong>{name}</strong><br />
                 <strong>{type}</strong><br />
-                <strong>{radius}</strong><br />
-                <strong>{longitude}</strong><br />
-                <strong>{latitude}</strong><br />
-                <strong>{capacity}</strong><br />
+                <strong>Radius: {radius}</strong><br />
+                <strong>Longitude: {longitude}</strong><br />
+                <strong>Latitude: {latitude}</strong><br />
+                <strong>Capacity: {capacity}</strong><br />
             </Popup>
-            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} >
+                <Popup>
+                    <strong>{city}</strong><br />
+                    <strong>{name}</strong><br />
+                    <strong>{type}</strong><br />
+                    <strong>Radius: {radius}</strong><br />
+                    <strong>Longitude: {longitude}</strong><br />
+                    <strong>Latitude: {latitude}</strong><br />
+                    <strong>Capacity: {capacity}</strong><br />
+                </Popup>
+            </Circle>
         </Marker>
     );
 };
@@ -120,12 +130,22 @@ export const addParkingStationMarker = (stationData) => {
                 <strong>{city}</strong><br />
                 <strong>{name}</strong><br />
                 <strong>{type}</strong><br />
-                <strong>{radius}</strong><br />
-                <strong>{longitude}</strong><br />
-                <strong>{latitude}</strong><br />
-                <strong>{capacity}</strong><br />
+                <strong>Radius: {radius}</strong><br />
+                <strong>Longitude: {longitude}</strong><br />
+                <strong>Latitude: {latitude}</strong><br />
+                <strong>Capacity: {capacity}</strong><br />
             </Popup>
-            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon}>
+                <Popup>
+                    <strong>{city}</strong><br />
+                    <strong>{name}</strong><br />
+                    <strong>{type}</strong><br />
+                    <strong>Radius: {radius}</strong><br />
+                    <strong>Longitude: {longitude}</strong><br />
+                    <strong>Latitude: {latitude}</strong><br />
+                    <strong>Capacity: {capacity}</strong><br />
+                </Popup>
+            </Circle>
         </Marker>
     );
 };

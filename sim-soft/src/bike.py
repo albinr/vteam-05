@@ -45,6 +45,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
         self.battery = battery
         self.min_battery = min_battery
         self.location = location
+        self.user_owner = None
         self.speed = speed
         self.speed_limit = speed_limit
         self.update_delay = random.uniform(0, 10)

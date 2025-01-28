@@ -42,7 +42,6 @@ class User: # pylint: disable=too-many-instance-attributes
         """
         try:
             requests.post(f"{API_URL}/v2/users", timeout=30, data={
-                # "username": self.username,
                 "user_id": self.user_id,
                 "email": self.email,
                 "balance": self.balance,
@@ -66,6 +65,9 @@ class User: # pylint: disable=too-many-instance-attributes
     async def run_user_interval(self):
         """Start the loop for simulating user."""
         # Run all tasks in the background
+        initial_delay = random.uniform(0, 60)
+        await asyncio.sleep(initial_delay)
+
         update_task = asyncio.create_task(self.rent_bike())
         await asyncio.gather(update_task)
 
@@ -101,18 +103,3 @@ class User: # pylint: disable=too-many-instance-attributes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME / RETURN_OR_HIRE_PROBABILITY,
                                                     MAX_TRAVEL_TIME / RETURN_OR_HIRE_PROBABILITY))
 
-
-    async def return_bike(self):
-        """
-        Method for returning a rented bike
-        """
-        # send request to park bike
-        # bike locks
-        print("hello")
-
-    # async def run(self):
-    #     """
-    #     Run the user
-    #     """
-    #     while True:
-    #         time.sleep(5)

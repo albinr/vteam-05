@@ -32,7 +32,7 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
     try {
         const result = await trip.startTrip(bikeId, userId);
 
-        req.io.to(bikeId).emit("command", {
+        req.io.emit("command", {
             bike_id: bikeId,
             command: "rent",
         });
@@ -48,7 +48,7 @@ router.post("/end/:bike_id", async (req, res) => {
     const { bike_id } = req.params;
     const result = await trip.endTrip(bike_id);
 
-    req.io.to(bike_id).emit("command", {
+    req.io.emit("command", {
         bike_id: bike_id,
         command: "available",
     });

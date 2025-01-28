@@ -15,7 +15,7 @@ COPY . .
 # Exponera porten som applikationen kör på
 EXPOSE 1337
 
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=5096"
 
 # Standardkommando för att starta applikationen
 CMD ["npm", "start"]

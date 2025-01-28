@@ -18,7 +18,7 @@ from src.user import User
 API_URL="http://backend:1337"
 
 FETCH_INTERVAL = 20
-USER_RENT_PORTION = 1 // 6
+USER_RENT_PORTION = 1 / 6
 
 class Simulation: # pylint: disable=too-many-instance-attributes
     """
@@ -161,13 +161,14 @@ class Simulation: # pylint: disable=too-many-instance-attributes
         """
         Distrubute bikes to users.
         """
-        for user in self.users[:len(self.users) * USER_RENT_PORTION]:
+        num_users_to_rent = int(len(self.users) * USER_RENT_PORTION)
+
+        for user in self.users[:num_users_to_rent]:
             for bike in self.bikes:
                 if user.bike:
                     break
 
                 if not bike.user_owner:
-                    # bike.status = "in_use"
                     bike.user_owner = user.user_id
                     user.bike = bike.bike_id
                     break

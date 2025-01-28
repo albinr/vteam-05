@@ -2,15 +2,19 @@
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
-const LeafletMap = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosition=null}) => {
-    const parkingMarkers = markers.filter((marker) => marker.type === "parking");
-    const chargingStationMarkers = markers.filter((marker) => marker.type === "chargestation");
-    const bikeMarkers = markers.filter((marker) => marker.type === "bike");
+const LeafletMap = ({ posix = [59.3290, 18.0680], zoom = 6, markers = [], userPosition = null }) => {
+    // const parkingMarkers = markers.filter((marker) => marker.type === "parking");
+    // const chargingStationMarkers = markers.filter((marker) => marker.type === "chargestation");
+    // const bikeMarkers = markers.filter((marker) => marker.type === "bike");
+
+    const parkingMarkers = useMemo(() => markers.filter((marker) => marker.type === "parking"), [markers]);
+    const chargingStationMarkers = useMemo(() => markers.filter((marker) => marker.type === "chargestation"), [markers]);
+    const bikeMarkers = useMemo(() => markers.filter((marker) => marker.type === "bike"), [markers]);
 
     const centerPos = userPosition ? userPosition : posix;
 
@@ -32,13 +36,15 @@ const LeafletMap = ({ posix=[59.3290, 18.0680], zoom = 6, markers = [], userPosi
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                updateWhenZooming={false}
+                updateWhenIdle
             />
             {userPosition && (
                 <Marker position={userPosition} icon={locationIcon}>
                     <Popup>Your location</Popup>
                 </Marker>
             )}
-            <MarkerClusterGroup chunkedLoading>
+            <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds>
                 {bikeMarkers.map((marker) => (
                     addBikeMarker({ ...marker, key: marker.bike_id })
                 ))}
