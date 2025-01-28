@@ -1,8 +1,11 @@
+""" Tests for SimBike class """
+
 import unittest
 from unittest.mock import patch
 from src.sim_bike import SimBike
 
 class TestSimBike(unittest.IsolatedAsyncioTestCase):
+    """Tests for SimBike class"""
     def setUp(self):
         self.bike = SimBike(bike_id=1, location=(59.3293, 18.0686), simulated=True)
 
