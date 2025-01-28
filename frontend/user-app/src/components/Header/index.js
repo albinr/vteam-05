@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { apiClient } from "@/services/apiClient";
 
 import "./Header.css";
+import Image from "next/image";
 
 export default function Header() {
     const [user, setUser] = useState(null);
@@ -38,15 +39,19 @@ export default function Header() {
 
     return (
         <header>
-            {
-                user ?
-                    <div id="header-right">
-                        <img id="header-user-img" src={user.image} alt="Profile Picture" />
-                    </div> :
-                    <div id="header-right">
-                        <img id="header-user-img" src={"."} alt="" />
-                    </div>
-            }
+            {user ? (
+                <div id="header-right">
+                    {user.image ? (
+                        <Image id="header-user-img" src={user.image} alt="Profile Picture" width={60} height={60} />
+                    ) : (
+                        <Image id="header-user-img" src="/default-profile.png" alt="Empty Profile Picture" width={60} height={60} />
+                    )}
+                </div>
+            ) : (
+                <div id="header-right">
+                    <Image id="header-user-img" src="/default-profile.png" alt="Empty Profile Picture" width={60} height={60} />
+                </div>
+            )}
             <div id="header-left">
                 <LogoutButton />
             </div>

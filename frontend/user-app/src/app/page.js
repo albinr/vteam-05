@@ -11,7 +11,7 @@ const Home = () => {
 
     useEffect(() => {
         router.push("/map");
-    }, []);
+    }, [router]);
 
 
     return (

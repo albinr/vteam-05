@@ -1,9 +1,13 @@
-"use client";
+/* eslint-disable react-hooks/exhaustive-deps */
 
+"use client";
 import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
 import io from "socket.io-client";
 import { apiClient } from "@/services/apiClient";
-import Map from "@/components/Map";
+const Map = dynamic(() => import("@/components/Map"), {
+    ssr: false,
+});
 import "./MapPage.css";
 
 export default function MapPage() {
