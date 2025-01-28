@@ -18,7 +18,7 @@ CREATE TABLE TempZone (
     radius INT DEFAULT 75
 );
 
-LOAD DATA LOCAL INFILE 'zone.csv'
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/zone.csv'
 INTO TABLE TempZone
 CHARSET utf8
 FIELDS
