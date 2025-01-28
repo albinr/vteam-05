@@ -1,7 +1,9 @@
 "use strict";
 const express = require("express");
+
 const router = express.Router();
 const trip = require("../../src/modules/trip.js");
+
 const { authenticateJWT, authorizeAdmin } = require("../../middleware/auth.js");
 
 // Visa alla resor
@@ -56,7 +58,7 @@ router.post("/end/:bike_id", authenticateJWT, async (req, res) => {
     const { bike_id } = req.params;
 
     try {
-        const  [ activeBike ]  = await trip.OngoingTripByUser(req.user.id);
+        const [activeBike] = await trip.OngoingTripByUser(req.user.id);
 
         if (activeBike.bike_id !== bike_id) {
             return res.json({ message: `Du har ingen aktiv resa för cykel med ID ${bike_id}` });
@@ -69,14 +71,11 @@ router.post("/end/:bike_id", authenticateJWT, async (req, res) => {
             command: "available",
             // user_id: req.user.id
         });
-
         return res.json({ message: `Resa avslutad för cykel med ID ${bike_id}`, result });
-
     } catch (error) {
         return res.json({ message: "Ett fel uppstod vid avslutning av resan." });
     }
 });
-
 
 // Route för att radera alla resor (Bara Admin)
 router.delete("/:isSimulated", authenticateJWT, authorizeAdmin, async (req, res) => {

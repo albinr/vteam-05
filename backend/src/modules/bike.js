@@ -33,7 +33,7 @@ async function getAvailableBikes() {
 
 async function getCityBikes(city) {
     try {
-        const [rows] = await pool.query(`CALL GetAvailableBikes(?)`,[city]);
+        const [rows] = await pool.query(`CALL GetAvailableBikes(?)`, [city]);
         return rows[0];
     } catch (error) {
         console.error("Error vid anrop av proceduren GetAvailableBikes:", error);
@@ -42,7 +42,6 @@ async function getCityBikes(city) {
 }
 
 async function showBike(bikeId) {
-    
     const [rows] = await pool.query(`
         SELECT
             bike_id,
@@ -58,9 +57,7 @@ async function showBike(bikeId) {
     if (rows.length === 0) {
         throw new Error(`Error att hämta cykel: Cykel med ID ${bikeId} finns inte`);
     }
-    
     return rows;
-    
 }
 
 async function addBike(bikeId, batteryLevel, longitude, latitude, isSimulated = 0) {
@@ -85,8 +82,8 @@ async function addBike(bikeId, batteryLevel, longitude, latitude, isSimulated = 
 
 async function updateBike(bikeId, updateData) {
     try {
-        const newPosition = updateData.longitude !== undefined && updateData.latitude !== undefined 
-            ? `POINT(${updateData.longitude} ${updateData.latitude})` 
+        const newPosition = updateData.longitude !== undefined && updateData.latitude !== undefined
+            ? `POINT(${updateData.longitude} ${updateData.latitude})`
             : null;
 
         const result = await pool.query(
@@ -118,7 +115,7 @@ async function deleteBikeMovement(bikeId) {
 
 async function deleteBike(bikeId) {
     try {
-        await deleteBikeMovement(bikeId)
+        await deleteBikeMovement(bikeId);
         const sql = `DELETE FROM Bike WHERE bike_id = ?`;
         const [result] = await pool.query(sql, [bikeId]);
         return result;
@@ -127,7 +124,6 @@ async function deleteBike(bikeId) {
         throw error;
     }
 }
-
 
 async function deleteBikes(simulatedOnly) {
     const inputRemove = simulatedOnly ? 1 : 0;

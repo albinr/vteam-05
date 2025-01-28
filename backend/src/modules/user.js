@@ -99,14 +99,13 @@ async function deleteUsers(simulatedOnly) {
 async function deleteUser(userId) {
     try {
         const [result] = await pool.query(`DELETE FROM User WHERE user_id = ?`, [userId]);
-        
+
         return result;
     } catch (error) {
         console.error("Error att ta bort användare:", error);
         throw error;
     }
 }
-
 
 async function findOrCreateUser(oauthUser) {
     try {

@@ -18,8 +18,8 @@ describe('Bike Module Tests', () => {
     test('should fetch all bikes successfully', async () => {
         const bikes = await showBikes();
         expect(bikes).toEqual([
-            { bike_id: 'test123', status: "available", battery_level: 100, longitude: 10, latitude: 20, simulation: 0 },
-            { bike_id: 'test456', status: "available", battery_level: 50, longitude: 11, latitude: 22, simulation: 1 },
+            { bike_id: 'test123', status: "available", battery_level: 100, longitude: 10, latitude: 20, simulation: 0, speed: 0 },
+            { bike_id: 'test456', status: "available", battery_level: 50, longitude: 11, latitude: 22, simulation: 1, speed: 0 },
         ]);
     });
 
@@ -55,8 +55,8 @@ describe('Bike Module Tests', () => {
         await deleteBikes(1)
         const bikes = await showBikes();
         expect(bikes).toEqual([
-            { bike_id: 'Bike1', status: "available", battery_level: 50, longitude: 11, latitude: 22, simulation: 0 },
-            { bike_id: 'test123', status: "charging", battery_level: 0, longitude: 20, latitude: 30, simulation: 0 },
+            { bike_id: 'Bike1', status: "available", battery_level: 50, longitude: 11, latitude: 22, simulation: 0, speed: 0 },
+            { bike_id: 'test123', status: "charging", battery_level: 0, longitude: 20, latitude: 30, simulation: 0, speed: 0 },
         ])
 
         await expect(deleteBikes(0)).resolves.toBeDefined();

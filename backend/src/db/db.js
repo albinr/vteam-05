@@ -1,9 +1,10 @@
-//modul för att välja mellan att använda docker eller bara "node app.js."
+// modul för att välja mellan att använda docker eller bara "node app.js."
 // för att ändra det gå till .env filen och sätt USE_DOCKER till true eller false
 
 const mysql = require('mysql2/promise');
 const config = require('../../data/vteam.json');
 require('dotenv').config();
+
 const useDocker = process.env.USE_DOCKER === 'true'; // Kontrollera om Docker ska användas
 
 const pool = mysql.createPool(

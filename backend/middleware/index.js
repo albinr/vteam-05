@@ -39,7 +39,6 @@ function authenticateJWT(req, res, next) {
     }
 }
 
-
 module.exports = {
     logIncomingToConsole: logIncomingToConsole,
     authenticateJWT
