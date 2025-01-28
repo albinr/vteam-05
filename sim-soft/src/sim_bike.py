@@ -8,9 +8,9 @@ in a system for renting bikes.
 import asyncio
 import random
 import uuid
-from geopy.distance import geodesic
 import math
-from bike import Bike
+from geopy.distance import geodesic
+from src.bike import Bike
 
 # Constants
 SLEEP_TIME_IN_USE = 5
@@ -46,7 +46,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
         """Assign a destination to the bike."""
         self.destination = (latitude, longitude)
         print(f"Bike {self.bike_id} destination set to {self.destination}")
-    
+
     def calculate_bearing(self, start, end):
         """Calculate the bearing from start to end coordinates."""
         start_lat, start_lon = math.radians(start[0]), math.radians(start[1])
@@ -54,7 +54,8 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
         d_lon = end_lon - start_lon
 
         x = math.sin(d_lon) * math.cos(end_lat)
-        y = math.cos(start_lat) * math.sin(end_lat) - math.sin(start_lat) * math.cos(end_lat) * math.cos(d_lon)
+        y = (math.cos(start_lat) * math.sin(end_lat) -
+             math.sin(start_lat) * math.cos(end_lat) * math.cos(d_lon))
         bearing = math.atan2(x, y)
         return (math.degrees(bearing) + 360) % 360
 
@@ -122,7 +123,9 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                     # Move toward the destination
                     bearing = self.calculate_bearing(self.location, self.destination)
                     delta_lat = (self.speed / 111320) * math.cos(math.radians(bearing))
-                    delta_lon = (self.speed / (111320 * math.cos(math.radians(self.location[0])))) * math.sin(math.radians(bearing))
+                    delta_lon = (
+                        self.speed / (111320 * math.cos(math.radians(self.location[0])))
+                    ) * math.sin(math.radians(bearing))
                     self.location = (self.location[0] + delta_lat, self.location[1] + delta_lon)
                     self.battery -= random.uniform(0.01, 0.05)  # Simulate battery drain
                     print(f"Bike {self.bike_id} is moving to destination.")
@@ -155,6 +158,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME, MAX_TRAVEL_TIME))
 
 async def main():
+    """Main function to run the bike simulation."""
     bike1 = SimBike(BIKE_ID,location = (59.3293, 18.0686) ,simulated=True)
     # Set up the bike's initial configuration
     bike1.set_start_location(59.3293, 18.0686)  # Starting location (Stockholm center)
@@ -172,4 +176,3 @@ async def main():
 # Run the async main function
 if __name__ == "__main__":
     asyncio.run(main())
-

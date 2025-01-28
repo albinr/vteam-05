@@ -1,28 +1,28 @@
 """
 test_bike.py
 
-Test file for bike class
+Test file for Bike class
 """
 
 import unittest
-# import datetime
 from src.bike import Bike
+
 class TestBike(unittest.IsolatedAsyncioTestCase):
     """
-    Test class for bike class
+    Test for Bike class
     """
     def setUp(self):
         self.bike = Bike(1)
 
     def test_is_bike(self):
         """
-        Test if bike is correct instance of class.
+        Test if bike is right instance (bike)
         """
         self.assertIsInstance(self.bike, Bike)
 
-    def test_bike_with_set_params(self):
-        """ 
-        Test if bike with specific params gets set
+    def test_bike_with_parameters(self):
+        """
+        Test if bike with parameters
         """
         bike_two = Bike(2,
             battery=43.43,
@@ -37,59 +37,35 @@ class TestBike(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(bike_two.location, (0.1, 0.1))
         self.assertEqual(bike_two.simulated, False)
 
-    def test_bike_send_update(self):
-        """
-        Test for bike to send updates
-        """
-        variable = "add test here"
-        print(variable)
-
-
     def test_get_bike_data(self):
         """
         Test for getting bike data
         """
         data = self.bike.get_data()
-        self.assertEqual(data["bike_id"].strip(),"1")
-        self.assertEqual(data["battery"], "100.00")
-        self.assertEqual(data["location"], (0,0))
-        self.assertEqual(data["status"].strip(), "locked")
-
-        # Fix this part of test
-        # try:
-        #     print(data["timestamp"])
-        #     print(type(data["timestamp"]))
-        #     datetime.date.fromisoformat(data["timestamp"].replace('Z', '+00:00'))
-        #     timestamp_is_valid = True
-        # except ValueError:
-        #     timestamp_is_valid = False
-        # self.assertTrue(timestamp_is_valid)
+        self.assertEqual(data["bike_id"], "1")
+        self.assertEqual(data["battery_level"], 100.00)
+        self.assertEqual(data["longitude"], 0)
+        self.assertEqual(data["latitude"], 0)
+        self.assertEqual(data["status"], "available")
 
     async def test_update_bike_data(self):
         """
         Test for updating bike data.
         """
-        # self.bike.update_bike_data(status="unlocked", location=(0.2, 0.2), battery=20)
-
-        # self.assertEqual(self.bike.status, "unlocked")
-        # self.assertEqual(self.bike.location, (0.2, 0.2))
-        # self.assertEqual(self.bike.battery, 20)
-
         await self.bike.update_bike_data(
-            status="unlocked",
+            status="available",
             location=(59.3293, 18.0686),
             battery=85.5
         )
 
-        self.assertEqual(self.bike.status, "unlocked")
+        self.assertEqual(self.bike.status, "available")
         self.assertEqual(self.bike.location, (59.3293, 18.0686))
         self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
 
-        await self.bike.update_bike_data(status="locked")
-        self.assertEqual(self.bike.status, "locked")
+        await self.bike.update_bike_data(status="in_use")
+        self.assertEqual(self.bike.status, "in_use")
         self.assertEqual(self.bike.location, (59.3293, 18.0686))
         self.assertAlmostEqual(self.bike.battery, 85.5, places=2)
-
 
 if __name__ == "__main__":
     unittest.main()

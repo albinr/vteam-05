@@ -68,11 +68,12 @@ class Bike: # pylint: disable=too-many-instance-attributes
             await self.sio.connect(WEBSOCKET_URL)
             await self.add_to_websocket()
             # print(f"Bike {self.bike_id} connected to WebSocket server.")
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             print(f"Error connecting to WebSocket server: {e}")
             return
 
     async def add_to_websocket(self):
+        """Add the bike to the WebSocket."""
         await self.sio.emit('bike-add', self.get_data())
 
     def get_data(self):
@@ -122,6 +123,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
             self.is_updating = False
 
     async def send_updates_interval_to_socketio(self):
+        """Send updates to the WebSocket server at intervals."""
         # await asyncio.sleep(random.randint(10, SLEEP_TIME_IN_USE * 10) / 10)
         while self.status != "shutdown":
             if self.status == "in_use":
@@ -132,12 +134,15 @@ class Bike: # pylint: disable=too-many-instance-attributes
             await self.send_update_to_socketio()
 
     async def on_connect(self):
+        """Method to handle connection to the WebSocket server."""
         print(f"Bike {self.bike_id} connected to Socket.IO server.")
 
     async def on_disconnect(self):
+        """Method to handle disconnection from the WebSocket server."""
         print(f"Bike {self.bike_id} disconnected from Socket.IO server.")
 
     async def on_command(self, data):
+        """Method to handle commands received from the WebSocket server."""
         print(data, type(data))
         try:
             # data = json.loads(data)
@@ -172,7 +177,7 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
         except json.JSONDecodeError as e:
             print(f"Failed to parse command data: {e}")
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             print(f"Error handling command: {e}")
 
 if __name__ == "__main__":
@@ -183,6 +188,7 @@ if __name__ == "__main__":
     # bike5 = Bike(uuid.uuid4(), simulated=True)
 
     async def main():
+        """Main func to run the bikes."""
         await bike1.initialize()  # Initialize bike asynchronously
 
         await asyncio.gather(

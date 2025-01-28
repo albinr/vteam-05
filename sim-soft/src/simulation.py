@@ -7,37 +7,29 @@ This module defines a Simulation class to create simulated bikes and users.
 import asyncio
 import uuid
 import atexit
-import requests
 import signal
 import sys
 import random
-from sim_bike import SimBike
+import requests
+from src.sim_bike import SimBike
 # from bike import Bike
-from user import User
+from src.user import User
 
 API_URL="http://backend:1337"
 
 FETCH_INTERVAL = 20
 USER_RENT_PORTION = 1 // 6
 
-class Simulation:
+class Simulation: # pylint: disable=too-many-instance-attributes
     """
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=True):
-        # on_exit()
-
-        # self.bikes = [
-        #                 Bike(bike_id=f"{uuid.uuid4()}",
-        #                 location=(56.176, 15.590), simulated=simulated)
-        #                 for _ in range(1, num_bikes + 1)
-        # ]
-
         self.state = "initialized"
         self.zones = []
         self.cities = []
         self.bikes = []
-        self.fetchedBikes = {}
+        self.fetched_bikes = {}
         self.num_bikes = num_bikes
         self.simulated = simulated
 
@@ -97,6 +89,7 @@ class Simulation:
 
 
     async def initialize_bikes(self):
+        """Initialize all bikes."""
         print("Initializing bikes...")
         for bike in self.bikes:
             await bike.initialize()
@@ -148,18 +141,19 @@ class Simulation:
         """
         while True:
             try:
-                bikesData = requests.get(f"{API_URL}/v2/bikes", timeout=30)
-                if bikesData.status_code != 200:
+                bikes_data = requests.get(f"{API_URL}/v2/bikes", timeout=30)
+                if bikes_data.status_code != 200:
                     # Throw error
-                    raise requests.exceptions.RequestException(f"Error getting bikes: {bikesData.status_code}")
+                    raise requests.exceptions.RequestException(
+                        f"Error getting bikes: {bikes_data.status_code}")
 
-                self.fetchedBikes = bikesData.json()
+                self.fetched_bikes = bikes_data.json()
 
                 for user in self.users:
-                    user.update_bikes(self.fetchedBikes)
+                    user.update_bikes(self.fetched_bikes)
 
-            except requests.exceptions.RequestException as e:
-                    print(f"Error getting bikes: {bikesData.status_code}")
+            except requests.exceptions.RequestException as _:
+                print(f"Error getting bikes: {bikes_data.status_code}")
 
             await asyncio.sleep(FETCH_INTERVAL)
 
@@ -201,20 +195,21 @@ def on_exit():
 
     try:
         requests.delete(f"{API_URL}/v2/bikes/all/1", timeout=30)
-        print(f"Simulated bikes deleted from database!")
+        print("Simulated bikes deleted from database!")
     except requests.exceptions.RequestException as e:
         print(f"Error deleting bike data: {e}")
 
     try:
         # Remove simulated users
         requests.delete(f"{API_URL}/v2/users/1", timeout=30)
-        print(f"Simulated users deleted from database!")
+        print("Simulated users deleted from database!")
     except requests.exceptions.RequestException as e:
         print(f"Error deleting users: {e}")
 
     print("Simulation has stopped.")
 
 def handle_signal():
+    """Handle exit signals."""
     on_exit()
     sys.exit(0)
 
