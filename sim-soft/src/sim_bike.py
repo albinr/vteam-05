@@ -40,12 +40,12 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
     def set_start_location(self, latitude, longitude):
         """Save the start location of the bike, so it can later be switched with destinaiton."""
         self.start_location = (latitude, longitude)
-        print(f"Bike {self.bike_id} destination set to {self.destination}")
+        # print(f"Bike {self.bike_id} destination set to {self.destination}")
 
     def set_destination(self, latitude, longitude):
         """Assign a destination to the bike."""
         self.destination = (latitude, longitude)
-        print(f"Bike {self.bike_id} destination set to {self.destination}")
+        # print(f"Bike {self.bike_id} destination set to {self.destination}")
 
     def calculate_bearing(self, start, end):
         """Calculate the bearing from start to end coordinates."""

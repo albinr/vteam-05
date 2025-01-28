@@ -91,4 +91,5 @@ services:
       - bike_network
     container_name: simulation
     volumes:
-      - ./sim-soft/src:/app
+      - ./sim-soft/src:/app/src        # Mount src into /app/src
+      - ./sim-soft/cli.py:/app/cli.py
