@@ -16,7 +16,7 @@ const bikeIcon = L.icon({
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 14],
-    popupAnchor: [0, -28],
+    popupAnchor: [0, -18],
 });
 
 const parkingIcon = L.icon({
@@ -24,7 +24,7 @@ const parkingIcon = L.icon({
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 30],
-    popupAnchor: [0, -28],
+    popupAnchor: [0, -18],
 });
 
 const chargeIcon = L.icon({
@@ -32,7 +32,7 @@ const chargeIcon = L.icon({
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 30],
-    popupAnchor: [0, -28],
+    popupAnchor: [0, -18],
 });
 
 const sendCommand = (bikeId, commandToSend) => {
@@ -67,15 +67,15 @@ export const addBikeMarker = (bikeData) => {
                             : status === "maintance" ? "red"
                                 : "red"
                 }}>{status}</span><br />
-                Battery: {battery_level}%<br />
+                <strong>Battery:</strong> {battery_level}%<br />
                 <Button
                     onClick={() => sendCommand(bike_id, "stop")}
                     label={"Stop"}
                 />
-                <Button
+                {/* <Button
                     onClick={() => sendCommand(bike_id, "shutdown")}
                     label={"Shutdown"}
-                />
+                /> */}
                 <Button
                     onClick={() => sendCommand(bike_id, "rent")}
                     label={"Rent for testing"}

@@ -29,6 +29,8 @@ const io = new Server(server, {
         credentials: true
     }
 });
+const { bikes } = require("./src/modules/bikeStore"); // TODO: Remove if not in use
+
 const jwt = require('jsonwebtoken');
 const { findOrCreateUser, isUserAdmin, getUserInfo } = require('./src/modules/user.js');
 const { authenticateJWT, authorizeAdmin } = require("./middleware/auth.js");
@@ -67,7 +69,7 @@ setInterval(() => {
   }, 5000); // Log every 5 seconds
 
 
-const bikes = {}; // Stores bike data from websockets
+// const bikes = {}; // Stores bike data from websockets
 
 /**
  * Function for adding bike to websocket and database.
@@ -431,3 +433,5 @@ function logStartUpDetailsToConsole() {
     console.info("Available routes are:");
     console.info(routes);
 }
+
+module.exports = { bikes };

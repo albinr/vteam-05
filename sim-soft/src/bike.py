@@ -96,6 +96,8 @@ class Bike: # pylint: disable=too-many-instance-attributes
         # Only update bike data if self.is_updating is False
 
         if status:
+            if self.status == "charging": # TODO: add better charge logic
+                return
             self.status = status
         if location:
             self.location = location
