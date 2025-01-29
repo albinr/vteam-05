@@ -1,0 +1,71 @@
+.outer-box {
+    height: 70%;
+    margin: 0 auto;
+    background-color: #eeeeee;
+    padding: 2.5%;
+    margin-top: 35px;
+    border-radius: 5px;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+}
+
+.inner-box {
+    display: flex;
+    height: 90%;
+    gap: 10%;
+}
+
+.left-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 45%;
+    height: 95%;
+    background-color: #eeeeee;
+    gap: 10px;
+}
+
+.right-box {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    height: 95%;
+    background-color: #eeeeee;
+    gap: 10px;
+}
+
+.email-box {
+    width: 90%;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    border-radius: 5px;
+    word-wrap: break-word;
+    white-space: normal;
+    align-items: center;
+}
+
+.money-box {
+    display: flex;
+    width: 90%;
+    height: 45px;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    border-radius: 5px;
+    align-items: center;
+}
+
+
+.big-button{
+    width: 55%;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
