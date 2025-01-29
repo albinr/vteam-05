@@ -61,10 +61,10 @@ For a detailed list of available API routes, refer to:
 ## **🤝 Contributors**
 | Name | GitHub Profile |
 |------|--------------|
-| **Marcus Nilsson Ahlin** | [GitHub](https://github.com/username) |
-| **Tobias Ralf** | [GitHub](https://github.com/username) |
-| **Tim Swärd** | [GitHub](https://github.com/username) |
-| **Albin Ryberg** | [GitHub](https://github.com/albinr) |
+| 👷‍♂️**Marcus Nilsson Ahlin** | [GitHub](https://github.com/username) |
+| 👷‍♂️**Tobias Ralf** | [GitHub](https://github.com/username) |
+| 👷‍♂️**Tim Swärd** | [GitHub](https://github.com/username) |
+| 👷‍♂️**Albin Ryberg** | [GitHub](https://github.com/albinr) |
 
 ---
 
