@@ -34,17 +34,6 @@
   list-style-type: none;
 }
 
-/* .sidebar-link {
-  display: block;
-  padding: 15px;
-  margin: 10px;
-  text-decoration: none;
-  color: #333;
-  z-index: 1000;
-  transition: background-color 0.3s;
-  border-radius: 6px;
-} */
-
 .sidebar-link {
   display: flex;
   align-items: center;

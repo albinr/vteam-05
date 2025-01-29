@@ -4,6 +4,7 @@ import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { fetchZones, deleteZoneById, updateZone, createZone } from "./api";
 import Button from "@/components/Button";
+import { addFlashMessage } from "@/components/Layout";
 import "./Zones.css"
 import withAuth from "../auth/hoc/withAuth";
 
@@ -39,7 +40,7 @@ const Zones = () => {
     useEffect(() => {
         const loadZones = async () => {
             const response = await fetchZones();
-            console.log(response)
+            // console.log(response)
             setZones(response);
             setFilteredZones(response);
         };
@@ -89,8 +90,20 @@ const Zones = () => {
                 await deleteZoneById(id);
                 const updatedZones = zones.filter((zone) => zone.zone_id !== id);
                 setZones(updatedZones);
-                setFilteredZones(updatedZones);
-                alert("Zone deleted successfully!");
+
+                if (searchTerm.trim() !== "") {
+                    const newFilteredZones = updatedZones.filter(
+                        (zone) =>
+                            zone.name.toLowerCase().includes(searchTerm) ||
+                            zone.zone_id.toString().includes(searchTerm) ||
+                            zone.city.toLowerCase().includes(searchTerm)
+                    );
+                    setFilteredZones(newFilteredZones);
+                } else {
+                    setFilteredZones(updatedZones);
+                }
+
+                addFlashMessage("Zone deleted successfully!", "success");
             } catch (error) {
                 console.error("Error deleting zone:", error);
                 alert("Failed to delete the zone.");
@@ -132,7 +145,7 @@ const Zones = () => {
             <Table
                 columns={zoneColumns}
                 data={currentZones}
-                onRowClick={(row) => handleZoneRowClick(row.zone_id)}
+                // onRowClick={(row) => handleZoneRowClick(row.zone_id)}
             />
         </div>
     );
