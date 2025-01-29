@@ -66,4 +66,6 @@ const LeafletMap = React.memo(({
     );
 });
 
+LeafletMap.displayName = "LeafletMap";
+
 export default LeafletMap;
