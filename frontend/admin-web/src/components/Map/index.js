@@ -7,7 +7,13 @@ import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
-const LeafletMap = ({ posix = [59.3290, 18.0680], zoom = 6, markers = [], userPosition = null }) => {
+const LeafletMap = ({
+    posix = [57.3290, 18.0680],
+    zoom = 4,
+    markers = [],
+    userPosition = null,
+    interactive = true
+}) => {
     // const parkingMarkers = markers.filter((marker) => marker.type === "parking");
     // const chargingStationMarkers = markers.filter((marker) => marker.type === "chargestation");
     // const bikeMarkers = markers.filter((marker) => marker.type === "bike");
@@ -30,8 +36,12 @@ const LeafletMap = ({ posix = [59.3290, 18.0680], zoom = 6, markers = [], userPo
             id="map"
             center={centerPos}
             zoom={zoom}
-            scrollWheelZoom
-            dragging
+            scrollWheelZoom={interactive} 
+            dragging={interactive}
+            doubleClickZoom={interactive}
+            touchZoom={interactive}
+            keyboard={interactive}
+            style={{ cursor: interactive ? "grab" : "pointer" }}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

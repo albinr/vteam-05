@@ -1,4 +1,4 @@
-.page-container img {
+.page-container .user-image {
     display: block;
     width: 100px;
     height: 100px;
@@ -25,10 +25,10 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dash-stat:hover {
-    transform: translateY(-5px);
+/* .dash-stat:hover {
+    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .dash-stat h2 {
     font-size: 1.5rem;
@@ -40,6 +40,31 @@
     font-size: 2rem;
     font-weight: bold;
     color: #2d89ef;
+}
+
+.dash-map {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+/* .dash-map:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+} */
+
+.dash-map:hover, .dash-stat:hover {
+    transform: scale(1.01);
+}
+
+.dash-admin-list {
+    margin-top: 30px;
 }
 
 @media (max-width: 768px) {
