@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import withAuth from "../../auth/hoc/withAuth";
-import { fetchUserById, fetchUserTripsById, deleteUserById } from "../api";
+import { fetchUserById, fetchUserTripsById, deleteUserById, promoteUserToAdmin } from "../api";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
@@ -37,6 +37,22 @@ const UserDetails = ({ session }) => {
     const handleEditUser = async () => {
         router.push(`/users/${id}/edit`)
     }
+
+    const handlePromoteUser = async () => {
+        if (!user) return;
+    
+        const newRole = user.admin === 1 ? 0 : 1;
+        const action = newRole === 1 ? "promote" : "demote";
+    
+        try {
+            await promoteUserToAdmin(id);
+            setUser({ ...user, admin: newRole });
+            addFlashMessage(`User successfully ${action}d`, "success");
+        } catch (error) {
+            console.error(`Error updating user role:`, error);
+            addFlashMessage(`Failed to ${action} user`, "error");
+        }
+    };
 
     useEffect(() => {
         if (!id) {
@@ -96,6 +112,12 @@ const UserDetails = ({ session }) => {
                 label={"Delete User"}
                 onClick={handleDeleteUser}
             />
+            {user.admin === 0 && (
+            <Button
+                label={"Make Admin"}
+                onClick={handlePromoteUser}
+            />
+            )}
             {trips.length > 0 && (
                 <div>
                     <h2>Trips</h2>

@@ -37,3 +37,8 @@ export const updateUser = async (id, newData) => {
     return apiClient.put(`/users/${id}`, newData)
 }
 
+// Update user role by id
+export const promoteUserToAdmin = async (id) => {
+    return apiClient.put(`/users/admin/${id}`);
+};
+
