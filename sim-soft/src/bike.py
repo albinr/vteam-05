@@ -149,8 +149,8 @@ class Bike: # pylint: disable=too-many-instance-attributes
             # data = json.loads(data)
 
             if data.get("bike_id").strip() != str(self.bike_id).strip():
-                print(f"{data.get('bike_id')} != {self.bike_id}")
-                print("Command not for this bike. Skipping.")
+                # print(f"{data.get('bike_id')} != {self.bike_id}")
+                # print("Command not for this bike. Skipping.")
                 return
 
             print(f"Received command: {data}")
