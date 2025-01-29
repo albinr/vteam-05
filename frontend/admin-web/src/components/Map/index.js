@@ -2,25 +2,22 @@
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+// import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import React from "react";
 import { addBikeMarker, addChargingStationMarker, addParkingStationMarker } from "./markers.js";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
-const LeafletMap = ({
+const LeafletMap = React.memo(({
     posix = [57.3290, 18.0680],
     zoom = 4,
     markers = [],
     userPosition = null,
     interactive = true
 }) => {
-    // const parkingMarkers = markers.filter((marker) => marker.type === "parking");
-    // const chargingStationMarkers = markers.filter((marker) => marker.type === "chargestation");
-    // const bikeMarkers = markers.filter((marker) => marker.type === "bike");
-
-    const parkingMarkers = useMemo(() => markers.filter((marker) => marker.type === "parking"), [markers]);
-    const chargingStationMarkers = useMemo(() => markers.filter((marker) => marker.type === "chargestation"), [markers]);
-    const bikeMarkers = useMemo(() => markers.filter((marker) => marker.type === "bike"), [markers]);
+    const parkingMarkers = markers.filter((marker) => marker.type === "parking");
+    const chargingStationMarkers = markers.filter((marker) => marker.type === "chargestation");
+    const bikeMarkers = markers.filter((marker) => marker.type === "bike");
 
     const centerPos = userPosition ? userPosition : posix;
 
@@ -67,6 +64,6 @@ const LeafletMap = ({
             ))}
         </MapContainer>
     );
-};
+});
 
 export default LeafletMap;

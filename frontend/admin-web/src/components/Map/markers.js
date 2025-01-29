@@ -23,7 +23,7 @@ const parkingIcon = L.icon({
     iconUrl: "/icons/parking-icon-40x40.png",
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
-    iconAnchor: [14, 14],
+    iconAnchor: [14, 30],
     popupAnchor: [0, -28],
 });
 
@@ -31,7 +31,7 @@ const chargeIcon = L.icon({
     iconUrl: "/icons/charge-icon-40x40.png",
     // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
-    iconAnchor: [14, 14],
+    iconAnchor: [14, 30],
     popupAnchor: [0, -28],
 });
 
