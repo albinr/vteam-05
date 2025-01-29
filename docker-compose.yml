@@ -25,6 +25,12 @@ services:
       - "./backend/database/ddl.sql:/docker-entrypoint-initdb.d/2.sql"
       - "./backend/database/insert.sql:/docker-entrypoint-initdb.d/3.sql"
       # - "./backend/database/user.csv:/docker-entrypoint-initdb.d/user.csv"
+    restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -38,7 +44,8 @@ services:
     networks:
       - bike_network
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
       DB_HOST: database
       DB_PORT: 3306
@@ -50,6 +57,7 @@ services:
   admin-web:
     build: ./frontend/admin-web
     depends_on:
+      - database
       - backend
     container_name: admin-web-container
     volumes:
@@ -62,6 +70,7 @@ services:
   user-web:
     build: ./frontend/user-web
     depends_on:
+      - database
       - backend
     container_name: user-web-container
     volumes:
@@ -74,6 +83,7 @@ services:
   user-app:
     build: ./frontend/user-app
     depends_on:
+      - database
       - backend
     container_name: user-app-container
     volumes:
@@ -87,6 +97,7 @@ services:
     build: ./sim-soft
     depends_on:
       - backend
+      - database
     networks:
       - bike_network
     container_name: simulation
