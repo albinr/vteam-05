@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import withAuth from "../hoc/withAuth";
 import { apiClient } from "@/services/apiClient";
 import "./balance.css";
-import Button from "../../components/Button";
 
 const Balance = ({ session }) => {
     const [balance, setBalance] = useState(0);
@@ -66,42 +65,9 @@ const Balance = ({ session }) => {
         }
     };
 
-    // async function monthlyPay(user) {
-    //     if (!checkbox) {
-    //         return;
-    //     }
-    //     let userbalance = user.userInfo.balance
-    //     const today = new Date();
-    //     const month = today.getMonth();
-    //     const year = today.getFullYear();
-    //     const lastday = new Date(year, month + 1, 0) ;
-    //     const paid = localStorage.getItem("paid");
-    //     console.log(user)
-
-    //     if (today.getDate() === lastday && !paid) {
-    //         if (userbalance > 0) {
-    //             const amount = - userbalance;
-    //             userbalance = 0
-    //             try {
-    //                 await apiClient.put(`v3/users/${user.id}`, {
-    //                     balance: amount,
-    //                 });
-    //             } catch (error) {
-    //                 console.error("Error adding money:", error.message);
-    //                 setBalance(balance);
-    //             }
-    //             localStorage.setItem("paid", "true")
-    //             console.log('added', amount, 'to account')
-    //         }
-    //     } else if (today.getDate() !== lastday) {
-    //         localStorage.removeItem("paid");
-    //     }
-    // }
-    // monthlyPay(user);
-
     return (
         <div className="outer-box">
-            <h1>Payment Methods</h1>
+            <h1>Payment Method</h1>
             <h3>Current Balance</h3>
             <div className="balance-box">
                 <h2>{balance}kr</h2>
@@ -125,12 +91,12 @@ const Balance = ({ session }) => {
                 </div>
                 <div className="right-box">
                     <h3>How it works</h3>
-                    <p>You can add money to your balance in advance for faster future payments.</p>
-                    <ul>
-                        <li>Enter the amount you'd like to add.</li>
-                        <li>Click <strong>Submit</strong> to process the transaction.</li>
-                        <li>The amount will be added to your current balance.</li>
-                        <li>Once you've completed a trip it will deduct the amount from you'r balance</li>
+                    <p>You can add money to you&apos;r balance in advance for faster future payments.</p>
+                    <ul className="right-box-text">
+                        <p>Enter the amount you like to add.</p>
+                        <p>Click <strong>Submit</strong> to process the transaction.</p>
+                        <p>The amount will be added to your current balance.</p>
+                        <p>Once you&apos;ve completed a trip it will deduct the amount from your balance</p>
                     </ul>
                 </div>
             </div>
