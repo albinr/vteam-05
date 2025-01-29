@@ -57,7 +57,7 @@ const BikeDetails = ({ session }) => {
     }
 
     return (
-        <div>
+        <div className="page-container">
             <h1>Bike Details</h1>
             <p><strong>Bike ID:</strong> {bike.bike_id}</p>
             <p><strong>Status:</strong> {bike.status}</p>

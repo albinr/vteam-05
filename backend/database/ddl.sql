@@ -11,7 +11,7 @@ DROP PROCEDURE IF EXISTS RemoveBikes;
 DROP PROCEDURE IF EXISTS RemoveUsers;
 DROP PROCEDURE IF EXISTS RemoveTrips;
 DROP PROCEDURE IF EXISTS TripCost;
-DROP PROCEDURE IF EXISTS UpdareStatus;
+DROP PROCEDURE IF EXISTS UpdateStatus;
 DROP PROCEDURE IF EXISTS GetAvailableBikes;
 DROP PROCEDURE IF EXISTS GetBikesInCity;
 DROP PROCEDURE IF EXISTS GetAllBikes;
@@ -31,7 +31,8 @@ CREATE TABLE Bike
   battery_level FLOAT NOT NULL DEFAULT 100,
   position POINT NOT NULL,
   speed FLOAT DEFAULT 0,
-  simulation INT DEFAULT 0
+  simulation INT DEFAULT 0,
+  SPATIAL INDEX (position)
 );
 
 --
@@ -223,6 +224,7 @@ CREATE PROCEDURE RemoveBikes(
 BEGIN
   IF input_remove = 1 THEN
     DELETE FROM Bike WHERE simulation = 1;
+    DELETE FROM BikeMovement;
   ELSE
     DELETE FROM Bike;
   END IF;
@@ -441,6 +443,33 @@ BEGIN
   FROM Trip
   WHERE user_id = input_user_id
     AND end_time IS NULL;
+END;;
+
+DELIMITER ;
+
+
+DELIMITER ;;
+
+CREATE PROCEDURE UpdateBike(
+  IN u_bike_id VARCHAR(36),
+  IN new_position_text TEXT,
+  IN new_battery_level FLOAT,
+  IN new_status ENUM('available', 'in_use', 'maintenance', 'charging')
+)
+BEGIN
+  SET @new_position = IF(new_position_text IS NOT NULL, ST_GeomFromText(new_position_text), NULL);
+
+  UPDATE Bike
+  SET
+    position = COALESCE(@new_position, position),
+    battery_level = COALESCE(new_battery_level, battery_level),
+    status = COALESCE(new_status, status)
+  WHERE bike_id = u_bike_id;
+
+  IF @new_position IS NOT NULL THEN
+    INSERT INTO BikeMovement (bike_id, position)
+    VALUES (u_bike_id, @new_position);
+  END IF;
 END;;
 
 DELIMITER ;

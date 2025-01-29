@@ -1,18 +1,53 @@
+import Cookies from "js-cookie";
+
+const getHeaders = (options) => {
+    const token = Cookies.get("token");
+    if (!token) {
+        console.warn("No token found in cookies.");
+    }
+    return {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : undefined,
+        ...options.headers,
+    };
+};
+
 export const apiClient = {
     async get(url, options = {}) {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json", ...options.headers },
+            headers: getHeaders(options),
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
     },
 
+    // async post(url, body, options = {}) {
+    //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
+    //         method: "POST",
+    //         headers: getHeaders(options),
+    //         body: JSON.stringify(body),
+    //         credentials: "include",
+    //         ...options,
+    //     });
+    //     return handleResponse(response);
+    // },
+
     async post(url, body, options = {}) {
+        const formBody = new URLSearchParams();
+        for (const key in body) {
+            formBody.append(key, body[key]);
+        }
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", ...options.headers },
-            body: JSON.stringify(body),
+            headers: {
+                ...getHeaders(options),
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formBody.toString(),
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
@@ -21,22 +56,45 @@ export const apiClient = {
     async delete(url, body = null, options = {}) {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json", ...options.headers },
+            headers: getHeaders(options),
             ...(body ? { body: JSON.stringify(body) } : {}),
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
     },
 
+    // async put(url, body, options = {}) {
+    //     console.log("put body",body)
+    //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
+    //         method: "PUT",
+    //         headers: getHeaders(options),
+    //         body: JSON.stringify(body),
+    //         credentials: "include",
+    //         ...options,
+    //     });
+    //     return handleResponse(response);
+    // },
+
     async put(url, body, options = {}) {
+        const formBody = new URLSearchParams();
+        for (const key in body) {
+            formBody.append(key, body[key]);
+        }
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json", ...options.headers },
-            body: JSON.stringify(body),
+            headers: {
+                ...getHeaders(options),
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formBody.toString(),
+            credentials: "include",
             ...options,
         });
         return handleResponse(response);
-    },
+    }
+
 };
 
 async function handleResponse(response) {

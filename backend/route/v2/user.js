@@ -5,8 +5,11 @@
 
 "use strict";
 const express = require("express");
+
 const router = express.Router();
 const user = require("../../src/modules/user.js");
+
+const { deleteTripByUserId } = require("../../src/modules/trip.js");
 
 // lägg till en ny användare
 router.post("/", async (req, res) => {
@@ -33,12 +36,12 @@ router.put("/:userId", async (req, res) => {
 
 // ge en användare admin rättigheter
 router.put("/admin/:userId", async (req, res) => {
-    const { userId } = req.params
+    const { userId } = req.params;
 
     const result = await user.giveAdmin(userId);
 
-    res.json(result.info)
-})
+    res.json(result.info);
+});
 
 // hämta alla trips av en användare
 router.get("/:userId/trips", async (req, res) => {
@@ -49,7 +52,7 @@ router.get("/:userId/trips", async (req, res) => {
 
 // hämta info från en användare
 router.get("/one/:userId", async (req, res) => {
-    const { userId } = req.params
+    const { userId } = req.params;
     const userInfo = await user.getUserInfo(userId);
     res.json(userInfo);
 });
@@ -74,6 +77,7 @@ router.delete("/:isSimulated", async (req, res) => {
 router.delete("/one/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
+        await deleteTripByUserId(userId);
         const result = await user.deleteUser(userId);
         res.json({ message: `Användare med ID ${userId} har raderats` });
     } catch (error) {
@@ -86,7 +90,5 @@ router.get("/", async (req, res) => {
     const allUsers = await user.getAllUsers();
     res.json(allUsers);
 });
-
-
 
 module.exports = router;

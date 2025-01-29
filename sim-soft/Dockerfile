@@ -1,21 +1,16 @@
 FROM python:3.10-slim
 
-# COPY ./src /app/
-
-VOLUME /app
-
-COPY ./requirements.txt /app/
-
+# Set the working directory inside the container
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+# Copy only requirements first to leverage Docker's layer caching
+COPY ./requirements.txt /app/requirements.txt
 
-# CMD ["python3", "simulation.py"]
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# cli test with entrypoint
-ENTRYPOINT ["python", "cli.py", "start", "--num-bikes", "5"]
-# CMD ["python", "cli.py", "start", "--num-bikes", "3000"]
+# Set PYTHONPATH to ensure src can be discovered
+ENV PYTHONPATH=/app
 
-# Freeze program on startup
-# CMD ["tail", "-f", "/dev/null"]
-#xx
+# Define the default command for the container
+CMD ["python", "cli.py", "start", "--num-bikes", "100"]

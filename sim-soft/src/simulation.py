@@ -7,34 +7,31 @@ This module defines a Simulation class to create simulated bikes and users.
 import asyncio
 import uuid
 import atexit
-import requests
 import signal
 import sys
 import random
-from bike import Bike
-from user import User
+import requests
+from src.sim_bike import SimBike
+# from bike import Bike
+from src.user import User
 
 API_URL="http://backend:1337"
 
-FETCH_INTERVAL = 5
+FETCH_INTERVAL = 20
+USER_RENT_PORTION = 1 / 6
 
-class Simulation:
+class Simulation: # pylint: disable=too-many-instance-attributes
     """
     Simulation class for starting a simulation with simulated bikes
     """
     def __init__(self, num_bikes=1, simulated=True):
-        on_exit()
-
-        # self.bikes = [
-        #                 Bike(bike_id=f"{uuid.uuid4()}",
-        #                 location=(56.176, 15.590), simulated=simulated)
-        #                 for _ in range(1, num_bikes + 1)
-        # ]
-
         self.state = "initialized"
         self.zones = []
         self.cities = []
         self.bikes = []
+        self.fetched_bikes = {}
+        self.num_bikes = num_bikes
+        self.simulated = simulated
 
         self.fetch_zones()
 
@@ -51,20 +48,51 @@ class Simulation:
         """
         Add a bike to the simulation.
         """
+        print(self.zones)
         for _ in range(1, num_bikes + 1):
             # Get random city to start bike in
-            random_city = self.cities[random.randint(0, len(self.cities) - 1)]
+            random_city = random.choice(self.cities)
 
-            # Get random zone in city
-            random_zone_int = random.randint(0, len(self.zones[random_city]) - 1)
-            bike_latitude = self.zones[random_city][random_zone_int]["latitude"]
-            bike_longitude = self.zones[random_city][random_zone_int]["longitude"]
+            zones = self.zones[random_city]
+            random.shuffle(zones)
+
+            # Select random start and destination zones
+            start_zone = zones[0]
+            destination_zone = zones[1]
+
+            # Extract coordinates for start and destination
+            start_latitude = start_zone["latitude"]
+            start_longitude = start_zone["longitude"]
+            start_type = start_zone["type"]
+
+            dest_latitude = destination_zone["latitude"]
+            dest_longitude = destination_zone["longitude"]
+            dest_type = destination_zone["type"]
 
             # Add bike to simulation
-            self.bikes.append(Bike(bike_id=f"{uuid.uuid4()}",
-                location=(bike_longitude, bike_latitude), simulated=simulated))
+            new_bike = SimBike(
+                bike_id=f"{uuid.uuid4()}",
+                location=(start_longitude, start_latitude),
+                start_type=start_type,
+                dest_type=dest_type,
+                simulated=simulated,
+            )
+            # Set start and destination
+            new_bike.set_start_location(start_longitude, start_latitude)
+            new_bike.set_destination(dest_longitude, dest_latitude)
+            new_bike.start_type = start_type
+            new_bike.dest_type = dest_type
+            # new_bike.status = "in_use" # Set bike status to in_use for testing moving bikes
+            self.bikes.append(new_bike)
+            print(f"Bike {new_bike.bike_id} start: ({start_latitude}, {start_longitude})")
+            print(f"Bike {new_bike.bike_id} destination: ({dest_latitude}, {dest_longitude})")
 
 
+    async def initialize_bikes(self):
+        """Initialize all bikes."""
+        print("Initializing bikes...")
+        for bike in self.bikes:
+            await bike.initialize()
 
     def fetch_zones(self):
         """
@@ -98,7 +126,7 @@ class Simulation:
                 f"Status: {bike.status}, "
                 f"Location: {bike.location}")
 
-    async def start_bikes(self):
+    async def start_bikes_and_users(self):
         """Start the bike update and interval loop."""
         bike_tasks = [bike.run_bike_interval() for bike in self.bikes]
         user_tasks = [user.run_user_interval() for user in self.users]
@@ -113,18 +141,19 @@ class Simulation:
         """
         while True:
             try:
-                bikes = requests.get(f"{API_URL}/v2/bikes", timeout=30)
-                if bikes.status_code != 200:
+                bikes_data = requests.get(f"{API_URL}/v2/bikes", timeout=30)
+                if bikes_data.status_code != 200:
                     # Throw error
-                    raise requests.exceptions.RequestException(f"Error getting bikes: {bikes.status_code}")
+                    raise requests.exceptions.RequestException(
+                        f"Error getting bikes: {bikes_data.status_code}")
 
-                self.bikes = bikes.json()
+                self.fetched_bikes = bikes_data.json()
 
                 for user in self.users:
-                    user.update_bikes(self.bikes)
+                    user.update_bikes(self.fetched_bikes)
 
-            except requests.exceptions.RequestException as e:
-                    print(f"Error getting bikes: {bikes.status_code}")
+            except requests.exceptions.RequestException as _:
+                print(f"Error getting bikes: {bikes_data.status_code}")
 
             await asyncio.sleep(FETCH_INTERVAL)
 
@@ -132,13 +161,14 @@ class Simulation:
         """
         Distrubute bikes to users.
         """
-        for user in self.users:
+        num_users_to_rent = int(len(self.users) * USER_RENT_PORTION)
+
+        for user in self.users[:num_users_to_rent]:
             for bike in self.bikes:
                 if user.bike:
                     break
 
                 if not bike.user_owner:
-                    bike.status = "in_use"
                     bike.user_owner = user.user_id
                     user.bike = bike.bike_id
                     break
@@ -148,7 +178,7 @@ class Simulation:
         print("[Simulation] Starting simulation...")
         self.state = "running"
         self.list_bikes()
-        await self.start_bikes()
+        await self.start_bikes_and_users()
 
     async def update_bike_data(self, bike_id, status=None, location=None, battery=None):
         """Update specific bike data (status, location, or battery)."""
@@ -160,26 +190,27 @@ def on_exit():
     """Stop the simulation on exit and deletes simulated items from database."""
     try:
         # Remove simulated trips
-        requests.delete(f"{API_URL}/v2/trips/1", timeout=30) # TODO: Change from 0 to 1 when fixed in db
+        requests.delete(f"{API_URL}/v2/trips/1", timeout=30)
     except requests.exceptions.RequestException as e:
         print(f"Error deleting trip data: {e}")
 
     try:
         requests.delete(f"{API_URL}/v2/bikes/all/1", timeout=30)
-        print(f"Simulated bikes deleted from database!")
+        print("Simulated bikes deleted from database!")
     except requests.exceptions.RequestException as e:
         print(f"Error deleting bike data: {e}")
 
     try:
         # Remove simulated users
         requests.delete(f"{API_URL}/v2/users/1", timeout=30)
-        print(f"Simulated users deleted from database!")
+        print("Simulated users deleted from database!")
     except requests.exceptions.RequestException as e:
         print(f"Error deleting users: {e}")
 
     print("Simulation has stopped.")
 
 def handle_signal():
+    """Handle exit signals."""
     on_exit()
     sys.exit(0)
 
@@ -196,6 +227,8 @@ if __name__ == "__main__":
         """
         To test the file
         """
+        await simulation.initialize_bikes()
+        await asyncio.sleep(60*5)
         # Start the simulation in a background task
         simulation_task = asyncio.create_task(simulation.start())
         # simulation.fetchZones()

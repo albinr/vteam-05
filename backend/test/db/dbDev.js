@@ -1,4 +1,3 @@
-//sssdsf
 
 const mysql = require('mysql2/promise');
 const config = require('../../data/noDocker.json');
@@ -19,7 +18,7 @@ const pool = mysql.createPool(
         : {
               ...config,
               database,
-          }
+          },
 );
 
 process.on('exit', () => {

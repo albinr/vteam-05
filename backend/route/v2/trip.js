@@ -1,5 +1,6 @@
 "use strict";
 const express = require("express");
+
 const router = express.Router();
 const trip = require("../../src/modules/trip.js");
 
@@ -13,10 +14,10 @@ router.get("/", async (req, res) => {
 router.get("/from/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    const trips = await trip.showTripsByUser(userId)
+    const trips = await trip.showTripsByUser(userId);
 
-    res.json(trips)
-})
+    res.json(trips);
+});
 
 // Visa resor från en viss cykel
 router.get("/:bike_id", async (req, res) => {
@@ -30,6 +31,12 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
     const { bikeId, userId } = req.params;
     try {
         const result = await trip.startTrip(bikeId, userId);
+
+        req.io.emit("command", {
+            bike_id: bikeId,
+            command: "rent",
+        });
+
         res.json({ message: `Resa startad för cykel med ID ${bikeId} för användare med ID ${userId}`, result });
     } catch (error) {
         res.json({ error: 'Något gick fel när resan skulle startas', details: error.message });
@@ -40,6 +47,12 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
 router.post("/end/:bike_id", async (req, res) => {
     const { bike_id } = req.params;
     const result = await trip.endTrip(bike_id);
+
+    req.io.emit("command", {
+        bike_id: bike_id,
+        command: "available",
+    });
+
     res.json({ message: `Resa avslutad för cykel med ID ${bike_id}`, result });
 });
 
@@ -64,19 +77,18 @@ router.delete("/:isSimulated", async (req, res) => {
 router.get("/active/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    const trips = await trip.OngoingTripByUser(userId)
+    const trips = await trip.OngoingTripByUser(userId);
 
-    res.json(trips)
-})
+    res.json(trips);
+});
 
 // Radera utifrån tripId
 router.delete("/one/:tripId", async (req, res) => {
     const { tripId } = req.params;
 
-    const trips = await trip.deleteTripById(tripId)
+    const trips = await trip.deleteTripById(tripId);
 
-    res.json(trips)
-})
-
+    res.json(trips);
+});
 
 module.exports = router;

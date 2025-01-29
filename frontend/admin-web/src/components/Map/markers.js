@@ -1,8 +1,7 @@
 import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
-import { apiClient } from "@/services/apiClient";
-import Cookies from "js-cookie";
 import Button from "../Button";
+import { getWebSocket } from "@/services/websocket";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,18 +35,23 @@ const chargeIcon = L.icon({
     popupAnchor: [0, -28],
 });
 
+const sendCommand = (bikeId, commandToSend) => {
+    try {
+        const socket = getWebSocket();
+        if (socket.connected) { // Check if the socket is connected
+            socket.emit("command", JSON.stringify({ bike_id: bikeId, command: commandToSend }));
+            console.log(`Sent command "${commandToSend}" to bike ${bikeId}`);
+        } else {
+            console.error("WebSocket is not connected.");
+        }
+    } catch (error) {
+        console.error("Error sending command:", error);
+    }
+};
+
 export const addBikeMarker = (bikeData) => {
     // const { id, position, battery, status } = bikeData;
     const { bike_id, battery_level, latitude, longitude, status } = bikeData;
-
-    const handleButtonClick = async () => {
-        try {
-            window.location.href = `/bikes/${bike_id}`;
-        } catch (error) {
-            console.error("Error selecting bike:", error);
-            return error;
-        }
-    };
 
     return (
         <Marker
@@ -59,12 +63,23 @@ export const addBikeMarker = (bikeData) => {
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
-                        : status === "rented" ?? status === "charging" ? "orange"
+                        : status === "in_use" ?? status === "charging" ? "orange"
                             : status === "maintance" ? "red"
                                 : "red"
                 }}>{status}</span><br />
                 Battery: {battery_level}%<br />
-                <Button id="bike_id" className="rent-button" onClick={handleButtonClick}>Bike Edit</Button>
+                <Button
+                    onClick={() => sendCommand(bike_id, "stop")}
+                    label={"Stop"}
+                />
+                <Button
+                    onClick={() => sendCommand(bike_id, "shutdown")}
+                    label={"Shutdown"}
+                />
+                <Button
+                    onClick={() => sendCommand(bike_id, "rent")}
+                    label={"Rent for testing"}
+                />
             </Popup>
         </Marker>
     );
@@ -74,31 +89,63 @@ export const addBikeMarker = (bikeData) => {
 export const addChargingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-            <Marker
-                key={zone_id}
-                position={[longitude, latitude]}
-                icon={chargeIcon}
-            >
+        <Marker
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={chargeIcon}
+        >
+            <Popup>
+                <strong>{city}</strong><br />
+                <strong>{name}</strong><br />
+                <strong>{type}</strong><br />
+                <strong>Radius: {radius}</strong><br />
+                <strong>Longitude: {longitude}</strong><br />
+                <strong>Latitude: {latitude}</strong><br />
+                <strong>Capacity: {capacity}</strong><br />
+            </Popup>
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} >
                 <Popup>
+                    <strong>{city}</strong><br />
                     <strong>{name}</strong><br />
+                    <strong>{type}</strong><br />
+                    <strong>Radius: {radius}</strong><br />
+                    <strong>Longitude: {longitude}</strong><br />
+                    <strong>Latitude: {latitude}</strong><br />
+                    <strong>Capacity: {capacity}</strong><br />
                 </Popup>
-                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
-            </Marker>
+            </Circle>
+        </Marker>
     );
 };
 
 export const addParkingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
-            <Marker
-                key={zone_id}
-                position={[longitude, latitude]}
-                icon={parkingIcon}
-            >
+        <Marker
+            key={zone_id}
+            position={[longitude, latitude]}
+            icon={parkingIcon}
+        >
+            <Popup>
+                <strong>{city}</strong><br />
+                <strong>{name}</strong><br />
+                <strong>{type}</strong><br />
+                <strong>Radius: {radius}</strong><br />
+                <strong>Longitude: {longitude}</strong><br />
+                <strong>Latitude: {latitude}</strong><br />
+                <strong>Capacity: {capacity}</strong><br />
+            </Popup>
+            <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon}>
                 <Popup>
+                    <strong>{city}</strong><br />
                     <strong>{name}</strong><br />
+                    <strong>{type}</strong><br />
+                    <strong>Radius: {radius}</strong><br />
+                    <strong>Longitude: {longitude}</strong><br />
+                    <strong>Latitude: {latitude}</strong><br />
+                    <strong>Capacity: {capacity}</strong><br />
                 </Popup>
-                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
-            </Marker>
+            </Circle>
+        </Marker>
     );
 };

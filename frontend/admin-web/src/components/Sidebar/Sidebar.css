@@ -1,14 +1,15 @@
 /* General Sidebar Styles */
 .sidebar {
-  width: 220px;
+  /* width: 220px; */
+  width: 300px;
   height: 100%;
   background-color: #fff;
   color: #333;
   position: fixed;
   top: 60;
-  left: -220px; /* Initially hidden */
+  left: -300px; /* Initially hidden */
   transition: left 0.3s ease;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
 }
@@ -29,15 +30,19 @@
   flex: 1;
   padding: 0;
   margin: 0;
+  z-index: 1000;
   list-style-type: none;
 }
 
 .sidebar-link {
   display: block;
   padding: 15px;
+  margin: 10px;
   text-decoration: none;
   color: #333;
+  z-index: 1000;
   transition: background-color 0.3s;
+  border-radius: 6px;
 }
 
 .sidebar-link:hover {
@@ -46,7 +51,8 @@
 
 .sidebar-link.active {
   font-weight: bold;
-  border-left: 6px solid black;
+  border: 1px solid #cdcdcd;
+  background-color: #e8e8e8;
 }
 
 
@@ -70,7 +76,7 @@
   .sidebar {
       left: 0; /* Always visible on larger screens */
       position: relative; /* Inline with main content */
-      width: 220px;
+      width: 300px;
   }
 
   .sidebar.open {

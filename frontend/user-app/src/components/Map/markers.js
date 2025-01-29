@@ -1,7 +1,8 @@
 import { Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
-import { apiClient } from "@/services/apiClient";
 import Cookies from "js-cookie";
+import { useState } from "react";
+import { apiClient } from "@/services/apiClient";
 
 // Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,7 +14,6 @@ L.Icon.Default.mergeOptions({
 
 const bikeIcon = L.icon({
     iconUrl: "/icons/bike-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -14],
@@ -21,7 +21,6 @@ const bikeIcon = L.icon({
 
 const parkingIcon = L.icon({
     iconUrl: "/icons/parking-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -28],
@@ -29,15 +28,13 @@ const parkingIcon = L.icon({
 
 const chargeIcon = L.icon({
     iconUrl: "/icons/charge-icon-40x40.png",
-    // iconRetinaUrl: "/path/to/bike-icon@2x.png",
     iconSize: [28, 28],
     iconAnchor: [14, 28],
     popupAnchor: [0, -28],
 });
 
-export const addBikeMarker = (bikeData) => {
-    // const { id, position, battery, status } = bikeData;
-    const { bike_id, battery_level, latitude, longitude, status } = bikeData;
+export const addBikeMarker = ({ bikeData }) => {
+    const { bike_id, battery_level, latitude, longitude, status, simulation } = bikeData;
 
     const handleButtonClick = async () => {
         if (status !== "available") {
@@ -53,19 +50,9 @@ export const addBikeMarker = (bikeData) => {
         }
 
         try {
-            console.log("Renting bike: ", bike_id);
             let token = Cookies.get("token");
 
-            console.log(token);
-            // const response = await apiClient.post(`/trips/start/${bike_id}/${userId}`,
-            //     {
-            //         headers: {
-            //             Authorization: `Bearer ${token}`
-            //         }
-            //     }
-            // );
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trips/start/${bike_id}/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/trips/start/${bike_id}/${userId}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -74,18 +61,11 @@ export const addBikeMarker = (bikeData) => {
 
             const data = await response.json();
 
-            console.log(data);
-
-            if (!data.result) {
-                throw new Error(response.message);
-            }
-
             // Redirect to "/trip"
             window.location.href = "/trip";
 
         } catch (error) {
             console.error("Error starting trip:", error);
-            return error;
         }
 
     };
@@ -96,32 +76,27 @@ export const addBikeMarker = (bikeData) => {
             position={[longitude, latitude]}
             icon={bikeIcon}
         >
-            <Popup
-                // style={{
-                //     window: "90vw",
-                //     heigh: "90vh",
-                // }}
-            >
+            <Popup>
                 <strong>{bike_id}</strong><br />
                 <span style={{
                     color: status === "available" ? "green"
-                    : status === "rented" ?? status === "charging" ? "orange"
-                    : status === "maintance" ? "red"
+                    : ["rented", "charging"].includes(status) ? "orange"
+                    : status === "maintenance" ? "red"
                     : "red"
                 }}>{status}</span><br />
-                Battery: {battery_level}%<br />
+                Battery: {Math.round(battery_level)}%<br />
                 {
-                    status === "available" ?
-                        <button id="bike_id" className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
+                    status === "available" && !simulation ?
+                        <button id={bike_id} className="rent-button" onClick={handleButtonClick}>Rent Bike</button>
                         :
-                        <button id={bike_id} className="rent-button" disabled>Not Available</button>
+                        <button id={bike_id} className="rent-button rent-button-disabled" disabled>Bike Not Available</button>
                 }
+                {/* {message && <p>{message}</p>} */}
             </Popup>
         </Marker>
     );
 };
 
-// Fix the marker
 export const addChargingStationMarker = (stationData) => {
     const { zone_id, name, city, type, longitude, latitude, capacity, radius } = stationData;
     return (
@@ -132,7 +107,9 @@ export const addChargingStationMarker = (stationData) => {
             >
             <Popup>
                 <strong>{name}</strong><br />
-                {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
+                <strong>{city}</strong><br />
+                <strong>({type})</strong><br />
+                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'green' }} icon={chargeIcon} />
             </Popup>
         </Marker>
     );
@@ -148,15 +125,15 @@ export const addParkingStationMarker = (stationData) => {
             >
             <Popup>
                 <strong>{name}</strong><br />
-                {/* <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} /> */}
+                <strong>{city}</strong><br />
+                <strong>({type})</strong><br />
+                <Circle center={[longitude, latitude]} radius={radius} pathOptions={{ color: 'blue' }} icon={chargeIcon} />
             </Popup>
         </Marker>
     );
 };
 
-
-// Fix the marker
-export const addZoneMarker = (zoneData) => { 
+export const addZoneMarker = (zoneData) => {
     const { id, position, battery, status } = zoneData;
     return (
         <Marker

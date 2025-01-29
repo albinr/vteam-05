@@ -9,7 +9,7 @@ const Login = () => {
     useEffect(() => {
         // Redirect to backend for authentication
         router.push(`${process.env.NEXT_PUBLIC_API_AUTH_URL}/admin-web/google`);
-    }, []);
+    }, [router]);
 
     return <div>Redirecting to login...</div>;
 };

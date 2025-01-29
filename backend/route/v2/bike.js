@@ -1,5 +1,6 @@
 "use strict";
 const express = require("express");
+
 const router = express.Router();
 const bike = require("../../src/modules/bike.js");
 
@@ -8,6 +9,7 @@ router.post("/add", async (req, res) => {
     const { batteryLevel, longitude, latitude, isSimulated = 0, bikeId } = req.body;
     try {
         const newBike = await bike.addBike(bikeId, batteryLevel, longitude, latitude, isSimulated);
+        req.io.emit('new-bike', { bikeId: newBike, batteryLevel, longitude, latitude, isSimulated });
         res.json({ message: "Cykel tillagd med ID", bikeId: newBike });
     } catch (error) {
         res.json({ error: error.message || "Något gick fel vid tillägg av cykel." });

@@ -19,7 +19,7 @@ const TripPage = () => {
             const user_id = Cookies.get("user") ? JSON.parse(Cookies.get("user")).id : null;
 
             // Fetch active trip
-            const trips = await apiClient.get(`/trips/active/${user_id}`,
+            const trips = await apiClient.get(`/v3/trips/active/${user_id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${Cookies.get("token")}`
@@ -60,16 +60,12 @@ const TripPage = () => {
         try {
             let token = Cookies.get("token");
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trips/end/${bike_id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/trips/end/${bike_id}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-
-            const data = await response.json();
-
-            console.log(data);
 
             // Redirect to "/trip"
             window.location.href = "/history";

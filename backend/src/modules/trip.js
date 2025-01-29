@@ -107,6 +107,16 @@ async function deleteTripById(tripId) {
     }
 }
 
+async function deleteTripByUserId(userId) {
+    try {
+        const [result] = await pool.query('DELETE FROM Trip WHERE user_id = ?', [userId]);
+        return result.affectedRows > 0;
+    } catch (error) {
+        console.error("Error att radera resan:", error);
+        throw error;
+    }
+}
+
 // Funktion för att hämta en aktiv resa från en specifik användare
 async function OngoingTripByUser(userId) {
     const [result] = await pool.query('Call GetOngoingTrip(?)', [userId]);
@@ -121,5 +131,6 @@ module.exports = {
     showTripsByUser,
     showTripsByBikeId,
     deleteTripById,
-    OngoingTripByUser
+    OngoingTripByUser,
+    deleteTripByUserId
 };

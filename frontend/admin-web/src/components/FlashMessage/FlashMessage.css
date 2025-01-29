@@ -1,0 +1,68 @@
+@keyframes rollDown {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes rollUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+.flash-message {
+    position: absolute;
+    /* top: 10px; */
+    /* left: 50%; */
+    width: 100%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    animation: rollDown 0.3s ease-out forwards;
+}
+
+.flash-message.hide {
+    animation: rollUp 0.3s ease-in forwards;
+}
+
+.flash-message.success {
+    background-color: #4caf50;
+}
+
+.flash-message.error {
+    background-color: #f44336;
+}
+
+.flash-message.info {
+    background-color: #2196f3;
+}
+
+.flash-message.warning {
+    background-color: #ff9800;
+}
+
+.flash-message button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+}
