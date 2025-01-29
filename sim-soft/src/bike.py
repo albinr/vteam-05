@@ -168,6 +168,12 @@ class Bike: # pylint: disable=too-many-instance-attributes
             elif command == "charge":
                 await self.update_bike_data(status="charging")
                 print(f"Bike {self.bike_id} status set to 'charging'")
+            elif command == "set-position":
+                lat = data.get("latitude")
+                lon = data.get("longitude")
+                lat, lon = float(lat), float(lon)
+                await self.update_bike_data(location=(lat, lon))
+                print(f"Bike {self.bike_id} location set to {data.get('latitude')}, {data.get('longitude')}")
             elif command == "kill":
                 await self.update_bike_data(status="shutdown")
                 print(f"Bike {self.bike_id} status set to 'shutdown'")
