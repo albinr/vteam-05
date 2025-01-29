@@ -32,3 +32,16 @@
     padding: 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.outer-box {
+    padding: 20px;
+    background-color: #eeeeee;
+    border-radius: 5px;
+    height: 90%;
+}
+
+.inner-box {
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
