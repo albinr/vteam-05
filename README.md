@@ -29,7 +29,7 @@ A complete system for managing **electric scooter rentals** across Swedish citie
 | Component   | Technologies |
 |-------------|-------------|
 | **Frontend** | Next.js, Leaflet.js (Maps) |
-| **Backend**  | Express.js, REST API, WebSockets, MariaDB |
+| **Backend**  | Express.js, REST API, Socket.IO, MariaDB |
 | **Simulation** | Python |
 | **Infrastructure** | Docker, GitHub Actions, Scrutinizer |
 
@@ -45,7 +45,7 @@ git clone https://github.com/albinr/vteam-05.git
 cd vteam-05
 ```
 
-### **2️⃣ Start the System**
+### **2️⃣ Start the System in the background**
 ```bash
 docker compose up -d
 ```
@@ -61,9 +61,9 @@ For a detailed list of available API routes, refer to:
 ## **🤝 Contributors**
 | Name | GitHub Profile |
 |------|--------------|
-| 👷‍♂️**Marcus Nilsson Ahlin** | [GitHub](https://github.com/username) |
-| 👷‍♂️**Tobias Ralf** | [GitHub](https://github.com/username) |
-| 👷‍♂️**Tim Swärd** | [GitHub](https://github.com/username) |
+| 👷‍♂️**Marcus Nilsson Ahlin** | [GitHub](https://github.com/MarcusNAhlin) |
+| 👷‍♂️**Tobias Ralf** | [GitHub](https://github.com/torl23) |
+| 👷‍♂️**Tim Swärd** | [GitHub](https://github.com/Tiqma) |
 | 👷‍♂️**Albin Ryberg** | [GitHub](https://github.com/albinr) |
 
 ---
