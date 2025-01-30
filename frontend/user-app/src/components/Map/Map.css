@@ -34,7 +34,8 @@
 .leaflet-popup-content-wrapper {
     background: var(--bg);
     width: 100vw;
-    min-height: 30vh;
+    max-width: 350px;
+    /* min-height: 30vh; */
     max-height: 50vh;
 }
 
