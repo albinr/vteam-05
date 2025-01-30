@@ -47,7 +47,7 @@ const validateApiKey = require("./middleware/apiKeyValidation.js");
 // Options for cors
 const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
     origin: [
         "http://admin-web:3000",
         "http://user-web:3001",

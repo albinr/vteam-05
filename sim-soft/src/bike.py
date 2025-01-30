@@ -106,13 +106,19 @@ class Bike: # pylint: disable=too-many-instance-attributes
 
         await self.send_update_to_socketio()
 
-    async def run_bike_interval(self):
-        """Start the update loop for sending data and battery drain."""
+    async def close(self):
+        if self.session:
+            await self.session.close()
+        if self.sio:
+            await self.sio.disconnect()
 
-        if self.sio.connected:  # Run only if connected to the WebSocket server
-            # Run all tasks in the background
-            update_task = asyncio.create_task(self.send_update_to_socketio())
-            await update_task
+    async def run_bike_interval(self):
+        try:
+            while True:
+                # Bike interval logic...
+                await asyncio.sleep(1)
+        finally:
+            await self.close()
 
     async def send_update_to_socketio(self):
         """Send an update to the WebSocket server."""
@@ -190,24 +196,15 @@ class Bike: # pylint: disable=too-many-instance-attributes
             print(f"Error handling command: {e}")
 
 if __name__ == "__main__":
-    bike1 = Bike(BIKE_ID, simulated=True)
-    # bike2 = Bike(uuid.uuid4(), simulated=True)
-    # bike3 = Bike(uuid.uuid4(), simulated=True)
-    # bike4 = Bike(uuid.uuid4(), simulated=True)
-    # bike5 = Bike(uuid.uuid4(), simulated=True)
+    bike1 = Bike(BIKE_ID, simulated=False, location=(56.20999, 15.27602))
 
     async def main():
         """Main func to run the bikes."""
+
         await bike1.initialize()  # Initialize bike asynchronously
 
         await asyncio.gather(
-            bike1.run_bike_interval(),
-            # bike2.run_bike_interval(),
-            # bike3.run_bike_interval(),
-            # bike4.run_bike_interval(),
-            # bike5.run_bike_interval(),
-            # Add other bikes here if needed
-        )
+            bike1.run_bike_interval())
 
     # Run the main coroutine
     asyncio.run(main())
