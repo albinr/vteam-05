@@ -48,7 +48,7 @@ class Simulation: # pylint: disable=too-many-instance-attributes
         """
         Add a bike to the simulation.
         """
-        print(self.zones)
+        # print(self.zones)
         for _ in range(1, num_bikes + 1):
             # Get random city to start bike in
             random_city = random.choice(self.cities)
