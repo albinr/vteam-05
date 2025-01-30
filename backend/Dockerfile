@@ -1,11 +1,11 @@
 # Använd en Node.js 18-bild
 FROM node:18-slim
 
-# Ange arbetskatalog
-WORKDIR /backend
-
 # Kopiera package.json och installera beroenden
 COPY package*.json ./
+
+# Ange arbetskatalog
+WORKDIR /backend
 
 RUN npm install --production --silent
 

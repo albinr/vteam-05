@@ -8,6 +8,27 @@ import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
 import { useFlashMessage } from "@/components/Layout";
+import Table from "@/components/Table"
+
+const tripColumns = [
+    { header: "ID", accessor: "trip_id" },
+    { header: "Start time", accessor: "start_time" },
+    { header: "Start position", accessor: "start_position" },
+    { 
+        header: "End Time", 
+        render: (row) => row.end_time !== null ? `${row.end_time}` : "-"
+    },
+    { 
+        header: "End Position", 
+        render: (row) => row.end_position !== null ? `${row.end_position}` : "-"
+    },
+    { 
+        header: "Duration", 
+        render: (row) => row.duration_minutes !== null ? `${row.duration_minutes} min` : "Active"
+    },
+    { header: "Price", accessor: "price" },
+
+];
 
 const UserDetails = ({ session }) => {
     const { id } = useParams();
@@ -118,16 +139,8 @@ const UserDetails = ({ session }) => {
                 onClick={handlePromoteUser}
             />
             )}
-            {trips.length > 0 && (
-                <div>
-                    <h2>Trips</h2>
-                    <ul>
-                        {trips.map((trip, index) => (
-                            <li key={trip.id || index}>{trip.trip_id} - {trip.price}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            <h2>Trips</h2>
+            <Table columns={tripColumns} data={trips}/>
             {payments.length > 0 && (
                 <div>
                     <h2>Payments</h2>

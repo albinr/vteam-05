@@ -42,6 +42,7 @@ const v1Router = require("./route/v1/bike.js");
 const v2Router = require("./route/v2/api.js");
 const v3Router = require("./route/v3/api.js");
 const bikeDB = require("./src/modules/bike.js");
+const validateApiKey = require("./middleware/apiKeyValidation.js");
 
 // Options for cors
 const corsOptions = {
@@ -288,7 +289,7 @@ app.use("/docs", express.static(path.join(__dirname, "docs")));
 
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
-app.use("/v3", v3Router);
+app.use("/v3", validateApiKey, v3Router);
 
 app.use(require('express-session')({
     secret: 'your-session-secret',
