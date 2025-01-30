@@ -35,14 +35,19 @@
 }
 
 .sidebar-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between icon and text */
   padding: 15px;
   margin: 10px;
-  text-decoration: none;
-  color: #333;
-  z-index: 1000;
-  transition: background-color 0.3s;
   border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.sidebar-link .icon {
+  font-size: 1.2rem; /* Adjust icon size */
 }
 
 .sidebar-link:hover {

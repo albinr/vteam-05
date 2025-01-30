@@ -96,6 +96,8 @@ class Bike: # pylint: disable=too-many-instance-attributes
         # Only update bike data if self.is_updating is False
 
         if status:
+            if self.status == "charging": # TODO: add better charge logic
+                return
             self.status = status
         if location:
             self.location = location
@@ -155,8 +157,8 @@ class Bike: # pylint: disable=too-many-instance-attributes
             # data = json.loads(data)
 
             if data.get("bike_id").strip() != str(self.bike_id).strip():
-                # print(f"{data.get('bike_id')} != {self.bike_id}")
-                # print("Command not for this bike. Skipping.")
+                print(f"{data.get('bike_id')} != {self.bike_id}")
+                print("Command not for this bike. Skipping.")
                 return
 
             print(f"Received command: {data}")

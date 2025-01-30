@@ -77,7 +77,7 @@ const MapView = () => {
         const interval = setInterval(() => {
             if (bikeUpdatesRef.current.length > 0) {
                 setBikes((prevBikes) => {
-                    console.log("prevBikes", prevBikes);
+                    // console.log("prevBikes", prevBikes);
                     const updatedBikes = [...prevBikes];
                     bikeUpdatesRef.current.forEach((newBike) => {
                         const index = updatedBikes.findIndex(bike => bike.bike_id === newBike.bike_id);

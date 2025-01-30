@@ -83,7 +83,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                 self.battery -= random.uniform(0.01, 0.05)
             if self.status == "charging" and self.battery < 100:
                 # Simulate battery charging
-                self.battery += random.uniform(0.01, 0.05)
+                self.battery += 0.1 # Charge at a fixed rate
 
                 # Make sure that the battery doesn't go over 100
                 if self.battery > 100: # pylint: disable=consider-using-min-builtin

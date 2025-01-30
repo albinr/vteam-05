@@ -3,6 +3,8 @@ const express = require("express");
 
 const router = express.Router();
 const trip = require("../../src/modules/trip.js");
+const { bikes } = require("../../src/modules/bikeStore.js"); // TODO: Remove this line if not needed
+
 
 // Visa alla resor
 router.get("/", async (req, res) => {
@@ -32,10 +34,21 @@ router.post("/start/:bikeId/:userId", async (req, res) => {
     try {
         const result = await trip.startTrip(bikeId, userId);
 
-        req.io.emit("command", {
-            bike_id: bikeId,
-            command: "rent",
-        });
+        const bikeSocketId = bikes[bikeId]?.socketId;
+        if (bikeSocketId) {
+            const socket = req.io.sockets.sockets.get(bikeSocketId);
+            if (socket) {
+                socket.emit("command", {
+                    bike_id: bikeId,
+                    command: "rent",
+                });
+                console.log(`Sent "rent" command to bike ${bikeId}`);
+            } else {
+                console.log(`Bike ${bikeId} is not connected`);
+            }
+        } else {
+            console.log(`No socket found for bike ${bikeId}`);
+        }
 
         res.json({ message: `Resa startad för cykel med ID ${bikeId} för användare med ID ${userId}`, result });
     } catch (error) {
@@ -48,11 +61,21 @@ router.post("/end/:bike_id", async (req, res) => {
     const { bike_id } = req.params;
     const result = await trip.endTrip(bike_id);
 
-    req.io.emit("command", {
-        bike_id: bike_id,
-        command: "available",
-    });
-
+    const bikeSocketId = bikes[bike_id]?.socketId;
+    if (bikeSocketId) {
+        const socket = req.io.sockets.sockets.get(bikeSocketId);
+        if (socket) {
+            socket.emit("command", {
+                bike_id: bike_id,
+                command: "available",
+            });
+            console.log(`Sent "available" command to bike ${bike_id}`);
+        } else {
+            console.log(`Bike ${bike_id} is not connected`);
+        }
+    } else {
+        console.log(`No socket found for bike ${bike_id}`);
+    }
     res.json({ message: `Resa avslutad för cykel med ID ${bike_id}`, result });
 });
 

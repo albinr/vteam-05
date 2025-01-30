@@ -2,12 +2,18 @@ import Cookies from "js-cookie";
 
 const getHeaders = (options) => {
     const token = Cookies.get("token");
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     if (!token) {
         console.warn("No token found in cookies.");
     }
+    if (!apiKey) {
+        console.warn("No API key found in environment variables.");
+    }
+    // console.log("api-key", apiKey)
     return {
         "Content-Type": "application/json",
         Authorization: token ? `Bearer ${token}` : undefined,
+        "x-api-key": apiKey,
         ...options.headers,
     };
 };
