@@ -68,8 +68,8 @@ class User: # pylint: disable=too-many-instance-attributes
         initial_delay = random.uniform(0, 60)
         await asyncio.sleep(initial_delay)
 
-        # update_task = asyncio.create_task(self.rent_bike())
-        # await asyncio.gather(update_task)
+        update_task = asyncio.create_task(self.rent_bike())
+        await asyncio.gather(update_task)
 
     async def rent_bike(self):
         """

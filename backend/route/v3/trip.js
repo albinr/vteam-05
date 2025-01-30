@@ -79,20 +79,20 @@ router.post("/end/:bike_id", authenticateJWT, async (req, res) => {
 
         const result = await trip.endTrip(bike_id);
 
-        const bikeSocketId = bikes[bikeId]?.socketId;
+        const bikeSocketId = bikes[bike_id]?.socketId;
         if (bikeSocketId) {
             const socket = req.io.sockets.sockets.get(bikeSocketId);
             if (socket) {
                 socket.emit("command", {
-                    bike_id: bikeId,
+                    bike_id: bike_id,
                     command: "available",
                 });
-                console.log(`Sent "available" command to bike ${bikeId}`);
+                console.log(`Sent "available" command to bike ${bike_id}`);
             } else {
-                console.log(`Bike ${bikeId} is not connected`);
+                console.log(`Bike ${bike_id} is not connected`);
             }
         } else {
-            console.log(`No socket found for bike ${bikeId}`);
+            console.log(`No socket found for bike ${bike_id}`);
         }
 
         return res.json({ message: `Resa avslutad för cykel med ID ${bike_id}`, result });

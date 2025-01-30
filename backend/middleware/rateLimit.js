@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 
 const userWebLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 1000,
   message: "Too many requests for user web, please try again later.",
   keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   standardHeaders: true,
@@ -12,7 +12,7 @@ const userWebLimiter = rateLimit({
 
 const userAppLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50,
+  max: 1000,
   message: "Too many requests for user app, please try again later.",
   keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   standardHeaders: true,
@@ -21,7 +21,7 @@ const userAppLimiter = rateLimit({
 
 const adminWebLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 2,
+  max: 1000,
   message: "Too many requests for admin web, please try again later.",
   keyGenerator: (req) => req.headers['x-api-key'] || req.ip,
   standardHeaders: true,

@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV PYTHONPATH=/app
 
 # Define the default command for the container
-CMD ["python", "cli.py", "start", "--num-bikes", "3000"]
+CMD ["python", "cli.py", "start", "--num-bikes", "20"]
