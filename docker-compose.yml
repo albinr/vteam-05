@@ -104,3 +104,17 @@ services:
     volumes:
       - ./sim-soft/src:/app/src
       - ./sim-soft/cli.py:/app/cli.py
+    command: ["python", "cli.py", "start", "--num-bikes", "100"]
+
+  bike:
+    build: ./sim-soft
+    depends_on:
+      - backend
+      - database
+    networks:
+      - bike_network
+    container_name: bike
+    volumes:
+      - ./sim-soft/src:/app/src
+      - ./sim-soft/cli.py:/app/cli.py
+    command: ["python", "src/bike.py"]

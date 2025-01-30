@@ -188,24 +188,13 @@ class Bike: # pylint: disable=too-many-instance-attributes
             print(f"Error handling command: {e}")
 
 if __name__ == "__main__":
-    bike1 = Bike(BIKE_ID, simulated=True)
-    # bike2 = Bike(uuid.uuid4(), simulated=True)
-    # bike3 = Bike(uuid.uuid4(), simulated=True)
-    # bike4 = Bike(uuid.uuid4(), simulated=True)
-    # bike5 = Bike(uuid.uuid4(), simulated=True)
+    bike1 = Bike(BIKE_ID, simulated=False, location=(59.3293, 18.0686))
 
     async def main():
         """Main func to run the bikes."""
         await bike1.initialize()  # Initialize bike asynchronously
 
-        await asyncio.gather(
-            bike1.run_bike_interval(),
-            # bike2.run_bike_interval(),
-            # bike3.run_bike_interval(),
-            # bike4.run_bike_interval(),
-            # bike5.run_bike_interval(),
-            # Add other bikes here if needed
-        )
+        await asyncio.gather(bike1.run_bike_interval())
 
     # Run the main coroutine
     asyncio.run(main())
