@@ -7,8 +7,8 @@ const Button = ({ label, onClick, href, className = "", disabled = false, type =
     return (
         <Element
             href={href}
-            type={type}
-            onClick={onClick}
+            type={href ? undefined : type}
+            onClick={href ? undefined : onClick}
             className={`button ${className}`}
             disabled={disabled}
             {...props}
