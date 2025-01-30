@@ -18,13 +18,7 @@ const HistoryPage = () => {
             const user_id = Cookies.get("user") ? JSON.parse(Cookies.get("user")).id : null;
 
             // Fetch active trip
-            const trips = await apiClient.get(`/v3/trips/from/${user_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`
-                    }
-                }
-            );
+            const trips = await apiClient.get(`/v3/trips/from/${user_id}`,);
 
             if (trips.length === 0) {
                 console.log("No previous trips");

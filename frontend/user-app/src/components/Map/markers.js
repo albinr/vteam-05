@@ -50,16 +50,16 @@ export const addBikeMarker = ({ bikeData }) => {
         }
 
         try {
-            let token = Cookies.get("token");
+            // let token = Cookies.get("token");
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/trips/start/${bike_id}/${userId}`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v3/trips/start/${bike_id}/${userId}`, {
+            //     method: "POST",
+            //     headers: {
+            //         Authorization: `Bearer ${token}`
+            //     }
+            // });
 
-            const data = await response.json();
+            await apiClient.post(`/v3/trips/start/${bike_id}/${userId}`);
 
             // Redirect to "/trip"
             window.location.href = "/trip";
