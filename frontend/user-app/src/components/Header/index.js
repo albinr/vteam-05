@@ -33,7 +33,9 @@ export default function Header() {
             setUser(dbUser);
         }
 
-        fetchUser();
+        setUser(JSON.parse(Cookies.get("user")));
+
+        // fetchUser();
     }, []);
 
 
