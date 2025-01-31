@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { fetchZones, deleteZoneById, updateZone, createZone } from "./api";
 import Button from "@/components/Button";
-import { addFlashMessage } from "@/components/Layout";
+import { useFlashMessage } from "@/components/Layout";
 import "./Zones.css"
 import withAuth from "../auth/hoc/withAuth";
 
@@ -19,7 +19,7 @@ const Zones = () => {
         {
             header: "Actions", render: (row) => (
                 <>
-                    <Button onClick={() => handleZoneUpdate(row)} label={"Edit"} />
+                    {/* <Button onClick={() => handleZoneUpdate(row)} label={"Edit"} /> */}
                     <Button onClick={() => handleZoneDelete(row.zone_id)} label={"Delete"} />
                 </>
             ),
@@ -30,6 +30,7 @@ const Zones = () => {
     const [zones, setZones] = useState([]); // All zone data
     const [currentPage, setCurrentPage] = useState(1); // Current page number
     const zonesPerPage = 10; // Number of zones per page
+    const addFlashMessage = useFlashMessage()
 
     const router = useRouter(); // Create router instance
 

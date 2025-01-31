@@ -60,8 +60,8 @@ services:
       - database
       - backend
     container_name: admin-web-container
-    volumes:
-      - ./frontend/admin-web:/app
+    # volumes: # Remove this so we don’t override the containers /app
+    #   - ./frontend/admin-web:/app
     ports:
       - 3000:3000
     networks:
@@ -73,8 +73,8 @@ services:
       - database
       - backend
     container_name: user-web-container
-    volumes:
-      - ./frontend/user-web:/app
+    # volumes:
+    #   - ./frontend/user-web:/app
     ports:
       - 3001:3001
     networks:
@@ -86,8 +86,8 @@ services:
       - database
       - backend
     container_name: user-app-container
-    volumes:
-      - ./frontend/user-app:/app
+    # volumes:
+    #   - ./frontend/user-app:/app
     ports:
       - 3002:3002
     networks:

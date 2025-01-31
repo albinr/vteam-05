@@ -59,7 +59,7 @@ const MapView = () => {
 
                 socket.on("bike-update-frontend", (newBike) => {
                     newBike.simulation = newBike.simulated;
-                    console.log("Received bike update:", newBike);
+                    // console.log("Received bike update:", newBike);
                     bikeUpdatesRef.current.push(newBike); // Add updates to ref
                 });
             } catch (error) {
@@ -89,7 +89,7 @@ const MapView = () => {
                     return updatedBikes;
                 });
             }
-        }, 100);
+        }, 200);
 
         // Cleanup
         return () => {
