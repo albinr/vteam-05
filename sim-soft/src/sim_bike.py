@@ -13,7 +13,7 @@ from geopy.distance import geodesic
 from src.bike import Bike
 
 # Constants
-SLEEP_TIME_IN_USE = 5
+SLEEP_TIME_IN_USE = 9
 SLEEP_TIME_IDLE = 60
 
 SLEEP_TIME = 10  # Seconds for simulation update loop

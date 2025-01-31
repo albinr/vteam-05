@@ -89,7 +89,7 @@ const MapView = () => {
                     return updatedBikes;
                 });
             }
-        }, 100);
+        }, 200);
 
         // Cleanup
         return () => {
