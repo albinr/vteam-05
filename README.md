@@ -16,16 +16,21 @@ A complete system for managing **electric scooter rentals** across Swedish citie
 
 ### **For Customers**
 ✅ Rent and return scooters via a **mobile app**  
+
 ✅ View trip and payment history  
+
 ✅ Find available scooters and parking zones  
 
 ### **Simulation**
-✅ Python-based **simulation engine** to test large-scale operations
-✅ Simulate users interacting with the system, account creati, bike rental
-✅ Simulate scooter movement, rentals, and battery depletion
+✅ Python-based **simulation engine** to test large-scale operations 
+
+✅ Simulate users interacting with the system, account creation, bike rental 
+
+✅ Simulate scooter movement, rentals, and battery depletion 
 
 ### **Bike program**
 ✅ Python-based **bike program** to controll bikes and monitor them  
+
 ✅ Simulate scooter movement, rentals, and battery depletion
 
 ---
