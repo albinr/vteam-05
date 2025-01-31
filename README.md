@@ -73,6 +73,3 @@ For a detailed list of available API routes, refer to:
 
 ---
 
-## **📝 License**
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
