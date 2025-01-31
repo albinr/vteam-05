@@ -54,8 +54,10 @@ A complete system for managing **electric scooter rentals** across Swedish citie
 git clone https://github.com/albinr/vteam-05.git
 cd vteam-05
 ```
+### **2️⃣ Clone the Repository**
+Create .env.local file for files that include the .env.local.example
 
-### **2️⃣ Start the System in the background**
+### **3️⃣ Start the System in the background**
 ```bash
 docker compose up -d
 ```
