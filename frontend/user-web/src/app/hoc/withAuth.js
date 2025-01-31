@@ -1,3 +1,5 @@
+/* eslint-disable react/display-name */
+
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
