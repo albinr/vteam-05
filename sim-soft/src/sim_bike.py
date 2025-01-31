@@ -28,7 +28,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
     """
     Bike class for simulating an electric bike.
     """
-    def __init__(self, *args, start_type=None, dest_type=None, **kwargs):
+    def __init__(self, *args, start_type=None, dest_type=None, user_callback=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.simulated = True
         self.start_location = None
@@ -36,6 +36,7 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
         self.start_type = start_type
         self.dest_type = dest_type
         self.moving = False
+        self.user_callback = user_callback
 
     def set_start_location(self, latitude, longitude):
         """Save the start location of the bike, so it can later be switched with destinaiton."""
@@ -112,6 +113,9 @@ class SimBike(Bike): # pylint: disable=too-many-instance-attributes
                     else:
                         await self.update_bike_data(status="available")
                         print(f"Bike {self.bike_id} is available at {self.destination}.")
+
+                    if self.user_callback:
+                        await self.user_callback(self)
 
                     self.start_location, self.destination = self.destination, self.start_location
                     self.start_type, self.dest_type = self.dest_type, self.start_type

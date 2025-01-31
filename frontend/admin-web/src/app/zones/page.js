@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { fetchZones, deleteZoneById, updateZone, createZone } from "./api";
 import Button from "@/components/Button";
-import { addFlashMessage } from "@/components/Layout";
+import { useFlashMessage } from "@/components/Layout";
 import "./Zones.css"
 import withAuth from "../auth/hoc/withAuth";
 
@@ -19,12 +19,11 @@ const Zones = () => {
         {
             header: "Actions", render: (row) => (
                 <>
-                    <Button onClick={() => handleZoneUpdate(row)} label={"Edit"} />
+                    {/* <Button onClick={() => handleZoneUpdate(row)} label={"Edit"} /> */}
                     <Button onClick={() => handleZoneDelete(row.zone_id)} label={"Delete"} />
                 </>
             ),
         },
-    
     ];
 
     const [zones, setZones] = useState([]); // All zone data
@@ -47,7 +46,7 @@ const Zones = () => {
 
         loadZones();
     }, []);
-
+    const addFlashMessage = useFlashMessage();
     // Pagination logic
     const totalPages = Math.ceil(filteredZones.length / zonesPerPage);
     const startIndex = (currentPage - 1) * zonesPerPage;

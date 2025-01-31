@@ -170,7 +170,8 @@ class Simulation: # pylint: disable=too-many-instance-attributes
 
                 if not bike.user_owner:
                     bike.user_owner = user.user_id
-                    user.bike = bike.bike_id
+                    user.bike = bike
+                    bike.user_callback = user.return_bike
                     break
 
     async def start(self):

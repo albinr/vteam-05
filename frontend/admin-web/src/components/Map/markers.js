@@ -67,7 +67,7 @@ export const addBikeMarker = (bikeData) => {
                             : status === "maintance" ? "red"
                                 : "red"
                 }}>{status}</span><br />
-                <strong>Battery:</strong> {battery_level}%<br />
+                <strong>Battery:</strong> {Number(battery_level).toFixed(2)}%<br />
                 <Button
                     onClick={() => sendCommand(bike_id, "stop")}
                     label={"Stop"}

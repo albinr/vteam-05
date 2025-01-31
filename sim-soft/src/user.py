@@ -82,24 +82,34 @@ class User: # pylint: disable=too-many-instance-attributes
                 # rent bike if not rented already
                     if random.randint(1, RETURN_OR_HIRE_PROBABILITY) == 1:
                         try:
-                            requests.post(f"{API_URL}/v2/trips/start/{self.bike}/{self.user_id}",
+                            requests.post(f"{API_URL}/v2/trips/start/{self.bike.bike_id}/{self.user_id}",
                                         timeout=30)
                             self.bike_rented = True
-                            print(f"[User {self.user_id}] Bike rented: {self.bike}")
+                            print(f"[User {self.user_id}] Bike rented: {self.bike.bike_id}")
                         except requests.exceptions.RequestException as e:
                             print(f"[User {self.user_id}] Error renting bike: {e}")
 
-                else:
-                    if random.randint(1, RETURN_OR_HIRE_PROBABILITY) == 1:
-                        try:
-                            requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
-                            self.bike_rented = False
-                            print(f"[User {self.user_id}] Bike returned: {self.bike}")
-                        except requests.exceptions.RequestException as e:
-                            print(f"[User {self.user_id}] Error returning bike: {e}")
-                # return bike after random time
+                # else:
+                #     if random.randint(1, RETURN_OR_HIRE_PROBABILITY) == 1:
+                #         try:
+                #             requests.post(f"{API_URL}/v2/trips/end/{self.bike}", timeout=30)
+                #             self.bike_rented = False
+                #             await self.bike.user_callback(self.bike)
+                #             print(f"[User {self.user_id}] Bike returned: {self.bike}")
+                #         except requests.exceptions.RequestException as e:
+                #             print(f"[User {self.user_id}] Error returning bike: {e}")
+                # # return bike after random time
 
             # await asyncio.sleep(RENT_INTERVAL)
             await asyncio.sleep(60 * random.uniform(MIN_TRAVEL_TIME / RETURN_OR_HIRE_PROBABILITY,
                                                     MAX_TRAVEL_TIME / RETURN_OR_HIRE_PROBABILITY))
 
+    async def return_bike(self, bike):
+            """Handles bike return when the bike reaches its destination."""
+            if bike == self.bike:
+                print(f"[User {self.user_id}] Returned bike {bike.bike_id} at {bike.location}")
+                self.bike_rented = False
+                try:
+                    requests.post(f"{API_URL}/v2/trips/end/{bike.bike_id}", timeout=30)
+                except requests.exceptions.RequestException as e:
+                    print(f"[User {self.user_id}] Error returning bike: {e}")
