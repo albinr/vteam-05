@@ -54,7 +54,7 @@ A complete system for managing **electric scooter rentals** across Swedish citie
 git clone https://github.com/albinr/vteam-05.git
 cd vteam-05
 ```
-### **2️⃣ Clone the Repository**
+### **2️⃣ Create env.local files**
 Create .env.local file for files that include the .env.local.example
 
 ### **3️⃣ Start the System in the background**
