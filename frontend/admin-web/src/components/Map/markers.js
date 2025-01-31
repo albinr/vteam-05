@@ -3,7 +3,6 @@ import L from "leaflet";
 import Button from "../Button";
 import { getWebSocket } from "@/services/websocket";
 
-// Ensure default icons are correctly loaded
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",

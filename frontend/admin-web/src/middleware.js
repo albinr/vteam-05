@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-    // Get JWT Token
     const token = request.cookies.get("token");
 
     if (!token) {
@@ -20,5 +19,5 @@ export const config = {
         '/bikes',
         '/users',
         '/zones',
-    ],  // Apply to specific routes
+    ],
 };

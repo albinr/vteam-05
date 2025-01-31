@@ -25,7 +25,6 @@ const Users = () => {
     const usersPerPage = 10;
     const router = useRouter();
 
-    // search logic
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredUsers, setFilteredUsers] = useState([]);
 

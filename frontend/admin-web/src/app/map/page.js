@@ -11,10 +11,9 @@ const MapView = () => {
     const [bikes, setBikes] = useState([]);
     const [zones, setZones] = useState([]);
     const [startPosition, setStartPosition] = useState(null);
-    const bikeUpdatesRef = useRef([]); // Temporary storage for bike updates
+    const bikeUpdatesRef = useRef([]);
 
     useEffect(() => {
-        // Fetch data from the API
         const fetchBikes = async () => {
             try {
                 const response = await apiClient.get("/bikes");
@@ -47,7 +46,6 @@ const MapView = () => {
             }
         };
 
-        // Setup WebSocket connection
         const setupWebSocket = async () => {
             try {
                 await initializeWebSocket();
@@ -60,24 +58,21 @@ const MapView = () => {
                 socket.on("bike-update-frontend", (newBike) => {
                     newBike.simulation = newBike.simulated;
                     // console.log("Received bike update:", newBike);
-                    bikeUpdatesRef.current.push(newBike); // Add updates to ref
+                    bikeUpdatesRef.current.push(newBike);
                 });
             } catch (error) {
                 console.error("Error setting up WebSocket:", error);
             }
         };
 
-        // Initialize the app
         fetchBikes();
         fetchZones();
         fetchUserPosition();
         setupWebSocket();
 
-        // Batch update interval
         const interval = setInterval(() => {
             if (bikeUpdatesRef.current.length > 0) {
                 setBikes((prevBikes) => {
-                    // console.log("prevBikes", prevBikes);
                     const updatedBikes = [...prevBikes];
                     bikeUpdatesRef.current.forEach((newBike) => {
                         const index = updatedBikes.findIndex(bike => bike.bike_id === newBike.bike_id);
@@ -91,7 +86,6 @@ const MapView = () => {
             }
         }, 200);
 
-        // Cleanup
         return () => {
             clearInterval(interval);
             const socket = getWebSocket();
@@ -99,9 +93,8 @@ const MapView = () => {
                 socket.disconnect();
             }
         };
-    }, []); // Dependency array ensures this runs only on mount
+    }, []);
 
-    // Memoize markers to prevent unnecessary re-renders
     const memoizedMarkers = useMemo(() => [...zones, ...bikes], [zones, bikes]);
 
     return (

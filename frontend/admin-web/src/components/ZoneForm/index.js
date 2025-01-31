@@ -39,14 +39,11 @@ const ZoneForm = ({ session, existingZone = null }) => {
         setSuccess(null);
 
         try {
-            // Determine if this is a create or update action
             if (existingZone) {
-                // Update zone
                 await apiClient.put(`/zones/${existingZone.zoneId}`, formData);
                 // addFlashMessage("Zone updated successfully!", "success");
                 router.push("/zones");
             } else {
-                // Create new zone
                 console.log(formData);
                 await apiClient.post("/zones/add", formData);
                 setSuccess("Zone created successfully!");

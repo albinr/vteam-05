@@ -37,7 +37,7 @@ const UpdateUser = () => {
 
                 setUser({
                     ...userData,
-                    user_id: userData.user_id.toString(), // Ensure user_id is a string
+                    user_id: userData.user_id.toString(),
                 });
 
                 setFormData({

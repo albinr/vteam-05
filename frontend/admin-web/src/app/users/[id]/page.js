@@ -83,20 +83,16 @@ const UserDetails = ({ session }) => {
 
         const loadUserData = async () => {
             try {
-                // Fetch user details
                 const userData = await fetchUserById(id);
                 console.log("User data:", userData);
                 setUser(userData);
 
-                // Fetch user trips
                 const userTrips = await fetchUserTripsById(id);
                 console.log("User trips:", userTrips);
                 setTrips(userTrips || []);
-                // Fetch user payments
                 // const userPayments = await fetchUserPaymentsById(id);
                 // console.log("User payments:", userPayments);
 
-                // Update states
                 // setPayments(userPayments || []);
             } catch (err) {
                 console.error(`Error fetching data: ${err.message}`);

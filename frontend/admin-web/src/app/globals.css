@@ -68,8 +68,8 @@ select {
   /* margin-bottom: 15px; */
   width: 100%;
   box-sizing: border-box;
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
 
 .page-container{

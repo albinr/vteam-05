@@ -10,7 +10,6 @@ export default function LoginSuccess() {
 
     useEffect(() => {
         let token = searchParams.get("token");
-        // Get token from query and clean it up afterwards
         if (token) {
             console.log("Setting token in local storage: ", token);
 

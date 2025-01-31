@@ -27,16 +27,15 @@ const Zones = () => {
     
     ];
 
-    const [zones, setZones] = useState([]); // All zone data
-    const [currentPage, setCurrentPage] = useState(1); // Current page number
-    const zonesPerPage = 10; // Number of zones per page
+    const [zones, setZones] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const zonesPerPage = 10;
     const addFlashMessage = useFlashMessage()
 
-    const router = useRouter(); // Create router instance
+    const router = useRouter();
 
-    // Search logic
-    const [searchTerm, setSearchTerm] = useState(""); // Search term
-    const [filteredZones, setFilteredZones] = useState([]); // Filtered zones
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredZones, setFilteredZones] = useState([]);
 
     useEffect(() => {
         const loadZones = async () => {
@@ -49,7 +48,6 @@ const Zones = () => {
         loadZones();
     }, []);
 
-    // Pagination logic
     const totalPages = Math.ceil(filteredZones.length / zonesPerPage);
     const startIndex = (currentPage - 1) * zonesPerPage;
     const currentZones = filteredZones.slice(startIndex, startIndex + zonesPerPage);
@@ -113,7 +111,6 @@ const Zones = () => {
     };
 
     const handleZoneUpdate = (zone) => {
-        // Navigate to an update page or open a modal for editing
         router.push(`/zones/edit/${zone.zone_id}`);
     };
 
@@ -146,7 +143,6 @@ const Zones = () => {
             <Table
                 columns={zoneColumns}
                 data={currentZones}
-                // onRowClick={(row) => handleZoneRowClick(row.zone_id)}
             />
         </div>
     );

@@ -1,34 +1,24 @@
 .layout {
     display: flex;
     flex-direction: column;
-    /* Stacks Header on top */
     height: 100vh;
-    /* Full viewport height */
 }
 
 .layout-body {
     display: flex;
-    /* Sidebar and Content side by side */
     flex: 1;
-    /* Take up remaining space below Header */
 }
 
 .layout-content {
     display: flex;
     flex-direction: column;
     flex: 1;
-    /* Main content takes remaining space */
     overflow: auto;
-    /* Scroll if content overflows */
 }
 
 .layout-main {
     flex: 1;
-    /* padding: 16px; */
     background-color: #f3f4f6;
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
-    /* align-items: center; */
-    /* Light gray background */
 }

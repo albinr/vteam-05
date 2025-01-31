@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import withAuth from "../../auth/hoc/withAuth";
-import { fetchZoneById, deleteZoneById } from "../api"; // Updated API calls
+import { fetchZoneById, deleteZoneById } from "../api";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Button from "@/components/Button";
@@ -45,7 +45,6 @@ const ZoneDetails = ({ session }) => {
             try {
                 console.log("Fetching zone details for ID:", id);
 
-                // Fetch zone details
                 const zoneData = await fetchZoneById(id);
                 console.log("Zone data:", zoneData);
                 setZone(zoneData);

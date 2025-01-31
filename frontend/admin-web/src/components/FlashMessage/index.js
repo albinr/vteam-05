@@ -3,15 +3,15 @@ import "./FlashMessage.css";
 
 const FlashMessage = ({ message, type = "info", duration = 3000, onDismiss }) => {
     const [isVisible, setIsVisible] = useState(true);
-    const [isHiding, setIsHiding] = useState(false); // New state for hiding animation
+    const [isHiding, setIsHiding] = useState(false);
 
     useEffect(() => {
         const showTimer = setTimeout(() => {
-            setIsHiding(true); // Start "roll up" animation
+            setIsHiding(true);
             setTimeout(() => {
-                setIsVisible(false); // Remove from DOM after animation
+                setIsVisible(false);
                 if (onDismiss) onDismiss();
-            }, 300); // Match the duration of the "roll up" animation
+            }, 300);
         }, duration);
 
         return () => clearTimeout(showTimer);
@@ -24,11 +24,11 @@ const FlashMessage = ({ message, type = "info", duration = 3000, onDismiss }) =>
             <span>{message}</span>
             <button
                 onClick={() => {
-                    setIsHiding(true); // Start "roll up" animation
+                    setIsHiding(true);
                     setTimeout(() => {
-                        setIsVisible(false); // Remove from DOM after animation
+                        setIsVisible(false);
                         if (onDismiss) onDismiss();
-                    }, 300); // Match the duration of the "roll up" animation
+                    }, 300);
                 }}
             >
                 &times;

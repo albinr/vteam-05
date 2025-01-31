@@ -4,7 +4,6 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    /* Full page height */
     font-size: 1.5rem;
     color: #333;
 }
@@ -19,7 +18,6 @@
     margin-bottom: 10px;
 }
 
-/* Animation for the spinner */
 @keyframes spin {
     0% {
         transform: rotate(0deg);
